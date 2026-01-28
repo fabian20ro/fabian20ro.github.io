@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fabian's Projects</title>
+  <meta name="description" content="A collection of my open source projects">
+  <style>
+    :root {
+      --bg: #0d1117;
+      --card-bg: #161b22;
+      --card-border: #30363d;
+      --text: #e6edf3;
+      --text-muted: #8b949e;
+      --accent: #58a6ff;
+      --accent-hover: #79c0ff;
+      --shadow: rgba(0, 0, 0, 0.3);
+    }
+
+    [data-theme="light"] {
+      --bg: #f6f8fa;
+      --card-bg: #ffffff;
+      --card-border: #d0d7de;
+      --text: #24292f;
+      --text-muted: #57606a;
+      --accent: #0969da;
+      --accent-hover: #0550ae;
+      --shadow: rgba(0, 0, 0, 0.1);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      min-height: 100vh;
+      transition: background 0.3s ease, color 0.3s ease;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 2rem 1.5rem;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2rem;
+    }
+
+    h1 {
+      font-size: 1.75rem;
+      font-weight: 600;
+    }
+
+    .header-controls {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .theme-toggle,
+    .lang-toggle {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 8px;
+      padding: 0.5rem 0.75rem;
+      cursor: pointer;
+      font-size: 1.25rem;
+      transition: all 0.2s ease;
+    }
+
+    .lang-toggle {
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .theme-toggle:hover,
+    .lang-toggle:hover {
+      border-color: var(--accent);
+    }
+
+    .intro {
+      color: var(--text-muted);
+      margin-bottom: 2.5rem;
+      font-size: 1.1rem;
+    }
+
+    .section-title {
+      font-size: 0.875rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+      margin-bottom: 1rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 1px solid var(--card-border);
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1rem;
+      margin-bottom: 2.5rem;
+    }
+
+    @media (max-width: 600px) {
+      .grid {
+        grid-template-columns: 1fr;
+      }
+
+      h1 {
+        font-size: 1.5rem;
+      }
+    }
+
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      padding: 1.25rem;
+      text-decoration: none;
+      color: var(--text);
+      transition: all 0.2s ease;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .card:hover {
+      border-color: var(--accent);
+      box-shadow: 0 4px 12px var(--shadow);
+      transform: translateY(-2px);
+    }
+
+    .card-icon {
+      font-size: 1.5rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .card-title {
+      font-size: 1rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+    }
+
+    .card-desc {
+      font-size: 0.875rem;
+      color: var(--text-muted);
+      flex-grow: 1;
+      margin-bottom: 1rem;
+    }
+
+    .card-link {
+      font-size: 0.875rem;
+      color: var(--accent);
+      font-weight: 500;
+    }
+
+    .card:hover .card-link {
+      color: var(--accent-hover);
+    }
+
+    footer {
+      text-align: center;
+      padding-top: 1rem;
+      border-top: 1px solid var(--card-border);
+    }
+
+    footer a {
+      color: var(--accent);
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    footer a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1 data-i18n="title">Fabian's Projects</h1>
+      <div class="header-controls">
+        <button class="lang-toggle" onclick="toggleLang()" aria-label="Toggle language">EN</button>
+        <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
+          <span class="theme-icon"></span>
+        </button>
+      </div>
+    </header>
+
+    <p class="intro" data-i18n="intro">
+      Hi, I'm Fabian. Here you'll find a collection of my open source projects.
+    </p>
+
+    <h2 class="section-title" data-i18n="liveProjects">Live Projects</h2>
+    <div class="grid">
+      <a href="https://fabian20ro.github.io/image-prompt-expander/" class="card">
+        <span class="card-icon">🎨</span>
+        <span class="card-title" data-i18n="imagePromptTitle">Image Prompt Expander</span>
+        <span class="card-desc" data-i18n="imagePromptDesc">A tool that helps expand and enhance image generation prompts for better AI-generated images.</span>
+        <span class="card-link" data-i18n="visitSite">Visit site →</span>
+      </a>
+      <a href="https://fabian20ro.github.io/propozitii-nostime/" class="card">
+        <span class="card-icon">🇷🇴</span>
+        <span class="card-title" data-i18n="propozitiiTitle">Propozitii Nostime</span>
+        <span class="card-desc" data-i18n="propozitiiDesc">A fun Romanian language project for generating amusing sentences.</span>
+        <span class="card-link" data-i18n="visitSite">Visit site →</span>
+      </a>
+    </div>
+
+    <h2 class="section-title" data-i18n="repositories">Repositories</h2>
+    <div class="grid">
+      <a href="https://github.com/fabian20ro/sudoku-python" class="card">
+        <span class="card-icon">🧩</span>
+        <span class="card-title" data-i18n="sudokuTitle">Sudoku Python</span>
+        <span class="card-desc" data-i18n="sudokuDesc">A Python-based Sudoku solver and generator.</span>
+        <span class="card-link" data-i18n="viewGithub">View on GitHub →</span>
+      </a>
+      <a href="https://github.com/fabian20ro/booking-filter-out" class="card">
+        <span class="card-icon">🔍</span>
+        <span class="card-title" data-i18n="bookingTitle">Booking Filter Out</span>
+        <span class="card-desc" data-i18n="bookingDesc">A browser extension to filter booking.com results to show only pet-friendly locations.</span>
+        <span class="card-link" data-i18n="viewGithub">View on GitHub →</span>
+      </a>
+    </div>
+
+    <footer>
+      <a href="https://github.com/fabian20ro" data-i18n="viewAllGithub">View all projects on GitHub →</a>
+    </footer>
+  </div>
+
+  <script>
+    // Translations
+    const translations = {
+      en: {
+        title: "Fabian's Projects",
+        intro: "Hi, I'm Fabian. Here you'll find a collection of my open source projects.",
+        liveProjects: "Live Projects",
+        repositories: "Repositories",
+        imagePromptTitle: "Image Prompt Expander",
+        imagePromptDesc: "A tool that helps expand and enhance image generation prompts for better AI-generated images.",
+        propozitiiTitle: "Propozitii Nostime",
+        propozitiiDesc: "A fun Romanian language project for generating amusing sentences.",
+        sudokuTitle: "Sudoku Python",
+        sudokuDesc: "A Python-based Sudoku solver and generator.",
+        bookingTitle: "Booking Filter Out",
+        bookingDesc: "A browser extension to filter booking.com results to show only pet-friendly locations.",
+        visitSite: "Visit site →",
+        viewGithub: "View on GitHub →",
+        viewAllGithub: "View all projects on GitHub →"
+      },
+      ro: {
+        title: "Proiectele lui Fabian",
+        intro: "Salut, sunt Fabian. Aici vei găsi o colecție de proiecte open source.",
+        liveProjects: "Proiecte Live",
+        repositories: "Cod Sursă",
+        imagePromptTitle: "Image Prompt Expander",
+        imagePromptDesc: "Un instrument care ajută la extinderea și îmbunătățirea prompt-urilor pentru imagini generate de AI.",
+        propozitiiTitle: "Propoziții Nostime",
+        propozitiiDesc: "Un proiect amuzant pentru generarea de propoziții hazlii.",
+        sudokuTitle: "Sudoku Python",
+        sudokuDesc: "Un rezolvator și generator de Sudoku bazat pe Python.",
+        bookingTitle: "Booking Filter Out",
+        bookingDesc: "O extensie de browser pentru a filtra rezultatele de pe booking.com și a afișa doar locațiile care acceptă animale.",
+        visitSite: "Vizitează →",
+        viewGithub: "Vezi pe GitHub →",
+        viewAllGithub: "Vezi toate proiectele pe GitHub →"
+      }
+    };
+
+    // Language functions
+    function setLang(lang) {
+      document.querySelectorAll('[data-i18n]').forEach(el => {
+        const key = el.dataset.i18n;
+        if (translations[lang][key]) {
+          el.textContent = translations[lang][key];
+        }
+      });
+      document.querySelector('.lang-toggle').textContent = lang.toUpperCase();
+      localStorage.setItem('lang', lang);
+    }
+
+    function toggleLang() {
+      const current = localStorage.getItem('lang') || 'en';
+      setLang(current === 'en' ? 'ro' : 'en');
+    }
+
+    // Theme functions
+    function setTheme(theme) {
+      document.documentElement.setAttribute('data-theme', theme);
+      document.querySelector('.theme-icon').textContent = theme === 'dark' ? '☀️' : '🌙';
+      localStorage.setItem('theme', theme);
+    }
+
+    function toggleTheme() {
+      const current = document.documentElement.getAttribute('data-theme');
+      setTheme(current === 'dark' ? 'light' : 'dark');
+    }
+
+    // Initialize theme and language
+    const savedTheme = localStorage.getItem('theme') || 'dark';
+    setTheme(savedTheme);
+
+    const savedLang = localStorage.getItem('lang') || 'en';
+    setLang(savedLang);
+  </script>
+</body>
+</html>
