@@ -436,8 +436,16 @@
     const savedTheme = localStorage.getItem('theme') || 'dark';
     setTheme(savedTheme);
 
-    const savedLang = localStorage.getItem('lang') || 'en';
-    setLang(savedLang);
+    // Detect default language based on browser settings
+    function getDefaultLang() {
+      const browserLang = navigator.language || navigator.languages?.[0] || 'en';
+      // Check if browser language starts with 'ro' (covers 'ro', 'ro-RO', etc.)
+      return browserLang.startsWith('ro') ? 'ro' : 'en';
+    }
+
+    // Initialize language (saved preference takes priority)
+    const savedLang = localStorage.getItem('lang');
+    setLang(savedLang || getDefaultLang());
 
     // GitHub Activity Feed
     const GITHUB_USERNAME = 'fabian20ro';
