@@ -9,6 +9,9 @@ vendor/
 .bundle/
 Gemfile.lock
 
+# Node
+node_modules/
+
 # Mac OS
 .DS_Store
 
