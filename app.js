@@ -237,9 +237,12 @@ function toggleLang() {
   setLang(currentLang === 'en' ? 'ro' : 'en');
 }
 
-function createCard(card) {
+function createCard(card, isSelected) {
   const cardNode = document.createElement('a');
   cardNode.className = 'card';
+  if (isSelected) {
+    cardNode.classList.add('card-selected');
+  }
   cardNode.href = card.href;
 
   const iconNode = document.createElement('span');
@@ -271,11 +274,15 @@ function renderProjectCards() {
   const repositories = document.getElementById('repositories');
 
   if (liveProjects) {
-    liveProjects.replaceChildren(...projectSections.liveProjects.map(createCard));
+    liveProjects.replaceChildren(
+      ...projectSections.liveProjects.map((card, index) => createCard(card, index === 0))
+    );
   }
 
   if (repositories) {
-    repositories.replaceChildren(...projectSections.repositories.map(createCard));
+    repositories.replaceChildren(
+      ...projectSections.repositories.map((card) => createCard(card, false))
+    );
   }
 }
 
