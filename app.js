@@ -59,8 +59,8 @@ const translations = {
     imagePromptTitle: 'Image Prompt Expander',
     imagePromptDesc:
       'A tool that helps expand and enhance image generation prompts for better AI-generated images.',
-    propozitiiTitle: 'Propozitii Nostime',
-    propozitiiDesc: 'A fun Romanian language project for generating amusing sentences.',
+    propozitiiTitle: 'Propozitii Absurde',
+    propozitiiDesc: 'A fun Romanian language project for generating absurd sentences.',
     sudokuTitle: 'Sudoku Python',
     sudokuDesc: 'A Python-based Sudoku solver and generator.',
     bookingTitle: 'Booking Filter Out',
@@ -104,8 +104,8 @@ const translations = {
     imagePromptTitle: 'Image Prompt Expander',
     imagePromptDesc:
       'Un instrument care ajuta la extinderea si imbunatatirea prompt-urilor pentru imagini generate de AI.',
-    propozitiiTitle: 'Propozitii Nostime',
-    propozitiiDesc: 'Un proiect amuzant pentru generarea de propozitii hazlii.',
+    propozitiiTitle: 'Propozitii Absurde',
+    propozitiiDesc: 'Un proiect amuzant pentru generarea de propozitii absurde.',
     sudokuTitle: 'Sudoku Python',
     sudokuDesc: 'Un rezolvator si generator de Sudoku bazat pe Python.',
     bookingTitle: 'Booking Filter Out',
