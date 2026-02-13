@@ -60,7 +60,7 @@ const translations = {
     imagePromptDesc:
       'A tool that helps expand and enhance image generation prompts for better AI-generated images.',
     propozitiiTitle: 'Propozitii Absurde',
-    propozitiiDesc: 'A fun Romanian language project for generating absurd sentences.',
+    propozitiiDesc: 'Sentences made from random words, always absurd, sometimes funny.',
     sudokuTitle: 'Sudoku Python',
     sudokuDesc: 'A Python-based Sudoku solver and generator.',
     bookingTitle: 'Booking Filter Out',
@@ -105,7 +105,7 @@ const translations = {
     imagePromptDesc:
       'Un instrument care ajuta la extinderea si imbunatatirea prompt-urilor pentru imagini generate de AI.',
     propozitiiTitle: 'Propozitii Absurde',
-    propozitiiDesc: 'Un proiect amuzant pentru generarea de propozitii absurde.',
+    propozitiiDesc: 'Propozitii formate din cuvinte aleatoare, mereu absurde, uneori nostime.',
     sudokuTitle: 'Sudoku Python',
     sudokuDesc: 'Un rezolvator si generator de Sudoku bazat pe Python.',
     bookingTitle: 'Booking Filter Out',
