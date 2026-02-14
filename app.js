@@ -15,6 +15,13 @@ const projectSections = {
       linkKey: 'visitSite'
     },
     {
+      href: 'https://github.com/fabian20ro/better-stb',
+      icon: '🧪',
+      titleKey: 'betterStbTitle',
+      descKey: 'betterStbDesc',
+      linkKey: 'viewGithub'
+    },
+    {
       href: 'https://fabian20ro.github.io/image-prompt-expander/',
       icon: '🎨',
       titleKey: 'imagePromptTitle',
@@ -31,10 +38,10 @@ const projectSections = {
   ],
   repositories: [
     {
-      href: 'https://github.com/fabian20ro/sudoku-python',
-      icon: '🧩',
-      titleKey: 'sudokuTitle',
-      descKey: 'sudokuDesc',
+      href: 'https://github.com/fabian20ro/word-rarity-classifier',
+      icon: '📊',
+      titleKey: 'wordRarityTitle',
+      descKey: 'wordRarityDesc',
       linkKey: 'viewGithub'
     },
     {
@@ -42,6 +49,13 @@ const projectSections = {
       icon: '🔍',
       titleKey: 'bookingTitle',
       descKey: 'bookingDesc',
+      linkKey: 'viewGithub'
+    },
+    {
+      href: 'https://github.com/fabian20ro/sudoku-python',
+      icon: '🧩',
+      titleKey: 'sudokuTitle',
+      descKey: 'sudokuDesc',
       linkKey: 'viewGithub'
     }
   ]
@@ -56,11 +70,15 @@ const translations = {
     recentActivity: 'Recent Activity',
     emotIdTitle: 'Emot-ID',
     emotIdDesc: 'An emotion identification tool.',
+    betterStbTitle: 'Better STB',
+    betterStbDesc: 'A utility project for improving STB workflows and outputs.',
     imagePromptTitle: 'Image Prompt Expander',
     imagePromptDesc:
       'A tool that helps expand and enhance image generation prompts for better AI-generated images.',
     propozitiiTitle: 'Propozitii Absurde',
     propozitiiDesc: 'Sentences made from random words, always absurd, sometimes funny.',
+    wordRarityTitle: 'Word Rarity Classifier',
+    wordRarityDesc: 'A classifier that scores and categorizes word rarity.',
     sudokuTitle: 'Sudoku Python',
     sudokuDesc: 'A Python-based Sudoku solver and generator.',
     bookingTitle: 'Booking Filter Out',
@@ -101,11 +119,15 @@ const translations = {
     recentActivity: 'Activitate Recenta',
     emotIdTitle: 'Emot-ID',
     emotIdDesc: 'Un instrument pentru identificarea emotiilor.',
+    betterStbTitle: 'Better STB',
+    betterStbDesc: 'Un proiect utilitar pentru imbunatatirea fluxurilor si rezultatelor STB.',
     imagePromptTitle: 'Image Prompt Expander',
     imagePromptDesc:
       'Un instrument care ajuta la extinderea si imbunatatirea prompt-urilor pentru imagini generate de AI.',
     propozitiiTitle: 'Propozitii Absurde',
     propozitiiDesc: 'Propozitii formate din cuvinte aleatoare, mereu absurde, uneori nostime.',
+    wordRarityTitle: 'Word Rarity Classifier',
+    wordRarityDesc: 'Un clasificator care puncteaza si categoriseste raritatea cuvintelor.',
     sudokuTitle: 'Sudoku Python',
     sudokuDesc: 'Un rezolvator si generator de Sudoku bazat pe Python.',
     bookingTitle: 'Booking Filter Out',
