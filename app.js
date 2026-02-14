@@ -15,11 +15,11 @@ const projectSections = {
       linkKey: 'visitSite'
     },
     {
-      href: 'https://github.com/fabian20ro/better-stb',
+      href: 'https://fabian20ro.github.io/better-stb/',
       icon: '🧪',
       titleKey: 'betterStbTitle',
       descKey: 'betterStbDesc',
-      linkKey: 'viewGithub'
+      linkKey: 'visitSite'
     },
     {
       href: 'https://fabian20ro.github.io/image-prompt-expander/',
