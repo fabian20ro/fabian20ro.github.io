@@ -70,8 +70,8 @@ const translations = {
     recentActivity: 'Recent Activity',
     emotIdTitle: 'Emot-ID',
     emotIdDesc: 'An emotion identification tool.',
-    betterStbTitle: 'Better STB',
-    betterStbDesc: 'A utility project for improving STB workflows and outputs.',
+    betterStbTitle: 'Another STB App',
+    betterStbDesc: 'An alternative STB utility app with a different workflow and outputs.',
     imagePromptTitle: 'Image Prompt Expander',
     imagePromptDesc:
       'A tool that helps expand and enhance image generation prompts for better AI-generated images.',
@@ -119,8 +119,8 @@ const translations = {
     recentActivity: 'Activitate Recenta',
     emotIdTitle: 'Emot-ID',
     emotIdDesc: 'Un instrument pentru identificarea emotiilor.',
-    betterStbTitle: 'Better STB',
-    betterStbDesc: 'Un proiect utilitar pentru imbunatatirea fluxurilor si rezultatelor STB.',
+    betterStbTitle: 'Alta aplicatie STB',
+    betterStbDesc: 'O aplicatie utilitara alternativa pentru STB, cu un flux si rezultate diferite.',
     imagePromptTitle: 'Image Prompt Expander',
     imagePromptDesc:
       'Un instrument care ajuta la extinderea si imbunatatirea prompt-urilor pentru imagini generate de AI.',
