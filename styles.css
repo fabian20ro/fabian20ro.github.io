@@ -173,33 +173,16 @@ a:focus-visible {
 }
 
 .card-link {
-  width: 2rem;
-  height: 2rem;
-  border: 1px solid var(--card-border);
-  border-radius: 999px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  font-size: 0;
-}
-
-.card-link::before {
-  content: '\2192';
   color: var(--accent);
-  font-size: 1rem;
+  font-size: 1.25rem;
   font-weight: 700;
   line-height: 1;
+  flex-shrink: 0;
   transition: color 0.2s ease, transform 0.2s ease;
 }
 
 .card:hover .card-link,
 .card-selected .card-link {
-  border-color: var(--accent);
-}
-
-.card:hover .card-link::before,
-.card-selected .card-link::before {
   color: var(--accent-hover);
   transform: translateX(1px);
 }

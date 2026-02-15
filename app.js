@@ -236,6 +236,15 @@ function setLang(lang) {
     }
   }
 
+  const cardLinks = document.querySelectorAll('.card-link[data-link-key]');
+  for (const link of cardLinks) {
+    const key = link.getAttribute('data-link-key');
+    if (key) {
+      link.setAttribute('aria-label', t(key));
+      link.setAttribute('title', t(key));
+    }
+  }
+
   const langToggle = document.getElementById('lang-toggle');
   const themeToggle = document.getElementById('theme-toggle');
 
@@ -284,8 +293,10 @@ function createCard(card, isSelected) {
 
   const linkNode = document.createElement('span');
   linkNode.className = 'card-link';
-  linkNode.setAttribute('data-i18n', card.linkKey);
-  linkNode.textContent = t(card.linkKey);
+  linkNode.setAttribute('data-link-key', card.linkKey);
+  linkNode.setAttribute('aria-label', t(card.linkKey));
+  linkNode.setAttribute('title', t(card.linkKey));
+  linkNode.textContent = '→';
 
   const headerNode = document.createElement('div');
   headerNode.className = 'card-header';
