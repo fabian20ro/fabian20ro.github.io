@@ -16,7 +16,7 @@ const projectSections = {
     },
     {
       href: 'https://fabian20ro.github.io/better-stb/',
-      icon: '🧪',
+      icon: '🚇',
       titleKey: 'betterStbTitle',
       descKey: 'betterStbDesc',
       linkKey: 'visitSite'
@@ -287,7 +287,16 @@ function createCard(card, isSelected) {
   linkNode.setAttribute('data-i18n', card.linkKey);
   linkNode.textContent = t(card.linkKey);
 
-  cardNode.append(iconNode, titleNode, descNode, linkNode);
+  const headerNode = document.createElement('div');
+  headerNode.className = 'card-header';
+
+  const titleRowNode = document.createElement('div');
+  titleRowNode.className = 'card-title-row';
+  titleRowNode.append(iconNode, titleNode);
+
+  headerNode.append(titleRowNode, linkNode);
+
+  cardNode.append(headerNode, descNode);
   return cardNode;
 }
 
