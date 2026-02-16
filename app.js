@@ -15,7 +15,7 @@ const projectSections = {
       linkKey: 'visitSite'
     },
     {
-      href: 'https://fabian20ro.github.io/better-stb/',
+      href: 'https://fabian20ro.github.io/alt-stb/',
       icon: '🚇',
       titleKey: 'betterStbTitle',
       descKey: 'betterStbDesc',
