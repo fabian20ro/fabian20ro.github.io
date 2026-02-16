@@ -168,7 +168,7 @@ let activityEvents = [];
 function storageGet(key) {
   try {
     return localStorage.getItem(key);
-  } catch (_error) {
+  } catch {
     return null;
   }
 }
@@ -176,7 +176,7 @@ function storageGet(key) {
 function storageSet(key, value) {
   try {
     localStorage.setItem(key, value);
-  } catch (_error) {
+  } catch {
     // Ignore storage errors in restricted/private contexts.
   }
 }
@@ -536,7 +536,7 @@ function readActivityCache() {
       return null;
     }
     return parsed;
-  } catch (_error) {
+  } catch {
     return null;
   }
 }
@@ -586,7 +586,7 @@ async function loadGitHubActivity() {
     activityEvents = events;
     writeActivityCache(events);
     renderActivity(activityEvents);
-  } catch (_error) {
+  } catch {
     if (activityEvents.length === 0) {
       showActivityError();
     }
