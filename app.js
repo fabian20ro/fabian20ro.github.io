@@ -120,7 +120,8 @@ const translations = {
     emotIdTitle: 'Emot-ID',
     emotIdDesc: 'Un instrument pentru identificarea emotiilor.',
     betterStbTitle: 'Alta aplicatie STB',
-    betterStbDesc: 'O aplicatie utilitara alternativa pentru STB, cu un flux si rezultate diferite.',
+    betterStbDesc:
+      'O aplicatie utilitara alternativa pentru STB, cu un flux si rezultate diferite.',
     imagePromptTitle: 'Image Prompt Expander',
     imagePromptDesc:
       'Un instrument care ajuta la extinderea si imbunatatirea prompt-urilor pentru imagini generate de AI.',
@@ -406,7 +407,10 @@ function createActivityText(event) {
 
   switch (event.type) {
     case 'PushEvent': {
-      const ref = event.payload && typeof event.payload.ref === 'string' ? event.payload.ref : 'refs/heads/main';
+      const ref =
+        event.payload && typeof event.payload.ref === 'string'
+          ? event.payload.ref
+          : 'refs/heads/main';
       const branch = ref.replace('refs/heads/', '') || 'main';
       const branchUrl = `${repoUrl}/tree/${encodeURIComponent(branch)}`;
       appendText(textNode, `${t('pushedTo')} `);
@@ -441,7 +445,11 @@ function createActivityText(event) {
       const issueNumber = event.payload && event.payload.issue ? event.payload.issue.number : null;
       const issueUrl = Number.isInteger(issueNumber) ? `${repoUrl}/issues/${issueNumber}` : repoUrl;
       appendText(textNode, `${t('openedIssue')} `);
-      appendLink(textNode, issueUrl, Number.isInteger(issueNumber) ? `${repoLabel}#${issueNumber}` : repoLabel);
+      appendLink(
+        textNode,
+        issueUrl,
+        Number.isInteger(issueNumber) ? `${repoLabel}#${issueNumber}` : repoLabel
+      );
       break;
     }
     case 'PullRequestEvent': {
@@ -449,7 +457,11 @@ function createActivityText(event) {
         event.payload && event.payload.pull_request ? event.payload.pull_request.number : null;
       const prUrl = Number.isInteger(prNumber) ? `${repoUrl}/pull/${prNumber}` : repoUrl;
       appendText(textNode, `${t('openedPR')} `);
-      appendLink(textNode, prUrl, Number.isInteger(prNumber) ? `${repoLabel}#${prNumber}` : repoLabel);
+      appendLink(
+        textNode,
+        prUrl,
+        Number.isInteger(prNumber) ? `${repoLabel}#${prNumber}` : repoLabel
+      );
       break;
     }
     case 'IssueCommentEvent':
