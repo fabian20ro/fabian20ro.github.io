@@ -121,7 +121,7 @@ const translations = {
     emotIdDesc: 'Instrument de identificare a emoțiilor.',
     betterStbTitle: 'Altă aplicație STB',
     betterStbDesc:
-      'Aplicație alternativă pentru STB, cu un flux și rezultate diferite.',
+      'Aplicație alternativă pentru STB, cu o abordare și rezultate diferite.',
     imagePromptTitle: 'Image Prompt Expander',
     imagePromptDesc:
       'Instrument care ajută la extinderea și îmbunătățirea prompt-urilor pentru imagini generate de AI.',
