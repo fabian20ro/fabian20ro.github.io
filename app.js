@@ -132,8 +132,7 @@ const translations = {
     sudokuTitle: 'Sudoku Python',
     sudokuDesc: 'Rezolvă și generează puzzle-uri Sudoku, scris în Python.',
     bookingTitle: 'Booking Filter Out',
-    bookingDesc:
-      'Extensie de browser care estompează locațiile pet-friendly de pe booking.com.',
+    bookingDesc: 'Extensie de browser care estompează locațiile pet-friendly de pe booking.com.',
     visitSite: 'Vizitează →',
     viewGithub: 'Vezi pe GitHub →',
     viewAllGithub: 'Vezi toate proiectele pe GitHub →',
