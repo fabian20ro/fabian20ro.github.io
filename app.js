@@ -119,9 +119,9 @@ const translations = {
     recentActivity: 'Activitate Recentă',
     emotIdTitle: 'Emot-ID',
     emotIdDesc: 'Instrument de identificare a emoțiilor.',
-    betterStbTitle: 'Altă aplicație STB',
+    betterStbTitle: 'Alt STB',
     betterStbDesc:
-      'Aplicație alternativă pentru STB, cu o abordare și rezultate diferite.',
+      'Alternativă mai simplă, organizată altfel, cu toate datele pe telefon, cu codul sursă disponibil public. Scopul nu e să înlocuiască aplicația oficială, InfoTB.',
     imagePromptTitle: 'Image Prompt Expander',
     imagePromptDesc:
       'Instrument care ajută la extinderea și îmbunătățirea prompt-urilor pentru imagini generate de AI.',
