@@ -130,7 +130,7 @@ const translations = {
     wordRarityTitle: 'Word Rarity Classifier',
     wordRarityDesc: 'Clasificator care punctează și categorisește raritatea cuvintelor.',
     sudokuTitle: 'Sudoku Python',
-    sudokuDesc: 'Rezolvator și generator de Sudoku scris în Python.',
+    sudokuDesc: 'Rezolvă și generează puzzle-uri Sudoku, scris în Python.',
     bookingTitle: 'Booking Filter Out',
     bookingDesc:
       'Extensie de browser care estompează locațiile pet-friendly de pe booking.com.',
