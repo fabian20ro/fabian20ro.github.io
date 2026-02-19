@@ -34,6 +34,13 @@ const projectSections = {
       titleKey: 'propozitiiTitle',
       descKey: 'propozitiiDesc',
       linkKey: 'visitSite'
+    },
+    {
+      href: 'https://fabian20ro.github.io/password-generator/',
+      icon: '🔐',
+      titleKey: 'passwordGenTitle',
+      descKey: 'passwordGenDesc',
+      linkKey: 'visitSite'
     }
   ],
   repositories: [
@@ -77,6 +84,9 @@ const translations = {
       'A tool that helps expand and enhance image generation prompts for better AI-generated images.',
     propozitiiTitle: 'Propozitii Absurde',
     propozitiiDesc: 'Sentences made from random words, always absurd, sometimes funny.',
+    passwordGenTitle: 'Password Generator',
+    passwordGenDesc:
+      'Generates cryptographically secure passwords using the Web Crypto API. Five strong passwords at a click.',
     wordRarityTitle: 'Word Rarity Classifier',
     wordRarityDesc: 'A classifier that scores and categorizes word rarity.',
     sudokuTitle: 'Sudoku Python',
@@ -127,6 +137,9 @@ const translations = {
       'Instrument care ajută la extinderea și îmbunătățirea prompt-urilor pentru imagini generate de AI.',
     propozitiiTitle: 'Propoziții Absurde',
     propozitiiDesc: 'Propoziții din cuvinte aleatoare, mereu absurde, uneori nostime.',
+    passwordGenTitle: 'Generator de Parole',
+    passwordGenDesc:
+      'Generează parole sigure criptografic prin Web Crypto API. Cinci parole solide dintr-o singură apăsare.',
     wordRarityTitle: 'Word Rarity Classifier',
     wordRarityDesc: 'Clasificator care punctează și categorisește raritatea cuvintelor.',
     sudokuTitle: 'Sudoku Python',
