@@ -1,5 +1,7 @@
 # Fabian's Projects
 
+**Live site:** <https://fabian20ro.github.io>
+
 Static portfolio page for live demos, repositories, and recent GitHub activity.
 
 ## Features
