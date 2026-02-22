@@ -41,6 +41,13 @@ const projectSections = {
       titleKey: 'passwordGenTitle',
       descKey: 'passwordGenDesc',
       linkKey: 'visitSite'
+    },
+    {
+      href: 'https://fabian20ro.github.io/pixel-article-reader/',
+      icon: '🔊',
+      titleKey: 'articleVoiceTitle',
+      descKey: 'articleVoiceDesc',
+      linkKey: 'visitSite'
     }
   ],
   repositories: [
@@ -87,6 +94,9 @@ const translations = {
     passwordGenTitle: 'Password Generator',
     passwordGenDesc:
       'Generates cryptographically secure passwords using the Web Crypto API. Five strong passwords at a click.',
+    articleVoiceTitle: 'ArticleVoice',
+    articleVoiceDesc:
+      'A progressive web app that converts articles into audio using on-device text-to-speech. Paste a URL and listen.',
     wordRarityTitle: 'Word Rarity Classifier',
     wordRarityDesc: 'A classifier that scores and categorizes word rarity.',
     sudokuTitle: 'Sudoku Python',
@@ -140,6 +150,9 @@ const translations = {
     passwordGenTitle: 'Generator de Parole',
     passwordGenDesc:
       'Generează parole sigure criptografic prin Web Crypto API. Cinci parole solide dintr-o singură apăsare.',
+    articleVoiceTitle: 'ArticleVoice',
+    articleVoiceDesc:
+      'Aplicație web care transformă articolele în audio folosind sinteză vocală pe dispozitiv. Lipește un URL și ascultă.',
     wordRarityTitle: 'Word Rarity Classifier',
     wordRarityDesc: 'Clasificator care punctează și categorisește raritatea cuvintelor.',
     sudokuTitle: 'Sudoku Python',
