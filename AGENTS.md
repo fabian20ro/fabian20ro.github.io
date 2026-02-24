@@ -42,9 +42,10 @@ The maintenance protocol ensures all files stay lean and current.
 
 Specialized agents in `.claude/agents/`. Invoke proactively — don't wait to be asked.
 
-| Agent         | File                              | Invoke When                                              |
-| ------------- | --------------------------------- | -------------------------------------------------------- |
-| Architect     | `.claude/agents/architect.md`     | System design, scalability, refactoring decisions        |
-| Planner       | `.claude/agents/planner.md`       | Complex multi-step features — plan before coding         |
-| UX Expert     | `.claude/agents/ux-expert.md`     | UI components, interaction patterns, accessibility       |
-| Agent Creator | `.claude/agents/agent-creator.md` | Need a new specialized agent for a recurring task domain |
+| Agent         | File                              | Invoke When                                                |
+| ------------- | --------------------------------- | ---------------------------------------------------------- |
+| Architect     | `.claude/agents/architect.md`     | System design, scalability, refactoring decisions          |
+| Planner       | `.claude/agents/planner.md`       | Complex multi-step features — plan before coding           |
+| UX Expert     | `.claude/agents/ux-expert.md`     | UI components, interaction patterns, accessibility         |
+| Agent Creator | `.claude/agents/agent-creator.md` | Need a new specialized agent for a recurring task domain   |
+| Linguist      | `.claude/agents/linguist.md`      | Project descriptions, translations, bilingual copy (EN/RO) |
