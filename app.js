@@ -94,9 +94,9 @@ const translations = {
     passwordGenTitle: 'Password Generator',
     passwordGenDesc:
       'Generates cryptographically secure passwords using the Web Crypto API. Five strong passwords at a click.',
-    articleVoiceTitle: 'ArticleVoice',
+    articleVoiceTitle: 'Article Reader',
     articleVoiceDesc:
-      'A progressive web app that converts articles into audio using on-device text-to-speech. Paste a URL and listen.',
+      'Paste an article URL, read a clean version, or listen to it aloud. Extracts content, renders it as markdown, and speaks it using on-device TTS — with speed control, paragraph skip, and offline support.',
     wordRarityTitle: 'Word Rarity Classifier',
     wordRarityDesc: 'A classifier that scores and categorizes word rarity.',
     sudokuTitle: 'Sudoku Python',
@@ -150,9 +150,9 @@ const translations = {
     passwordGenTitle: 'Generator de Parole',
     passwordGenDesc:
       'Generează parole sigure criptografic prin Web Crypto API. Cinci parole solide dintr-o singură apăsare.',
-    articleVoiceTitle: 'ArticleVoice',
+    articleVoiceTitle: 'Article Reader',
     articleVoiceDesc:
-      'Aplicație web care transformă articolele în audio folosind sinteză vocală pe dispozitiv. Lipește un URL și ascultă.',
+      'Lipește un URL de articol, citește o versiune curată sau ascultă-l. Extrage conținutul, îl redă ca markdown și îl citește cu vocea dispozitivului — cu control de viteză, salt între paragrafe și funcționare offline.',
     wordRarityTitle: 'Word Rarity Classifier',
     wordRarityDesc: 'Clasificator care punctează și categorisește raritatea cuvintelor.',
     sudokuTitle: 'Sudoku Python',
