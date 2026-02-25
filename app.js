@@ -4,6 +4,9 @@ const GITHUB_USERNAME = 'fabian20ro';
 const ACTIVITY_LIMIT = 10;
 const ACTIVITY_CACHE_KEY = 'github-activity-cache-v1';
 const ACTIVITY_CACHE_TTL_MS = 10 * 60 * 1000;
+const PAGE_REFRESH_MARKER_KEY = 'page-refresh-marker-v1';
+const PAGE_LAST_SEEN_AT_KEY = 'page-last-seen-at-v1';
+const PAGE_STALE_REOPEN_THRESHOLD_MS = 12 * 60 * 60 * 1000;
 
 const projectSections = {
   liveProjects: [
@@ -203,6 +206,22 @@ function storageSet(key, value) {
   try {
     localStorage.setItem(key, value);
   } catch {
+    // Ignore storage errors in restricted/private contexts.
+  }
+}
+
+function sessionGet(key) {
+  try {
+    return sessionStorage.getItem(key);
+  } catch (_error) {
+    return null;
+  }
+}
+
+function sessionSet(key, value) {
+  try {
+    sessionStorage.setItem(key, value);
+  } catch (_error) {
     // Ignore storage errors in restricted/private contexts.
   }
 }
@@ -630,7 +649,58 @@ async function loadGitHubActivity() {
   }
 }
 
+function markPageSeenNow() {
+  storageSet(PAGE_LAST_SEEN_AT_KEY, String(Date.now()));
+}
+
+function refreshPageOncePerSession() {
+  if (sessionGet(PAGE_REFRESH_MARKER_KEY) === '1') {
+    return;
+  }
+
+  sessionSet(PAGE_REFRESH_MARKER_KEY, '1');
+  window.location.reload();
+}
+
+function maybeRefreshAfterLongGap() {
+  const lastSeenRaw = storageGet(PAGE_LAST_SEEN_AT_KEY);
+  const lastSeenAt = Number(lastSeenRaw);
+  const now = Date.now();
+
+  markPageSeenNow();
+
+  if (!Number.isFinite(lastSeenAt)) {
+    return;
+  }
+
+  if (now - lastSeenAt >= PAGE_STALE_REOPEN_THRESHOLD_MS) {
+    refreshPageOncePerSession();
+  }
+}
+
+function setupReopenRefreshGuard() {
+  maybeRefreshAfterLongGap();
+
+  window.addEventListener('pageshow', (event) => {
+    if (event.persisted) {
+      refreshPageOncePerSession();
+      return;
+    }
+
+    maybeRefreshAfterLongGap();
+  });
+
+  window.addEventListener('pagehide', markPageSeenNow);
+
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'hidden') {
+      markPageSeenNow();
+    }
+  });
+}
+
 function init() {
+  setupReopenRefreshGuard();
   renderProjectCards();
 
   const langToggle = document.getElementById('lang-toggle');
