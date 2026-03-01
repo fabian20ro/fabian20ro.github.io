@@ -16,6 +16,21 @@
 **Promoted to Lessons Learned:** Yes / No
 ```
 
+### 2026-03-01 — Add Find The Book to live projects
+
+**Context:** Add the find-the-book PWA (book identification via camera OCR) to the portfolio's live projects list. Move Image Prompt Expander to end of list.
+**What happened:**
+
+- Read the find-the-book GitHub repo README to understand capabilities: camera-based book identification using Tesseract.js OCR and Google Books API, runs entirely client-side.
+- Invoked the Linguist agent to produce bilingual EN/RO descriptions following the established tone and style.
+- Added new entry to `projectSections.liveProjects` with 📚 icon, pointing to `https://fabian20ro.github.io/find-the-book/`.
+- Moved Image Prompt Expander from position 3 to position 7 (end of list).
+- Added `findBookTitle` and `findBookDesc` translation keys to both `translations.en` and `translations.ro`.
+
+**Outcome:** Success
+**Insight:** The Planner and Linguist agents from `.claude/agents/` work well in sequence — plan first, then get copy, then implement.
+**Promoted to Lessons Learned:** No (first occurrence)
+
 ### 2026-02-24 — Rename ArticleVoice to Article Reader, improve descriptions, create Linguist agent
 
 **Context:** Rename the pixel-article-reader project entry from "ArticleVoice" to "Article Reader" in the portfolio. Improve the EN and RO descriptions based on the project's actual capabilities. Create a Linguist sub-agent for future copy tasks.
