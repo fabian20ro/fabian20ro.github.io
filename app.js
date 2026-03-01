@@ -226,7 +226,7 @@ function storageSet(key, value) {
 function sessionGet(key) {
   try {
     return sessionStorage.getItem(key);
-  } catch (_error) {
+  } catch {
     return null;
   }
 }
@@ -234,7 +234,7 @@ function sessionGet(key) {
 function sessionSet(key, value) {
   try {
     sessionStorage.setItem(key, value);
-  } catch (_error) {
+  } catch {
     // Ignore storage errors in restricted/private contexts.
   }
 }
