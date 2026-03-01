@@ -25,13 +25,6 @@ const projectSections = {
       linkKey: 'visitSite'
     },
     {
-      href: 'https://fabian20ro.github.io/image-prompt-expander/',
-      icon: '🎨',
-      titleKey: 'imagePromptTitle',
-      descKey: 'imagePromptDesc',
-      linkKey: 'visitSite'
-    },
-    {
       href: 'https://fabian20ro.github.io/propozitii-nostime/',
       icon: '🇷🇴',
       titleKey: 'propozitiiTitle',
@@ -50,6 +43,20 @@ const projectSections = {
       icon: '🔊',
       titleKey: 'articleVoiceTitle',
       descKey: 'articleVoiceDesc',
+      linkKey: 'visitSite'
+    },
+    {
+      href: 'https://fabian20ro.github.io/find-the-book/',
+      icon: '📚',
+      titleKey: 'findBookTitle',
+      descKey: 'findBookDesc',
+      linkKey: 'visitSite'
+    },
+    {
+      href: 'https://fabian20ro.github.io/image-prompt-expander/',
+      icon: '🎨',
+      titleKey: 'imagePromptTitle',
+      descKey: 'imagePromptDesc',
       linkKey: 'visitSite'
     }
   ],
@@ -100,6 +107,9 @@ const translations = {
     articleVoiceTitle: 'Article Reader',
     articleVoiceDesc:
       'Paste an article URL, read a clean version, or listen to it aloud. Extracts content, renders it as markdown, and speaks it using on-device TTS — with speed control, paragraph skip, and offline support.',
+    findBookTitle: 'Find The Book',
+    findBookDesc:
+      'Point your camera at a bookshelf to identify books instantly. No install, no server.',
     wordRarityTitle: 'Word Rarity Classifier',
     wordRarityDesc: 'A classifier that scores and categorizes word rarity.',
     sudokuTitle: 'Sudoku Python',
@@ -156,6 +166,9 @@ const translations = {
     articleVoiceTitle: 'Article Reader',
     articleVoiceDesc:
       'Lipește un URL de articol, citește o versiune curată sau ascultă-l. Extrage conținutul, îl redă ca markdown și îl citește cu vocea dispozitivului — cu control de viteză, salt între paragrafe și funcționare offline.',
+    findBookTitle: 'Find The Book',
+    findBookDesc:
+      'Îndreaptă camera spre un raft și identifică cărțile pe loc. Funcționează direct în browser.',
     wordRarityTitle: 'Word Rarity Classifier',
     wordRarityDesc: 'Clasificator care punctează și categorisește raritatea cuvintelor.',
     sudokuTitle: 'Sudoku Python',
