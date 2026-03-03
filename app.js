@@ -180,8 +180,7 @@ const translations = {
     findBookDesc:
       'Îndreaptă camera spre un raft și identifică cărțile pe loc. Funcționează direct în browser.',
     horrorScopeTitle: 'Horror-Scope',
-    horrorScopeDesc:
-      'Amprenta browser-ului tău îți decide zodia. Astrele nu ți-au cerut acordul.',
+    horrorScopeDesc: 'Amprenta browser-ului tău îți decide zodia. Astrele nu ți-au cerut acordul.',
     wordRarityTitle: 'Word Rarity Classifier',
     wordRarityDesc: 'Clasificator care punctează și categorisește raritatea cuvintelor.',
     sudokuTitle: 'Sudoku Python',
