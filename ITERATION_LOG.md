@@ -16,6 +16,20 @@
 **Promoted to Lessons Learned:** Yes / No
 ```
 
+### 2026-03-03 — Add Horror-Scope to live projects
+
+**Context:** Add the horror-scope app (humorous horoscope generator via browser fingerprinting) to the portfolio's live projects list, positioned before Image Prompt Expander.
+**What happened:**
+
+- Fetched the horror-scope GitHub repo README to understand the app: browser fingerprinting determines zodiac sign, context-free grammar generates absurd daily predictions, bilingual EN/RO, PWA, zero dependencies.
+- Used Plan agent to draft three bilingual description options following Linguist agent guidelines. User chose Option A (deadpan privacy joke).
+- Added new entry to `projectSections.liveProjects` with 🔮 icon, pointing to `https://fabian20ro.github.io/horror-scope/`.
+- Added `horrorScopeTitle` and `horrorScopeDesc` translation keys to both `translations.en` and `translations.ro`.
+
+**Outcome:** Success
+**Insight:** Planner + Linguist agent pattern continues to work well (third occurrence). WebFetch on raw GitHub URLs remains the way to read external READMEs.
+**Promoted to Lessons Learned:** No
+
 ### 2026-03-01 — Add Find The Book to live projects
 
 **Context:** Add the find-the-book PWA (book identification via camera OCR) to the portfolio's live projects list. Move Image Prompt Expander to end of list.

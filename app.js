@@ -53,6 +53,13 @@ const projectSections = {
       linkKey: 'visitSite'
     },
     {
+      href: 'https://fabian20ro.github.io/horror-scope/',
+      icon: '🔮',
+      titleKey: 'horrorScopeTitle',
+      descKey: 'horrorScopeDesc',
+      linkKey: 'visitSite'
+    },
+    {
       href: 'https://fabian20ro.github.io/image-prompt-expander/',
       icon: '🎨',
       titleKey: 'imagePromptTitle',
@@ -110,6 +117,9 @@ const translations = {
     findBookTitle: 'Find The Book',
     findBookDesc:
       'Point your camera at a bookshelf to identify books instantly. No install, no server.',
+    horrorScopeTitle: 'Horror-Scope',
+    horrorScopeDesc:
+      "Your browser's fingerprint determines your zodiac sign. The stars didn't ask for your consent.",
     wordRarityTitle: 'Word Rarity Classifier',
     wordRarityDesc: 'A classifier that scores and categorizes word rarity.',
     sudokuTitle: 'Sudoku Python',
@@ -169,6 +179,9 @@ const translations = {
     findBookTitle: 'Find The Book',
     findBookDesc:
       'Îndreaptă camera spre un raft și identifică cărțile pe loc. Funcționează direct în browser.',
+    horrorScopeTitle: 'Horror-Scope',
+    horrorScopeDesc:
+      'Amprenta browser-ului tău îți decide zodia. Astrele nu ți-au cerut acordul.',
     wordRarityTitle: 'Word Rarity Classifier',
     wordRarityDesc: 'Clasificator care punctează și categorisește raritatea cuvintelor.',
     sudokuTitle: 'Sudoku Python',
