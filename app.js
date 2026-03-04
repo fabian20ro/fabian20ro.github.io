@@ -88,7 +88,10 @@ const projectSections = {
       icon: '🎨',
       titleKey: 'imagePromptTitle',
       descKey: 'imagePromptDesc',
-      linkKey: 'viewGithub'
+      linkKey: 'viewGithub',
+      badgeUrl:
+        'https://github.com/fabian20ro/image-prompt-expander/actions/workflows/pages/pages-build-deployment/badge.svg',
+      liveSiteUrl: 'https://fabian20ro.github.io/image-prompt-expander/'
     },
     {
       href: 'https://github.com/fabian20ro/word-rarity-classifier',
@@ -145,6 +148,7 @@ const translations = {
     generatorRebusTitle: 'Rebus Generator',
     generatorRebusDesc: 'Fill in word puzzles using words from the Scrabble dictionary.',
     deployStatus: 'Deployment status',
+    liveSite: 'Live site',
     wordRarityTitle: 'Word Rarity Classifier',
     wordRarityDesc: 'A classifier that scores and categorizes word rarity.',
     sudokuTitle: 'Sudoku Python',
@@ -209,6 +213,7 @@ const translations = {
     generatorRebusTitle: 'Generator de Rebusuri',
     generatorRebusDesc: 'Completează rebusuri cu cuvinte din dicționarul de scrabble.',
     deployStatus: 'Stare de deploy',
+    liveSite: 'Site live',
     wordRarityTitle: 'Word Rarity Classifier',
     wordRarityDesc: 'Clasificator care punctează și categorisește raritatea cuvintelor.',
     sudokuTitle: 'Sudoku Python',
@@ -407,13 +412,29 @@ function createCard(card, isSelected) {
 
   cardNode.append(headerNode, descNode);
 
-  if (card.badgeUrl) {
-    const badgeNode = document.createElement('img');
-    badgeNode.className = 'card-badge';
-    badgeNode.src = card.badgeUrl;
-    badgeNode.alt = t('deployStatus');
-    badgeNode.loading = 'lazy';
-    cardNode.appendChild(badgeNode);
+  if (card.badgeUrl || card.liveSiteUrl) {
+    const footerNode = document.createElement('div');
+    footerNode.className = 'card-footer';
+
+    if (card.badgeUrl) {
+      const badgeNode = document.createElement('img');
+      badgeNode.className = 'card-badge';
+      badgeNode.src = card.badgeUrl;
+      badgeNode.alt = t('deployStatus');
+      badgeNode.loading = 'lazy';
+      footerNode.appendChild(badgeNode);
+    }
+
+    if (card.liveSiteUrl) {
+      const liveNode = document.createElement('span');
+      liveNode.className = 'card-live-link';
+      liveNode.textContent = '🌐';
+      liveNode.setAttribute('title', `${t('liveSite')}: ${card.liveSiteUrl}`);
+      liveNode.setAttribute('aria-label', t('liveSite'));
+      footerNode.appendChild(liveNode);
+    }
+
+    cardNode.appendChild(footerNode);
   }
 
   return cardNode;
