@@ -15,59 +15,81 @@ const projectSections = {
       icon: '😊',
       titleKey: 'emotIdTitle',
       descKey: 'emotIdDesc',
-      linkKey: 'visitSite'
+      linkKey: 'visitSite',
+      badgeUrl:
+        'https://github.com/fabian20ro/emot-id/workflows/Deploy%20to%20GitHub%20Pages/badge.svg'
     },
     {
       href: 'https://fabian20ro.github.io/alt-stb/',
       icon: '🚇',
       titleKey: 'betterStbTitle',
       descKey: 'betterStbDesc',
-      linkKey: 'visitSite'
+      linkKey: 'visitSite',
+      badgeUrl: 'https://github.com/fabian20ro/alt-stb/workflows/Deploy/badge.svg'
     },
     {
       href: 'https://fabian20ro.github.io/propozitii-nostime/',
       icon: '🇷🇴',
       titleKey: 'propozitiiTitle',
       descKey: 'propozitiiDesc',
-      linkKey: 'visitSite'
+      linkKey: 'visitSite',
+      badgeUrl:
+        'https://github.com/fabian20ro/propozitii-nostime/workflows/Deploy%20Frontend%20to%20GitHub%20Pages/badge.svg'
     },
     {
       href: 'https://fabian20ro.github.io/password-generator/',
       icon: '🔐',
       titleKey: 'passwordGenTitle',
       descKey: 'passwordGenDesc',
-      linkKey: 'visitSite'
+      linkKey: 'visitSite',
+      badgeUrl:
+        'https://github.com/fabian20ro/password-generator/workflows/Deploy%20to%20GitHub%20Pages/badge.svg'
     },
     {
       href: 'https://fabian20ro.github.io/pixel-article-reader/',
       icon: '🔊',
       titleKey: 'articleVoiceTitle',
       descKey: 'articleVoiceDesc',
-      linkKey: 'visitSite'
+      linkKey: 'visitSite',
+      badgeUrl:
+        'https://github.com/fabian20ro/pixel-article-reader/workflows/Deploy%20to%20GitHub%20Pages/badge.svg'
     },
     {
       href: 'https://fabian20ro.github.io/find-the-book/',
       icon: '📚',
       titleKey: 'findBookTitle',
       descKey: 'findBookDesc',
-      linkKey: 'visitSite'
+      linkKey: 'visitSite',
+      badgeUrl:
+        'https://github.com/fabian20ro/find-the-book/workflows/Deploy%20to%20GitHub%20Pages/badge.svg'
     },
     {
       href: 'https://fabian20ro.github.io/horror-scope/',
       icon: '🔮',
       titleKey: 'horrorScopeTitle',
       descKey: 'horrorScopeDesc',
-      linkKey: 'visitSite'
+      linkKey: 'visitSite',
+      badgeUrl:
+        'https://github.com/fabian20ro/horror-scope/workflows/Deploy%20to%20GitHub%20Pages/badge.svg'
     },
     {
-      href: 'https://fabian20ro.github.io/image-prompt-expander/',
-      icon: '🎨',
-      titleKey: 'imagePromptTitle',
-      descKey: 'imagePromptDesc',
-      linkKey: 'visitSite'
+      href: 'https://fabian20ro.github.io/generator-rebus/',
+      icon: '📝',
+      titleKey: 'generatorRebusTitle',
+      descKey: 'generatorRebusDesc',
+      linkKey: 'visitSite',
+      badgeUrl:
+        'https://github.com/fabian20ro/generator-rebus/workflows/Deploy%20Frontend%20to%20GitHub%20Pages/badge.svg'
     }
   ],
   repositories: [
+    {
+      href: 'https://github.com/fabian20ro/image-prompt-expander',
+      icon: '🎨',
+      titleKey: 'imagePromptTitle',
+      descKey: 'imagePromptDesc',
+      linkKey: 'viewGithub'
+    },
     {
       href: 'https://github.com/fabian20ro/word-rarity-classifier',
       icon: '📊',
@@ -120,6 +142,9 @@ const translations = {
     horrorScopeTitle: 'Horror-Scope',
     horrorScopeDesc:
       "Your browser's fingerprint determines your zodiac sign. The stars didn't ask for your consent.",
+    generatorRebusTitle: 'Rebus Generator',
+    generatorRebusDesc: 'Fill in word puzzles using words from the Scrabble dictionary.',
+    deployStatus: 'Deployment status',
     wordRarityTitle: 'Word Rarity Classifier',
     wordRarityDesc: 'A classifier that scores and categorizes word rarity.',
     sudokuTitle: 'Sudoku Python',
@@ -181,6 +206,9 @@ const translations = {
       'Îndreaptă camera spre un raft și identifică cărțile pe loc. Funcționează direct în browser.',
     horrorScopeTitle: 'Horror-Scope',
     horrorScopeDesc: 'Amprenta browser-ului tău îți decide zodia. Astrele nu ți-au cerut acordul.',
+    generatorRebusTitle: 'Generator de Rebusuri',
+    generatorRebusDesc: 'Completează rebusuri cu cuvinte din dicționarul de scrabble.',
+    deployStatus: 'Stare de deploy',
     wordRarityTitle: 'Word Rarity Classifier',
     wordRarityDesc: 'Clasificator care punctează și categorisește raritatea cuvintelor.',
     sudokuTitle: 'Sudoku Python',
@@ -378,6 +406,16 @@ function createCard(card, isSelected) {
   headerNode.append(titleRowNode, linkNode);
 
   cardNode.append(headerNode, descNode);
+
+  if (card.badgeUrl) {
+    const badgeNode = document.createElement('img');
+    badgeNode.className = 'card-badge';
+    badgeNode.src = card.badgeUrl;
+    badgeNode.alt = t('deployStatus');
+    badgeNode.loading = 'lazy';
+    cardNode.appendChild(badgeNode);
+  }
+
   return cardNode;
 }
 
