@@ -450,7 +450,7 @@ function createCard(card, isSelected) {
       badgeNode.className = 'card-badge';
       badgeNode.src = card.badgeUrl;
       badgeNode.alt = '';
-      badgeNode.loading = 'lazy';
+      badgeNode.loading = 'eager';
 
       badgeLinkNode.appendChild(badgeNode);
       footerNode.append(statusLabel, badgeLinkNode);
