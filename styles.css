@@ -177,6 +177,11 @@ a:focus-visible {
   flex-grow: 1;
 }
 
+.card-badge {
+  margin-top: 0.75rem;
+  height: 20px;
+}
+
 .card-link {
   color: var(--accent);
   font-size: 1.25rem;
