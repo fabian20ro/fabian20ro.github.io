@@ -371,13 +371,28 @@ function toggleLang() {
   setLang(currentLang === 'en' ? 'ro' : 'en');
 }
 
+function getBadgeActionsUrl(badgeUrl) {
+  const match = badgeUrl.match(/^https:\/\/github\.com\/[^/]+\/[^/]+/);
+  return match ? match[0] + '/actions' : badgeUrl;
+}
+
 function createCard(card, isSelected) {
-  const cardNode = document.createElement('a');
+  const cardNode = document.createElement('div');
   cardNode.className = 'card';
   if (isSelected) {
     cardNode.classList.add('card-selected');
   }
-  cardNode.href = card.href;
+  cardNode.setAttribute('role', 'group');
+  cardNode.setAttribute('tabindex', '0');
+  cardNode.setAttribute('aria-label', t(card.titleKey));
+  cardNode.addEventListener('click', () => {
+    window.location.href = card.href;
+  });
+  cardNode.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      window.location.href = card.href;
+    }
+  });
 
   const iconNode = document.createElement('span');
   iconNode.className = 'card-icon';
@@ -417,20 +432,41 @@ function createCard(card, isSelected) {
     footerNode.className = 'card-footer';
 
     if (card.badgeUrl) {
+      const statusLabel = document.createElement('span');
+      statusLabel.className = 'card-status-label';
+      statusLabel.setAttribute('data-i18n', 'deployStatus');
+      statusLabel.textContent = t('deployStatus');
+
+      const badgeLinkNode = document.createElement('a');
+      badgeLinkNode.className = 'card-badge-link';
+      badgeLinkNode.href = getBadgeActionsUrl(card.badgeUrl);
+      badgeLinkNode.target = '_blank';
+      badgeLinkNode.rel = 'noopener noreferrer';
+      badgeLinkNode.setAttribute('aria-label', t('deployStatus'));
+      badgeLinkNode.addEventListener('click', (e) => e.stopPropagation());
+      badgeLinkNode.addEventListener('keydown', (e) => e.stopPropagation());
+
       const badgeNode = document.createElement('img');
       badgeNode.className = 'card-badge';
       badgeNode.src = card.badgeUrl;
-      badgeNode.alt = t('deployStatus');
+      badgeNode.alt = '';
       badgeNode.loading = 'lazy';
-      footerNode.appendChild(badgeNode);
+
+      badgeLinkNode.appendChild(badgeNode);
+      footerNode.append(statusLabel, badgeLinkNode);
     }
 
     if (card.liveSiteUrl) {
-      const liveNode = document.createElement('span');
+      const liveNode = document.createElement('a');
       liveNode.className = 'card-live-link';
+      liveNode.href = card.liveSiteUrl;
+      liveNode.target = '_blank';
+      liveNode.rel = 'noopener noreferrer';
       liveNode.textContent = '🌐';
       liveNode.setAttribute('title', `${t('liveSite')}: ${card.liveSiteUrl}`);
       liveNode.setAttribute('aria-label', t('liveSite'));
+      liveNode.addEventListener('click', (e) => e.stopPropagation());
+      liveNode.addEventListener('keydown', (e) => e.stopPropagation());
       footerNode.appendChild(liveNode);
     }
 
