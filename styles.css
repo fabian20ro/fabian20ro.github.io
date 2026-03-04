@@ -177,9 +177,21 @@ a:focus-visible {
   flex-grow: 1;
 }
 
-.card-badge {
+.card-footer {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
   margin-top: 0.75rem;
+}
+
+.card-badge {
   height: 20px;
+}
+
+.card-live-link {
+  font-size: 1rem;
+  line-height: 1;
+  cursor: default;
 }
 
 .card-link {
