@@ -3,7 +3,7 @@
 const GITHUB_USERNAME = 'fabian20ro';
 const ACTIVITY_LIMIT = 10;
 const ACTIVITY_CACHE_KEY = 'github-activity-cache-v1';
-const ACTIVITY_CACHE_TTL_MS = 10 * 60 * 1000;
+const ACTIVITY_CACHE_TTL_MS = 3 * 60 * 1000;
 const PAGE_REFRESH_MARKER_KEY = 'page-refresh-marker-v1';
 const PAGE_LAST_SEEN_AT_KEY = 'page-last-seen-at-v1';
 const PAGE_STALE_REOPEN_THRESHOLD_MS = 12 * 60 * 60 * 1000;
