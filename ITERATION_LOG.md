@@ -60,4 +60,19 @@
 **Insight:** The `gh` CLI is not available in this environment. Use `WebFetch` on raw GitHub URLs to read READMEs from other repos.
 **Promoted to Lessons Learned:** No (first occurrence)
 
+### 2026-04-06 — Implement testing infrastructure and `getRelativeTime` tests
+
+**Context:** Analysis and implementation of a testing improvement to increase reliability and coverage.
+**What happened:**
+
+- Refactored `app.js` to support CommonJS exports when running in Node.js by adding guards for `window`, `module`, and `module.exports`.
+- Set up a testing environment using the built-in Node.js test runner (`node --test`).
+- Added a `test` script and updated the `check` script in `package.json`.
+- Implemented comprehensive tests for the `getRelativeTime` function in `tests/getRelativeTime.test.js`, covering multiple time intervals and both English and Romanian languages.
+- Updated `AGENTS.md` to reflect the availability of a test framework.
+
+**Outcome:** Success
+**Insight:** Modern Node.js versions (v18+) include a built-in test runner that is sufficient for unit testing pure functions in a browser-targeted codebase without adding heavy dependencies like Jest or Mocha.
+**Promoted to Lessons Learned:** No
+
 <!-- New entries above this line, most recent first -->
