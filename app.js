@@ -853,7 +853,25 @@ function init() {
 
   setTheme(getPreferredTheme());
   setLang(normalizeLang(storageGet('lang') || getDefaultLang()));
-  loadGitHubActivity();
+
+  // ⚡ Bolt: Lazy load GitHub activity using IntersectionObserver
+  // Defers expensive API calls and rendering until the activity feed is actually visible
+  const activitySection = document.querySelector('.activity-section');
+  if (activitySection && 'IntersectionObserver' in window) {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting) {
+          loadGitHubActivity();
+          observer.disconnect();
+        }
+      },
+      { rootMargin: '100px' } // Start loading slightly before it comes into view
+    );
+    observer.observe(activitySection);
+  } else {
+    // Fallback for older browsers
+    loadGitHubActivity();
+  }
 }
 
 init();
