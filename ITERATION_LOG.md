@@ -69,7 +69,7 @@
 - Set up a testing environment using the built-in Node.js test runner (`node --test`).
 - Added a `test` script and updated the `check` script in `package.json`.
 - Implemented comprehensive tests for the `getRelativeTime` function in `tests/getRelativeTime.test.js`, covering multiple time intervals and both English and Romanian languages.
-- Fixed CI failure by quoting the test glob pattern in `package.json` to ensure correct expansion by the Node.js test runner across different environments.
+- Fixed CI failure by explicitly specifying the test file path in `package.json` instead of using a glob pattern, to ensure compatibility across different environments.
 - Updated `AGENTS.md` to reflect the availability of a test framework.
 
 **Outcome:** Success
