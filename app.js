@@ -8,6 +8,17 @@ const PAGE_REFRESH_MARKER_KEY = 'page-refresh-marker-v1';
 const PAGE_LAST_SEEN_AT_KEY = 'page-last-seen-at-v1';
 const PAGE_STALE_REOPEN_THRESHOLD_MS = 12 * 60 * 60 * 1000;
 
+const EVENT_ICONS = {
+  PushEvent: '📤',
+  CreateEvent: '✨',
+  WatchEvent: '⭐',
+  ForkEvent: '🍴',
+  IssuesEvent: '🐛',
+  PullRequestEvent: '🔀',
+  IssueCommentEvent: '💬',
+  PullRequestReviewCommentEvent: '💬'
+};
+
 const projectSections = {
   liveProjects: [
     {
@@ -113,6 +124,14 @@ const projectSections = {
       titleKey: 'sudokuTitle',
       descKey: 'sudokuDesc',
       linkKey: 'viewGithub'
+    },
+    {
+      href: 'https://fabian20ro.github.io/harness-manager/',
+      icon: '🪢',
+      titleKey: 'harnessManagerTitle',
+      descKey: 'harnessManagerDesc',
+      linkKey: 'visitSite',
+      badgeUrl: 'https://github.com/fabian20ro/harness-manager/workflows/Deploy%20Pages/badge.svg'
     }
   ]
 };
@@ -156,6 +175,9 @@ const translations = {
     bookingTitle: 'Booking Filter Out',
     bookingDesc:
       'A browser extension to filter booking.com results to greyout locations that accept pets.',
+    harnessManagerTitle: 'Harness Manager',
+    harnessManagerDesc:
+      'See which files your editor and configurations actually process in your Git projects.',
     visitSite: 'Visit site →',
     viewGithub: 'View on GitHub →',
     viewAllGithub: 'View all projects on GitHub →',
@@ -220,6 +242,9 @@ const translations = {
     sudokuDesc: 'Rezolvă și generează puzzle-uri Sudoku, scris în Python.',
     bookingTitle: 'Booking Filter Out',
     bookingDesc: 'Extensie de browser care estompează locațiile pet-friendly de pe booking.com.',
+    harnessManagerTitle: 'Harness Manager',
+    harnessManagerDesc:
+      'Vezi rapid ce fișiere procesează editorul și configurațiile tale în proiectele Git.',
     visitSite: 'Vizitează →',
     viewGithub: 'Vezi pe GitHub →',
     viewAllGithub: 'Vezi toate proiectele pe GitHub →',
@@ -329,6 +354,11 @@ function toggleTheme() {
 
 function setLang(lang) {
   currentLang = normalizeLang(lang);
+
+  if (typeof document === 'undefined') {
+    return;
+  }
+
   document.documentElement.lang = currentLang;
 
   const i18nNodes = document.querySelectorAll('[data-i18n]');
@@ -378,6 +408,85 @@ function getBadgeActionsUrl(badgeUrl) {
   return match ? match[0] + '/actions' : badgeUrl;
 }
 
+function createCardHeader(card) {
+  const iconNode = document.createElement('span');
+  iconNode.className = 'card-icon';
+  iconNode.textContent = card.icon;
+  iconNode.setAttribute('aria-hidden', 'true');
+
+  const titleNode = document.createElement('span');
+  titleNode.className = 'card-title';
+  titleNode.setAttribute('data-i18n', card.titleKey);
+  titleNode.textContent = t(card.titleKey);
+
+  const linkNode = document.createElement('span');
+  linkNode.className = 'card-link';
+  linkNode.setAttribute('data-link-key', card.linkKey);
+  linkNode.setAttribute('aria-label', t(card.linkKey));
+  linkNode.setAttribute('title', t(card.linkKey));
+  linkNode.textContent = '→';
+
+  const headerNode = document.createElement('div');
+  headerNode.className = 'card-header';
+
+  const titleRowNode = document.createElement('div');
+  titleRowNode.className = 'card-title-row';
+  titleRowNode.append(iconNode, titleNode);
+
+  headerNode.append(titleRowNode, linkNode);
+  return headerNode;
+}
+
+function createCardFooter(card) {
+  if (!card.badgeUrl && !card.liveSiteUrl) {
+    return null;
+  }
+
+  const footerNode = document.createElement('div');
+  footerNode.className = 'card-footer';
+
+  if (card.badgeUrl) {
+    const statusLabel = document.createElement('span');
+    statusLabel.className = 'card-status-label';
+    statusLabel.setAttribute('data-i18n', 'deployStatus');
+    statusLabel.textContent = t('deployStatus');
+
+    const badgeLinkNode = document.createElement('a');
+    badgeLinkNode.className = 'card-badge-link';
+    badgeLinkNode.href = getBadgeActionsUrl(card.badgeUrl);
+    badgeLinkNode.target = '_blank';
+    badgeLinkNode.rel = 'noopener noreferrer';
+    badgeLinkNode.setAttribute('aria-label', t('deployStatus'));
+    badgeLinkNode.addEventListener('click', (e) => e.stopPropagation());
+    badgeLinkNode.addEventListener('keydown', (e) => e.stopPropagation());
+
+    const badgeNode = document.createElement('img');
+    badgeNode.className = 'card-badge';
+    badgeNode.src = card.badgeUrl;
+    badgeNode.alt = '';
+    badgeNode.loading = 'eager';
+
+    badgeLinkNode.appendChild(badgeNode);
+    footerNode.append(statusLabel, badgeLinkNode);
+  }
+
+  if (card.liveSiteUrl) {
+    const liveNode = document.createElement('a');
+    liveNode.className = 'card-live-link';
+    liveNode.href = card.liveSiteUrl;
+    liveNode.target = '_blank';
+    liveNode.rel = 'noopener noreferrer';
+    liveNode.textContent = '🌐';
+    liveNode.setAttribute('title', `${t('liveSite')}: ${card.liveSiteUrl}`);
+    liveNode.setAttribute('aria-label', t('liveSite'));
+    liveNode.addEventListener('click', (e) => e.stopPropagation());
+    liveNode.addEventListener('keydown', (e) => e.stopPropagation());
+    footerNode.appendChild(liveNode);
+  }
+
+  return footerNode;
+}
+
 function createCard(card, isSelected) {
   const cardNode = document.createElement('div');
   cardNode.className = 'card';
@@ -396,16 +505,6 @@ function createCard(card, isSelected) {
     }
   });
 
-  const iconNode = document.createElement('span');
-  iconNode.className = 'card-icon';
-  iconNode.textContent = card.icon;
-  iconNode.setAttribute('aria-hidden', 'true');
-
-  const titleNode = document.createElement('span');
-  titleNode.className = 'card-title';
-  titleNode.setAttribute('data-i18n', card.titleKey);
-  titleNode.textContent = t(card.titleKey);
-
   const descNode = document.createElement('span');
   descNode.className = 'card-desc';
   const descId = `desc-${card.titleKey}`;
@@ -414,67 +513,10 @@ function createCard(card, isSelected) {
   descNode.setAttribute('data-i18n', card.descKey);
   descNode.textContent = t(card.descKey);
 
-  const linkNode = document.createElement('span');
-  linkNode.className = 'card-link';
-  linkNode.setAttribute('data-link-key', card.linkKey);
-  linkNode.setAttribute('aria-label', t(card.linkKey));
-  linkNode.setAttribute('title', t(card.linkKey));
-  linkNode.textContent = '→';
+  cardNode.append(createCardHeader(card), descNode);
 
-  const headerNode = document.createElement('div');
-  headerNode.className = 'card-header';
-
-  const titleRowNode = document.createElement('div');
-  titleRowNode.className = 'card-title-row';
-  titleRowNode.append(iconNode, titleNode);
-
-  headerNode.append(titleRowNode, linkNode);
-
-  cardNode.append(headerNode, descNode);
-
-  if (card.badgeUrl || card.liveSiteUrl) {
-    const footerNode = document.createElement('div');
-    footerNode.className = 'card-footer';
-
-    if (card.badgeUrl) {
-      const statusLabel = document.createElement('span');
-      statusLabel.className = 'card-status-label';
-      statusLabel.setAttribute('data-i18n', 'deployStatus');
-      statusLabel.textContent = t('deployStatus');
-
-      const badgeLinkNode = document.createElement('a');
-      badgeLinkNode.className = 'card-badge-link';
-      badgeLinkNode.href = getBadgeActionsUrl(card.badgeUrl);
-      badgeLinkNode.target = '_blank';
-      badgeLinkNode.rel = 'noopener noreferrer';
-      badgeLinkNode.setAttribute('aria-label', t('deployStatus'));
-      badgeLinkNode.addEventListener('click', (e) => e.stopPropagation());
-      badgeLinkNode.addEventListener('keydown', (e) => e.stopPropagation());
-
-      const badgeNode = document.createElement('img');
-      badgeNode.className = 'card-badge';
-      badgeNode.src = card.badgeUrl;
-      badgeNode.alt = '';
-      badgeNode.loading = 'eager';
-
-      badgeLinkNode.appendChild(badgeNode);
-      footerNode.append(statusLabel, badgeLinkNode);
-    }
-
-    if (card.liveSiteUrl) {
-      const liveNode = document.createElement('a');
-      liveNode.className = 'card-live-link';
-      liveNode.href = card.liveSiteUrl;
-      liveNode.target = '_blank';
-      liveNode.rel = 'noopener noreferrer';
-      liveNode.textContent = '🌐';
-      liveNode.setAttribute('title', `${t('liveSite')}: ${card.liveSiteUrl}`);
-      liveNode.setAttribute('aria-label', t('liveSite'));
-      liveNode.addEventListener('click', (e) => e.stopPropagation());
-      liveNode.addEventListener('keydown', (e) => e.stopPropagation());
-      footerNode.appendChild(liveNode);
-    }
-
+  const footerNode = createCardFooter(card);
+  if (footerNode) {
     cardNode.appendChild(footerNode);
   }
 
@@ -519,18 +561,7 @@ function getRelativeTime(dateString) {
 }
 
 function getEventIcon(type) {
-  const icons = {
-    PushEvent: '📤',
-    CreateEvent: '✨',
-    WatchEvent: '⭐',
-    ForkEvent: '🍴',
-    IssuesEvent: '🐛',
-    PullRequestEvent: '🔀',
-    IssueCommentEvent: '💬',
-    PullRequestReviewCommentEvent: '💬'
-  };
-
-  return icons[type] || '📌';
+  return EVENT_ICONS[type] || '📌';
 }
 
 function parseRepoName(repoName) {
@@ -538,12 +569,12 @@ function parseRepoName(repoName) {
     return null;
   }
 
-  const [owner, repo] = repoName.split('/');
-  if (!owner || !repo) {
+  const match = repoName.match(/^([a-zA-Z0-9._-]+)\/([a-zA-Z0-9._-]+)$/);
+  if (!match) {
     return null;
   }
 
-  return { owner, repo };
+  return { owner: match[1], repo: match[2] };
 }
 
 function buildRepoUrl(repoName) {
@@ -560,6 +591,9 @@ function appendText(node, text) {
 }
 
 function appendLink(node, href, label) {
+  if (typeof href !== 'string' || (!href.startsWith('http') && !href.startsWith('/'))) {
+    return;
+  }
   const link = document.createElement('a');
   link.href = href;
   link.textContent = label;
@@ -841,7 +875,36 @@ function init() {
 
   setTheme(getPreferredTheme());
   setLang(normalizeLang(storageGet('lang') || getDefaultLang()));
-  loadGitHubActivity();
+
+  // ⚡ Bolt: Lazy load GitHub activity using IntersectionObserver
+  // Defers expensive API calls and rendering until the activity feed is actually visible
+  const activitySection = document.querySelector('.activity-section');
+  if (activitySection && 'IntersectionObserver' in window) {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting) {
+          loadGitHubActivity();
+          observer.disconnect();
+        }
+      },
+      { rootMargin: '100px' } // Start loading slightly before it comes into view
+    );
+    observer.observe(activitySection);
+  } else {
+    // Fallback for older browsers
+    loadGitHubActivity();
+  }
 }
 
-init();
+if (typeof window !== 'undefined') {
+  init();
+}
+
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = {
+    getRelativeTime,
+    t,
+    translations,
+    setLang
+  };
+}

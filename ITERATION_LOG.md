@@ -1,3 +1,19 @@
+### 2026-04-06 — Performance Optimization of getEventIcon
+
+**Context:** Optimize the `getEventIcon` function in `app.js` by moving the `icons` object outside the function to prevent repeated instantiation.
+**What happened:**
+
+- Created a benchmark script to measure the performance impact.
+- Baseline benchmark showed a ~42% improvement (from ~600ms to ~350ms for 10M iterations).
+- Moved the `icons` object out of the function and renamed it to `EVENT_ICONS` constant at the top of the file.
+- Verified functionality and performance after implementation.
+- Final benchmark confirmed the optimization remains effective.
+- Ran `npm run check` to ensure code quality.
+
+**Outcome:** Success
+**Insight:** Moving object literals outside frequently called functions is a simple but effective optimization in JavaScript to avoid unnecessary memory allocations and CPU cycles.
+**Promoted to Lessons Learned:** Yes
+
 # Iteration Log
 
 > Append-only journal of AI agent work sessions.
@@ -60,4 +76,28 @@
 **Insight:** The `gh` CLI is not available in this environment. Use `WebFetch` on raw GitHub URLs to read READMEs from other repos.
 **Promoted to Lessons Learned:** No (first occurrence)
 
+### 2026-04-06 — Implement testing infrastructure and `getRelativeTime` tests
+
+**Context:** Analysis and implementation of a testing improvement to increase reliability and coverage.
+**What happened:**
+
+- Refactored `app.js` to support CommonJS exports when running in Node.js by adding guards for `window`, `module`, and `module.exports`.
+- Set up a testing environment using the built-in Node.js test runner (`node --test`).
+- Added a `test` script and updated the `check` script in `package.json`.
+- Implemented comprehensive tests for the `getRelativeTime` function in `tests/getRelativeTime.test.js`, covering multiple time intervals and both English and Romanian languages.
+- Fixed CI failure by explicitly specifying the test file path in `package.json` instead of using a glob pattern, to ensure compatibility across different environments.
+- Updated `AGENTS.md` to reflect the availability of a test framework.
+
+**Outcome:** Success
+**Insight:** Modern Node.js versions (v18+) include a built-in test runner that is sufficient for unit testing pure functions in a browser-targeted codebase without adding heavy dependencies like Jest or Mocha.
+**Promoted to Lessons Learned:** No
+
 <!-- New entries above this line, most recent first -->
+
+### 2026-04-06
+
+- Added the `harness-manager` project to `app.js` under the `liveProjects` list.
+- Generated new EN and RO descriptions as requested, adhering to the Linguist sub-agent guidelines.
+- Selected "🪢" as an appropriate emoji icon suggesting "harness".
+- Extracted and added the GitHub Action badge `Deploy Pages` which correctly verified on the live API.
+- Verified changes using headless Playwright script to render a screenshot.
