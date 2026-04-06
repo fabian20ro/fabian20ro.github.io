@@ -61,3 +61,11 @@
 **Promoted to Lessons Learned:** No (first occurrence)
 
 <!-- New entries above this line, most recent first -->
+
+### 2026-04-06
+
+- Added the `harness-manager` project to `app.js` under the `liveProjects` list.
+- Generated new EN and RO descriptions as requested, adhering to the Linguist sub-agent guidelines.
+- Selected "🪢" as an appropriate emoji icon suggesting "harness".
+- Extracted and added the GitHub Action badge `Deploy Pages` which correctly verified on the live API.
+- Verified changes using headless Playwright script to render a screenshot.
