@@ -53,6 +53,12 @@ Obsolete lessons move to the Archive section at bottom (with date and reason). N
 
 ---
 
+## Performance
+
+- **[2026-03-05]** Avoid repeated object instantiation — Move object literals out of frequently called functions (like `getEventIcon`) to prevent unnecessary allocations and improve performance by ~40% at scale.
+
+---
+
 ## Archive
 
 <!-- Format: **[YYYY-MM-DD] Archived [YYYY-MM-DD]** Title — Reason for archival -->
