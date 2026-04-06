@@ -113,6 +113,14 @@ const projectSections = {
       titleKey: 'sudokuTitle',
       descKey: 'sudokuDesc',
       linkKey: 'viewGithub'
+    },
+    {
+      href: 'https://fabian20ro.github.io/harness-manager/',
+      icon: '🪢',
+      titleKey: 'harnessManagerTitle',
+      descKey: 'harnessManagerDesc',
+      linkKey: 'visitSite',
+      badgeUrl: 'https://github.com/fabian20ro/harness-manager/workflows/Deploy%20Pages/badge.svg'
     }
   ]
 };
@@ -156,6 +164,9 @@ const translations = {
     bookingTitle: 'Booking Filter Out',
     bookingDesc:
       'A browser extension to filter booking.com results to greyout locations that accept pets.',
+    harnessManagerTitle: 'Harness Manager',
+    harnessManagerDesc:
+      'See which files your editor and configurations actually process in your Git projects.',
     visitSite: 'Visit site →',
     viewGithub: 'View on GitHub →',
     viewAllGithub: 'View all projects on GitHub →',
@@ -220,6 +231,9 @@ const translations = {
     sudokuDesc: 'Rezolvă și generează puzzle-uri Sudoku, scris în Python.',
     bookingTitle: 'Booking Filter Out',
     bookingDesc: 'Extensie de browser care estompează locațiile pet-friendly de pe booking.com.',
+    harnessManagerTitle: 'Harness Manager',
+    harnessManagerDesc:
+      'Vezi rapid ce fișiere procesează editorul și configurațiile tale în proiectele Git.',
     visitSite: 'Vizitează →',
     viewGithub: 'Vezi pe GitHub →',
     viewAllGithub: 'Vezi toate proiectele pe GitHub →',
