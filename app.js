@@ -376,6 +376,85 @@ function getBadgeActionsUrl(badgeUrl) {
   return match ? match[0] + '/actions' : badgeUrl;
 }
 
+function createCardHeader(card) {
+  const iconNode = document.createElement('span');
+  iconNode.className = 'card-icon';
+  iconNode.textContent = card.icon;
+  iconNode.setAttribute('aria-hidden', 'true');
+
+  const titleNode = document.createElement('span');
+  titleNode.className = 'card-title';
+  titleNode.setAttribute('data-i18n', card.titleKey);
+  titleNode.textContent = t(card.titleKey);
+
+  const linkNode = document.createElement('span');
+  linkNode.className = 'card-link';
+  linkNode.setAttribute('data-link-key', card.linkKey);
+  linkNode.setAttribute('aria-label', t(card.linkKey));
+  linkNode.setAttribute('title', t(card.linkKey));
+  linkNode.textContent = '→';
+
+  const headerNode = document.createElement('div');
+  headerNode.className = 'card-header';
+
+  const titleRowNode = document.createElement('div');
+  titleRowNode.className = 'card-title-row';
+  titleRowNode.append(iconNode, titleNode);
+
+  headerNode.append(titleRowNode, linkNode);
+  return headerNode;
+}
+
+function createCardFooter(card) {
+  if (!card.badgeUrl && !card.liveSiteUrl) {
+    return null;
+  }
+
+  const footerNode = document.createElement('div');
+  footerNode.className = 'card-footer';
+
+  if (card.badgeUrl) {
+    const statusLabel = document.createElement('span');
+    statusLabel.className = 'card-status-label';
+    statusLabel.setAttribute('data-i18n', 'deployStatus');
+    statusLabel.textContent = t('deployStatus');
+
+    const badgeLinkNode = document.createElement('a');
+    badgeLinkNode.className = 'card-badge-link';
+    badgeLinkNode.href = getBadgeActionsUrl(card.badgeUrl);
+    badgeLinkNode.target = '_blank';
+    badgeLinkNode.rel = 'noopener noreferrer';
+    badgeLinkNode.setAttribute('aria-label', t('deployStatus'));
+    badgeLinkNode.addEventListener('click', (e) => e.stopPropagation());
+    badgeLinkNode.addEventListener('keydown', (e) => e.stopPropagation());
+
+    const badgeNode = document.createElement('img');
+    badgeNode.className = 'card-badge';
+    badgeNode.src = card.badgeUrl;
+    badgeNode.alt = '';
+    badgeNode.loading = 'eager';
+
+    badgeLinkNode.appendChild(badgeNode);
+    footerNode.append(statusLabel, badgeLinkNode);
+  }
+
+  if (card.liveSiteUrl) {
+    const liveNode = document.createElement('a');
+    liveNode.className = 'card-live-link';
+    liveNode.href = card.liveSiteUrl;
+    liveNode.target = '_blank';
+    liveNode.rel = 'noopener noreferrer';
+    liveNode.textContent = '🌐';
+    liveNode.setAttribute('title', `${t('liveSite')}: ${card.liveSiteUrl}`);
+    liveNode.setAttribute('aria-label', t('liveSite'));
+    liveNode.addEventListener('click', (e) => e.stopPropagation());
+    liveNode.addEventListener('keydown', (e) => e.stopPropagation());
+    footerNode.appendChild(liveNode);
+  }
+
+  return footerNode;
+}
+
 function createCard(card, isSelected) {
   const cardNode = document.createElement('div');
   cardNode.className = 'card';
@@ -394,82 +473,15 @@ function createCard(card, isSelected) {
     }
   });
 
-  const iconNode = document.createElement('span');
-  iconNode.className = 'card-icon';
-  iconNode.textContent = card.icon;
-  iconNode.setAttribute('aria-hidden', 'true');
-
-  const titleNode = document.createElement('span');
-  titleNode.className = 'card-title';
-  titleNode.setAttribute('data-i18n', card.titleKey);
-  titleNode.textContent = t(card.titleKey);
-
   const descNode = document.createElement('span');
   descNode.className = 'card-desc';
   descNode.setAttribute('data-i18n', card.descKey);
   descNode.textContent = t(card.descKey);
 
-  const linkNode = document.createElement('span');
-  linkNode.className = 'card-link';
-  linkNode.setAttribute('data-link-key', card.linkKey);
-  linkNode.setAttribute('aria-label', t(card.linkKey));
-  linkNode.setAttribute('title', t(card.linkKey));
-  linkNode.textContent = '→';
+  cardNode.append(createCardHeader(card), descNode);
 
-  const headerNode = document.createElement('div');
-  headerNode.className = 'card-header';
-
-  const titleRowNode = document.createElement('div');
-  titleRowNode.className = 'card-title-row';
-  titleRowNode.append(iconNode, titleNode);
-
-  headerNode.append(titleRowNode, linkNode);
-
-  cardNode.append(headerNode, descNode);
-
-  if (card.badgeUrl || card.liveSiteUrl) {
-    const footerNode = document.createElement('div');
-    footerNode.className = 'card-footer';
-
-    if (card.badgeUrl) {
-      const statusLabel = document.createElement('span');
-      statusLabel.className = 'card-status-label';
-      statusLabel.setAttribute('data-i18n', 'deployStatus');
-      statusLabel.textContent = t('deployStatus');
-
-      const badgeLinkNode = document.createElement('a');
-      badgeLinkNode.className = 'card-badge-link';
-      badgeLinkNode.href = getBadgeActionsUrl(card.badgeUrl);
-      badgeLinkNode.target = '_blank';
-      badgeLinkNode.rel = 'noopener noreferrer';
-      badgeLinkNode.setAttribute('aria-label', t('deployStatus'));
-      badgeLinkNode.addEventListener('click', (e) => e.stopPropagation());
-      badgeLinkNode.addEventListener('keydown', (e) => e.stopPropagation());
-
-      const badgeNode = document.createElement('img');
-      badgeNode.className = 'card-badge';
-      badgeNode.src = card.badgeUrl;
-      badgeNode.alt = '';
-      badgeNode.loading = 'eager';
-
-      badgeLinkNode.appendChild(badgeNode);
-      footerNode.append(statusLabel, badgeLinkNode);
-    }
-
-    if (card.liveSiteUrl) {
-      const liveNode = document.createElement('a');
-      liveNode.className = 'card-live-link';
-      liveNode.href = card.liveSiteUrl;
-      liveNode.target = '_blank';
-      liveNode.rel = 'noopener noreferrer';
-      liveNode.textContent = '🌐';
-      liveNode.setAttribute('title', `${t('liveSite')}: ${card.liveSiteUrl}`);
-      liveNode.setAttribute('aria-label', t('liveSite'));
-      liveNode.addEventListener('click', (e) => e.stopPropagation());
-      liveNode.addEventListener('keydown', (e) => e.stopPropagation());
-      footerNode.appendChild(liveNode);
-    }
-
+  const footerNode = createCardFooter(card);
+  if (footerNode) {
     cardNode.appendChild(footerNode);
   }
 
