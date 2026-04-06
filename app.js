@@ -354,10 +354,12 @@ function setLang(lang) {
   if (langToggle) {
     langToggle.textContent = currentLang.toUpperCase();
     langToggle.setAttribute('aria-label', t('toggleLanguage'));
+    langToggle.setAttribute('title', t('toggleLanguage'));
   }
 
   if (themeToggle) {
     themeToggle.setAttribute('aria-label', t('toggleTheme'));
+    themeToggle.setAttribute('title', t('toggleTheme'));
   }
 
   storageSet('lang', currentLang);
@@ -406,6 +408,9 @@ function createCard(card, isSelected) {
 
   const descNode = document.createElement('span');
   descNode.className = 'card-desc';
+  const descId = `desc-${card.titleKey}`;
+  descNode.id = descId;
+  cardNode.setAttribute('aria-describedby', descId);
   descNode.setAttribute('data-i18n', card.descKey);
   descNode.textContent = t(card.descKey);
 

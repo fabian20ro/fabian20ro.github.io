@@ -341,3 +341,12 @@ footer a:hover {
     font-size: 0.8125rem;
   }
 }
+
+.theme-toggle:active,
+.lang-toggle:active {
+  transform: scale(0.92);
+}
+
+.card:active {
+  transform: scale(0.98);
+}
