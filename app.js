@@ -343,6 +343,11 @@ function toggleTheme() {
 
 function setLang(lang) {
   currentLang = normalizeLang(lang);
+
+  if (typeof document === 'undefined') {
+    return;
+  }
+
   document.documentElement.lang = currentLang;
 
   const i18nNodes = document.querySelectorAll('[data-i18n]');
@@ -874,4 +879,15 @@ function init() {
   }
 }
 
-init();
+if (typeof window !== 'undefined') {
+  init();
+}
+
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = {
+    getRelativeTime,
+    t,
+    translations,
+    setLang
+  };
+}

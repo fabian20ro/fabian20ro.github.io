@@ -6,7 +6,6 @@
 
 ## Constraints
 
-- **No test framework:** There is no test runner or `npm test` script. Do not assume tests exist or try to run them.
 - **Sentry planned, not implemented:** `docs/sentry-rollout-plan.md` describes a future Sentry integration. The SDK is NOT yet in the project. Do not add Sentry code unless explicitly asked.
 - **SECURITY.md is a placeholder:** The version table in SECURITY.md is GitHub-generated boilerplate. It does not reflect actual project versions.
 - **Remote default branch is `main`:** Pull requests target `origin/main`. The local branch may be named `master`.
