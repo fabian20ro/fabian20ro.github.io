@@ -533,12 +533,12 @@ function parseRepoName(repoName) {
     return null;
   }
 
-  const [owner, repo] = repoName.split('/');
-  if (!owner || !repo) {
+  const match = repoName.match(/^([a-zA-Z0-9._-]+)\/([a-zA-Z0-9._-]+)$/);
+  if (!match) {
     return null;
   }
 
-  return { owner, repo };
+  return { owner: match[1], repo: match[2] };
 }
 
 function buildRepoUrl(repoName) {
@@ -555,6 +555,9 @@ function appendText(node, text) {
 }
 
 function appendLink(node, href, label) {
+  if (typeof href !== 'string' || (!href.startsWith('http') && !href.startsWith('/'))) {
+    return;
+  }
   const link = document.createElement('a');
   link.href = href;
   link.textContent = label;
