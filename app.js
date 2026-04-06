@@ -8,6 +8,17 @@ const PAGE_REFRESH_MARKER_KEY = 'page-refresh-marker-v1';
 const PAGE_LAST_SEEN_AT_KEY = 'page-last-seen-at-v1';
 const PAGE_STALE_REOPEN_THRESHOLD_MS = 12 * 60 * 60 * 1000;
 
+const EVENT_ICONS = {
+  PushEvent: '📤',
+  CreateEvent: '✨',
+  WatchEvent: '⭐',
+  ForkEvent: '🍴',
+  IssuesEvent: '🐛',
+  PullRequestEvent: '🔀',
+  IssueCommentEvent: '💬',
+  PullRequestReviewCommentEvent: '💬'
+};
+
 const projectSections = {
   liveProjects: [
     {
@@ -533,18 +544,7 @@ function getRelativeTime(dateString) {
 }
 
 function getEventIcon(type) {
-  const icons = {
-    PushEvent: '📤',
-    CreateEvent: '✨',
-    WatchEvent: '⭐',
-    ForkEvent: '🍴',
-    IssuesEvent: '🐛',
-    PullRequestEvent: '🔀',
-    IssueCommentEvent: '💬',
-    PullRequestReviewCommentEvent: '💬'
-  };
-
-  return icons[type] || '📌';
+  return EVENT_ICONS[type] || '📌';
 }
 
 function parseRepoName(repoName) {
