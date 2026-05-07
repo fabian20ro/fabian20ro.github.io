@@ -542,6 +542,10 @@ function getRelativeTime(dateString) {
   }
 
   const diffMs = Date.now() - date.getTime();
+  if (diffMs < 0) {
+    return t('justNow');
+  }
+
   const diffMins = Math.floor(diffMs / 60000);
   const diffHours = Math.floor(diffMs / 3600000);
   const diffDays = Math.floor(diffMs / 86400000);

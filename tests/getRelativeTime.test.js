@@ -22,6 +22,7 @@ test('getRelativeTime - English', (t) => {
     { date: new Date(now - 3 * 60 * 60 * 1000).toISOString(), expected: '3 hours ago', name: '3 hours ago' },
     { date: new Date(now - 24 * 60 * 60 * 1000).toISOString(), expected: '1 day ago', name: '1 day ago' },
     { date: new Date(now - 48 * 60 * 60 * 1000).toISOString(), expected: '2 days ago', name: '2 days ago' },
+    { date: new Date(now + 5 * 60 * 1000).toISOString(), expected: 'just now', name: 'future date' },
     { date: 'invalid-date', expected: 'just now', name: 'invalid date' }
   ];
 
@@ -49,6 +50,7 @@ test('getRelativeTime - Romanian', (t) => {
     { date: new Date(now - 3 * 60 * 60 * 1000).toISOString(), expected: '3 ore în urmă', name: '3 hours ago (ro)' },
     { date: new Date(now - 24 * 60 * 60 * 1000).toISOString(), expected: 'acum 1 zi', name: '1 day ago (ro)' },
     { date: new Date(now - 48 * 60 * 60 * 1000).toISOString(), expected: '2 zile în urmă', name: '2 days ago (ro)' },
+    { date: new Date(now + 5 * 60 * 1000).toISOString(), expected: 'chiar acum', name: 'future date (ro)' },
     { date: 'invalid-date', expected: 'chiar acum', name: 'invalid date (ro)' }
   ];
 

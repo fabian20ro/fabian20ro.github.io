@@ -49,7 +49,7 @@ Obsolete lessons move to the Archive section at bottom (with date and reason). N
 
 ## Common Mistakes
 
-<!-- Format: **[YYYY-MM-DD]** Brief title — Explanation -->
+**[2026-05-07] Clamp future relative times — Relative-time helpers should treat future-dated timestamps as "just now" (or the locale equivalent) instead of emitting negative minutes/hours. Browser clock skew and delayed event timestamps can otherwise produce confusing output.
 
 ---
 

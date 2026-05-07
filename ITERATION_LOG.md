@@ -92,6 +92,19 @@
 **Insight:** Modern Node.js versions (v18+) include a built-in test runner that is sufficient for unit testing pure functions in a browser-targeted codebase without adding heavy dependencies like Jest or Mocha.
 **Promoted to Lessons Learned:** No
 
+### 2026-05-07 — Clamp future-dated activity timestamps
+
+**Context:** Make the relative-time helper more forgiving when an event timestamp is a few minutes in the future.
+**What happened:**
+
+- Updated `getRelativeTime()` in `app.js` to clamp future-dated timestamps to the locale's "just now" string instead of producing negative relative times.
+- Added English and Romanian test cases for future timestamps in `tests/getRelativeTime.test.js`.
+- Ran `npm test` and `npm run check`; the first `npm run check` failed because the environment initially picked up a global ESLint 6.4.0 without the repo's flat config, so I ran `npm install --no-fund --no-audit` and re-ran the check successfully.
+
+**Outcome:** Success
+**Insight:** Relative-time helpers should defensively handle clock skew / future timestamps; the user-facing fallback is usually clearer than exposing a negative duration.
+**Promoted to Lessons Learned:** Yes
+
 <!-- New entries above this line, most recent first -->
 
 ### 2026-04-06
