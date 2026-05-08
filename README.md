@@ -27,10 +27,19 @@ Static portfolio page for live demos, repositories, and recent GitHub activity.
 ## Quality Checks
 
 - Install dependencies: `npm install`
-- Run all checks: `npm run check`
+- Run all checks (lint, format, test): `npm run check`
+- Run tests: `npm test`
 - Format files: `npm run format`
 
 CI runs the same checks on push and pull requests.
+
+## Localization
+
+The project supports English (EN) and Romanian (RO).
+Translations are managed within `app.js`. To add a new language:
+
+1. Add the language key to the `translations` object in `app.js`.
+2. Update the `normalizeLang` and `getDefaultLang` functions if necessary.
 
 ## Monitoring Plan
 
