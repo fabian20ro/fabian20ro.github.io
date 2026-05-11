@@ -105,6 +105,19 @@
 **Insight:** Relative-time helpers should defensively handle clock skew / future timestamps; the user-facing fallback is usually clearer than exposing a negative duration.
 **Promoted to Lessons Learned:** Yes
 
+### 2026-05-11 — Tighten relative-time boundary coverage
+
+**Context:** Add regression coverage for the `getRelativeTime()` helper around minute and hour thresholds.
+**What happened:**
+
+- Added English and Romanian test cases for 59-second, 59-minute-59-second, and 23-hour-59-minute boundary inputs.
+- Kept the change test-only; no runtime code needed to change.
+- Ran `npm test` to verify the suite still passes.
+
+**Outcome:** Success
+**Insight:** Boundary coverage around floor-based time formatting is cheap insurance against off-by-one regressions.
+**Promoted to Lessons Learned:** No
+
 <!-- New entries above this line, most recent first -->
 
 ### 2026-04-06
