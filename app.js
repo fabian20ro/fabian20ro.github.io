@@ -902,6 +902,8 @@ if (typeof window !== 'undefined') {
 if (typeof module !== 'undefined' && module.exports) {
   module.exports = {
     getRelativeTime,
+    parseRepoName,
+    buildRepoUrl,
     t,
     translations,
     setLang
