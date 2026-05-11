@@ -118,6 +118,19 @@
 **Insight:** Boundary coverage around floor-based time formatting is cheap insurance against off-by-one regressions.
 **Promoted to Lessons Learned:** No
 
+### 2026-05-11 — Add repo URL helper coverage
+
+**Context:** Increase regression coverage for internal repo-name parsing and GitHub profile URL fallback helpers.
+**What happened:**
+
+- Exported `parseRepoName` and `buildRepoUrl` from `app.js` so they can be tested directly.
+- Added a focused test block covering valid repo-name parsing, valid URL generation, and fallback behavior for malformed repo names.
+- Ran `npm test` and `npm run check`; both passed.
+
+**Outcome:** Success
+**Insight:** Small helper exports can make internal contract coverage cheaper without changing browser behavior.
+**Promoted to Lessons Learned:** No
+
 <!-- New entries above this line, most recent first -->
 
 ### 2026-04-06
