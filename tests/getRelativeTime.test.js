@@ -16,9 +16,12 @@ test('getRelativeTime - English', (t) => {
 
   const testCases = [
     { date: new Date(now - 30 * 1000).toISOString(), expected: 'just now', name: 'less than a minute' },
+    { date: new Date(now - 59 * 1000).toISOString(), expected: 'just now', name: '59 seconds ago' },
     { date: new Date(now - 60 * 1000).toISOString(), expected: '1 minute ago', name: '1 minute ago' },
+    { date: new Date(now - 59 * 60 * 1000 - 59 * 1000).toISOString(), expected: '59 minutes ago', name: '59 minutes 59 seconds ago' },
     { date: new Date(now - 5 * 60 * 1000).toISOString(), expected: '5 minutes ago', name: '5 minutes ago' },
     { date: new Date(now - 60 * 60 * 1000).toISOString(), expected: '1 hour ago', name: '1 hour ago' },
+    { date: new Date(now - 23 * 60 * 60 * 1000 - 59 * 60 * 1000).toISOString(), expected: '23 hours ago', name: '23 hours 59 minutes ago' },
     { date: new Date(now - 3 * 60 * 60 * 1000).toISOString(), expected: '3 hours ago', name: '3 hours ago' },
     { date: new Date(now - 24 * 60 * 60 * 1000).toISOString(), expected: '1 day ago', name: '1 day ago' },
     { date: new Date(now - 48 * 60 * 60 * 1000).toISOString(), expected: '2 days ago', name: '2 days ago' },
@@ -44,9 +47,12 @@ test('getRelativeTime - Romanian', (t) => {
 
   const testCases = [
     { date: new Date(now - 30 * 1000).toISOString(), expected: 'chiar acum', name: 'less than a minute (ro)' },
+    { date: new Date(now - 59 * 1000).toISOString(), expected: 'chiar acum', name: '59 seconds ago (ro)' },
     { date: new Date(now - 60 * 1000).toISOString(), expected: 'acum 1 minut', name: '1 minute ago (ro)' },
+    { date: new Date(now - 59 * 60 * 1000 - 59 * 1000).toISOString(), expected: '59 minute în urmă', name: '59 minutes 59 seconds ago (ro)' },
     { date: new Date(now - 5 * 60 * 1000).toISOString(), expected: '5 minute în urmă', name: '5 minutes ago (ro)' },
     { date: new Date(now - 60 * 60 * 1000).toISOString(), expected: 'acum 1 oră', name: '1 hour ago (ro)' },
+    { date: new Date(now - 23 * 60 * 60 * 1000 - 59 * 60 * 1000).toISOString(), expected: '23 ore în urmă', name: '23 hours 59 minutes ago (ro)' },
     { date: new Date(now - 3 * 60 * 60 * 1000).toISOString(), expected: '3 ore în urmă', name: '3 hours ago (ro)' },
     { date: new Date(now - 24 * 60 * 60 * 1000).toISOString(), expected: 'acum 1 zi', name: '1 day ago (ro)' },
     { date: new Date(now - 48 * 60 * 60 * 1000).toISOString(), expected: '2 zile în urmă', name: '2 days ago (ro)' },
