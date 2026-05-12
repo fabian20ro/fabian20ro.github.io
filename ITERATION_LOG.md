@@ -158,6 +158,18 @@
 **Insight:** When a language toggle accepts data from multiple sources, treat locale tags as a first-class input rather than assuming a bare two-letter code.
 **Promoted to Lessons Learned:** Yes
 
+### 2026-05-12 — Document locale-tag normalization
+
+**Context:** Keep the portfolio README aligned with the current language normalization behavior.
+**What happened:**
+
+- Updated `README.md` to note that the English/Romanian localization flow normalizes locale tags like `ro-RO` and `ro_RO`.
+- Ran `npm run check` to verify the repo stayed clean after the docs change.
+
+**Outcome:** Success
+**Insight:** Small doc updates are useful when they surface already-shipped behavior that users can rely on.
+**Promoted to Lessons Learned:** No
+
 <!-- New entries above this line, most recent first -->
 
 ### 2026-04-06

@@ -7,7 +7,7 @@ Static portfolio page for live demos, repositories, and recent GitHub activity.
 ## Features
 
 - Light/dark theme with persisted preference and system-default fallback.
-- English/Romanian localization with dynamic `<html lang>` updates.
+- English/Romanian localization with dynamic `<html lang>` updates and normalized locale tags.
 - GitHub activity feed with local cache (10-minute TTL) to reduce API calls.
 - DOM-based activity rendering (no raw `innerHTML` from API data).
 - Keyboard-accessible controls with visible focus states.
@@ -36,6 +36,7 @@ CI runs the same checks on push and pull requests.
 ## Localization
 
 The project supports English (EN) and Romanian (RO).
+Locale tags are normalized defensively, so values like `ro-RO` and `ro_RO` still resolve to Romanian.
 Translations are managed within `app.js`. To add a new language:
 
 1. Add the language key to the `translations` object in `app.js`.
