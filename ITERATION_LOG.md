@@ -131,6 +131,19 @@
 **Insight:** Small helper exports can make internal contract coverage cheaper without changing browser behavior.
 **Promoted to Lessons Learned:** No
 
+### 2026-05-12 — Cover badge actions URL helper
+
+**Context:** Add regression coverage for the helper that turns GitHub badge URLs into their corresponding Actions pages.
+**What happened:**
+
+- Exported `getBadgeActionsUrl()` from `app.js` so the helper can be tested directly.
+- Added a focused Node test that verifies the GitHub badge URL rewrite and the non-GitHub fallback path.
+- Ran `npm test`, `npm run lint`, and `npm run check`; all passed.
+
+**Outcome:** Success
+**Insight:** Small helper exports can make internal contract coverage cheap without changing browser behavior.
+**Promoted to Lessons Learned:** No
+
 <!-- New entries above this line, most recent first -->
 
 ### 2026-04-06
