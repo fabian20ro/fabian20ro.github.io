@@ -314,7 +314,14 @@ function t(key) {
 }
 
 function normalizeLang(lang) {
-  return lang === 'ro' ? 'ro' : 'en';
+  if (typeof lang !== 'string') {
+    return 'en';
+  }
+
+  const normalized = lang.trim().toLowerCase();
+  return normalized === 'ro' || normalized.startsWith('ro-') || normalized.startsWith('ro_')
+    ? 'ro'
+    : 'en';
 }
 
 function getDefaultLang() {
@@ -903,6 +910,7 @@ if (typeof module !== 'undefined' && module.exports) {
   module.exports = {
     getRelativeTime,
     getBadgeActionsUrl,
+    normalizeLang,
     parseRepoName,
     buildRepoUrl,
     t,

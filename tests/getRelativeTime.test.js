@@ -1,6 +1,13 @@
 const test = require('node:test');
 const assert = require('node:assert');
-const { buildRepoUrl, getBadgeActionsUrl, getRelativeTime, parseRepoName, setLang } = require('../app.js');
+const {
+  buildRepoUrl,
+  getBadgeActionsUrl,
+  getRelativeTime,
+  normalizeLang,
+  parseRepoName,
+  setLang
+} = require('../app.js');
 
 test('getRelativeTime - English', (t) => {
   const now = Date.now();
@@ -63,6 +70,16 @@ test('getRelativeTime - Romanian', (t) => {
   testCases.forEach(({ date, expected, name }) => {
     assert.strictEqual(getRelativeTime(date), expected, `Failed: ${name}`);
   });
+});
+
+test('normalizeLang', () => {
+  assert.strictEqual(normalizeLang('ro'), 'ro');
+  assert.strictEqual(normalizeLang('RO'), 'ro');
+  assert.strictEqual(normalizeLang('ro-RO'), 'ro');
+  assert.strictEqual(normalizeLang('ro_RO'), 'ro');
+  assert.strictEqual(normalizeLang('en'), 'en');
+  assert.strictEqual(normalizeLang('road'), 'en');
+  assert.strictEqual(normalizeLang(null), 'en');
 });
 
 test('parseRepoName and buildRepoUrl', () => {
