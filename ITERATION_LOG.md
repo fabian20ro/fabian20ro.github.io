@@ -144,6 +144,20 @@
 **Insight:** Small helper exports can make internal contract coverage cheap without changing browser behavior.
 **Promoted to Lessons Learned:** No
 
+### 2026-05-12 — Broaden locale normalization for Romanian
+
+**Context:** Make the portfolio language selector more forgiving when callers provide locale-style Romanian tags instead of only the bare `ro` code.
+**What happened:**
+
+- Updated `normalizeLang()` in `app.js` to trim and lowercase incoming values, then map `ro`, `ro-RO`, and `ro_RO` to Romanian while keeping unrelated strings on English.
+- Exported `normalizeLang()` so it can be tested directly.
+- Added focused Node tests covering uppercase Romanian input, locale-tag variants, unrelated strings, and non-string values.
+- Ran `npm test` and `npm run check`; both passed after formatting `app.js` with Prettier.
+
+**Outcome:** Success
+**Insight:** When a language toggle accepts data from multiple sources, treat locale tags as a first-class input rather than assuming a bare two-letter code.
+**Promoted to Lessons Learned:** Yes
+
 <!-- New entries above this line, most recent first -->
 
 ### 2026-04-06
