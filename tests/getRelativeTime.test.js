@@ -1,6 +1,6 @@
 const test = require('node:test');
 const assert = require('node:assert');
-const { buildRepoUrl, getRelativeTime, parseRepoName, setLang } = require('../app.js');
+const { buildRepoUrl, getBadgeActionsUrl, getRelativeTime, parseRepoName, setLang } = require('../app.js');
 
 test('getRelativeTime - English', (t) => {
   const now = Date.now();
@@ -76,4 +76,16 @@ test('parseRepoName and buildRepoUrl', () => {
   assert.strictEqual(parseRepoName('invalid repo name'), null);
   assert.strictEqual(parseRepoName('fabian20ro/'), null);
   assert.strictEqual(parseRepoName('/repo'), null);
+});
+
+test('getBadgeActionsUrl', () => {
+  assert.strictEqual(
+    getBadgeActionsUrl('https://github.com/fabian20ro/harness-manager/workflows/Deploy%20Pages/badge.svg'),
+    'https://github.com/fabian20ro/harness-manager/actions'
+  );
+
+  assert.strictEqual(
+    getBadgeActionsUrl('https://example.com/badge.svg'),
+    'https://example.com/badge.svg'
+  );
 });

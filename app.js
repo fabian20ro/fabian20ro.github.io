@@ -902,6 +902,7 @@ if (typeof window !== 'undefined') {
 if (typeof module !== 'undefined' && module.exports) {
   module.exports = {
     getRelativeTime,
+    getBadgeActionsUrl,
     parseRepoName,
     buildRepoUrl,
     t,
