@@ -192,3 +192,15 @@
 **Outcome:** Success
 **Insight:** Locale normalization should trim first, then lowercase and compare against accepted tags.
 **Promoted to Lessons Learned:** Yes
+
+### 2026-05-13 — Sync README locale copy with normalization behavior
+
+**Context:** Keep the portfolio README aligned with the current locale-normalization contract.
+**What happened:**
+
+- Updated the feature summary and localization section in `README.md` to mention whitespace-trimmed locale values alongside the existing `ro-RO` and `ro_RO` examples.
+- Ran `npm run check` to verify linting, formatting, and tests still pass after the docs-only change.
+
+**Outcome:** Success
+**Insight:** Small README updates are useful when they mirror already-tested behavior, especially for normalization rules that callers may not guess correctly.
+**Promoted to Lessons Learned:** No
