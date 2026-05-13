@@ -158,16 +158,17 @@
 **Insight:** When a language toggle accepts data from multiple sources, treat locale tags as a first-class input rather than assuming a bare two-letter code.
 **Promoted to Lessons Learned:** Yes
 
-### 2026-05-12 — Document locale-tag normalization
+### 2026-05-13 — Lock activity-cache freshness contract
 
-**Context:** Keep the portfolio README aligned with the current language normalization behavior.
+**Context:** Make the 10-minute GitHub activity cache TTL easier to verify directly.
 **What happened:**
 
-- Updated `README.md` to note that the English/Romanian localization flow normalizes locale tags like `ro-RO` and `ro_RO`.
-- Ran `npm run check` to verify the repo stayed clean after the docs change.
+- Exported `isCacheFresh()` from `app.js` so the cache freshness boundary can be tested without reaching into internal module state.
+- Added a focused Node test that covers a fresh cache entry, the exact 10-minute cutoff, and an expired entry.
+- Ran `npm test` and `npm run check`; both passed.
 
 **Outcome:** Success
-**Insight:** Small doc updates are useful when they surface already-shipped behavior that users can rely on.
+**Insight:** When a user-facing TTL is documented, a tiny direct regression test is a cheap way to keep the contract honest.
 **Promoted to Lessons Learned:** No
 
 <!-- New entries above this line, most recent first -->

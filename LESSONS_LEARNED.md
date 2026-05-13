@@ -53,7 +53,9 @@ Obsolete lessons move to the Archive section at bottom (with date and reason). N
 
 ## Common Mistakes
 
-\*\*[2026-05-07] Clamp future relative times — Relative-time helpers should treat future-dated timestamps as "just now" (or the locale equivalent) instead of emitting negative minutes/hours. Browser clock skew and delayed event timestamps can otherwise produce confusing output.
+**[2026-05-13]** Directly test documented TTL boundaries — When the UI or docs promise a fixed freshness window, add a focused boundary test for the exact cutoff instead of relying only on indirect integration coverage.
+
+**[2026-05-07]** Clamp future relative times — Relative-time helpers should treat future-dated timestamps as "just now" (or the locale equivalent) instead of emitting negative minutes/hours. Browser clock skew and delayed event timestamps can otherwise produce confusing output.
 
 ---
 

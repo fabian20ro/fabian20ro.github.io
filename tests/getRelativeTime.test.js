@@ -3,6 +3,7 @@ const assert = require('node:assert');
 const {
   buildRepoUrl,
   getBadgeActionsUrl,
+  isCacheFresh,
   getRelativeTime,
   normalizeLang,
   parseRepoName,
@@ -108,4 +109,18 @@ test('getBadgeActionsUrl', () => {
     getBadgeActionsUrl('https://example.com/badge.svg'),
     'https://example.com/badge.svg'
   );
+});
+
+test('isCacheFresh', () => {
+  const now = Date.now();
+  const originalDateNow = Date.now;
+  Date.now = () => now;
+
+  try {
+    assert.strictEqual(isCacheFresh({ timestamp: now - 9 * 60 * 1000 }), true);
+    assert.strictEqual(isCacheFresh({ timestamp: now - 10 * 60 * 1000 }), false);
+    assert.strictEqual(isCacheFresh({ timestamp: now - 11 * 60 * 1000 }), false);
+  } finally {
+    Date.now = originalDateNow;
+  }
 });
