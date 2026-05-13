@@ -179,3 +179,16 @@
 - Selected "🪢" as an appropriate emoji icon suggesting "harness".
 - Extracted and added the GitHub Action badge `Deploy Pages` which correctly verified on the live API.
 - Verified changes using headless Playwright script to render a screenshot.
+
+### 2026-05-13 — Lock in trimmed locale normalization
+
+**Context:** Add regression coverage for locale normalization when stored or UI-provided values include surrounding whitespace.
+**What happened:**
+
+- Expanded the `normalizeLang` test block to cover whitespace-padded Romanian locale tags and whitespace-padded non-Romanian strings.
+- Added a reusable lesson about trimming locale inputs before normalization.
+- Ran `npm test` and `npm run check`; both passed.
+
+**Outcome:** Success
+**Insight:** Locale normalization should trim first, then lowercase and compare against accepted tags.
+**Promoted to Lessons Learned:** Yes

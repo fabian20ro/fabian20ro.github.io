@@ -37,6 +37,8 @@ Obsolete lessons move to the Archive section at bottom (with date and reason). N
 
 ## Localization
 
+**[2026-05-13]** Trim locale inputs before normalization — Locale values can arrive with surrounding whitespace from storage or UI plumbing. Trim before comparing, then lowercase and accept locale tags like `ro-RO` / `ro_RO` so valid regional variants don't fall back to the wrong language.
+
 **[2026-05-12]** Locale tag normalization — When a UI accepts language codes from storage or browser APIs, normalize them defensively (trim, lowercase, and accept locale tags like `ro-RO` / `ro_RO`) so valid regional variants don't fall back to the wrong language.
 
 <!-- Format: **[YYYY-MM-DD]** Brief title — Explanation -->
