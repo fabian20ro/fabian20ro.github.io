@@ -171,6 +171,19 @@
 **Insight:** When a user-facing TTL is documented, a tiny direct regression test is a cheap way to keep the contract honest.
 **Promoted to Lessons Learned:** No
 
+### 2026-05-14 — Render fresh empty activity caches
+
+**Context:** Keep the portfolio's GitHub activity feed from hanging on the loading placeholder when a fresh cache exists but contains no events.
+**What happened:**
+
+- Changed `loadGitHubActivity()` so any parsed cache gets rendered, even when the cached event list is empty.
+- Added a focused Node test that stubs the activity feed and confirms a fresh empty cache replaces the loading text with the visible error state instead of triggering a refetch.
+- Expanded the `npm test` script to include the new test file and ran `npm test` plus `npm run check`.
+
+**Outcome:** Success
+**Insight:** Fresh empty caches still need a visible terminal state; otherwise the UI can look stuck even though the cache path short-circuited correctly.
+**Promoted to Lessons Learned:** Yes
+
 <!-- New entries above this line, most recent first -->
 
 ### 2026-04-06

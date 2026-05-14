@@ -793,7 +793,7 @@ async function fetchGitHubActivity() {
 async function loadGitHubActivity() {
   const cache = readActivityCache();
 
-  if (cache && Array.isArray(cache.events) && cache.events.length > 0) {
+  if (cache) {
     activityEvents = cache.events;
     renderActivity(activityEvents);
   }
@@ -911,6 +911,7 @@ if (typeof module !== 'undefined' && module.exports) {
     getRelativeTime,
     getBadgeActionsUrl,
     isCacheFresh,
+    loadGitHubActivity,
     normalizeLang,
     parseRepoName,
     buildRepoUrl,
