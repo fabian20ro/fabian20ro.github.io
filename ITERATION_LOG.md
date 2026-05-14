@@ -209,6 +209,20 @@
 **Insight:** User-facing cache behavior is worth documenting when it affects what the visitor sees after a network failure.
 **Promoted to Lessons Learned:** Yes
 
+### 2026-05-14 — Reject future-dated cache timestamps
+
+**Context:** Tighten the GitHub activity cache helper so future timestamps do not count as fresh.
+**What happened:**
+
+- Updated `isCacheFresh()` in `app.js` to reject timestamps that are ahead of `Date.now()`.
+- Added a regression test for a future-dated cache timestamp in `tests/getRelativeTime.test.js`.
+- Added a reusable lesson about treating future timestamps as stale.
+- Ran the focused test suite and project checks after the change.
+
+**Outcome:** Success
+**Insight:** Freshness logic should reject both malformed and future timestamps; otherwise clock skew or restored data can make stale cache look valid.
+**Promoted to Lessons Learned:** Yes
+
 <!-- New entries above this line, most recent first -->
 
 ### 2026-04-06
