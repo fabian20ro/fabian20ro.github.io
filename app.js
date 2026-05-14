@@ -772,7 +772,7 @@ function writeActivityCache(events) {
 }
 
 function isCacheFresh(cache) {
-  return Date.now() - cache.timestamp < ACTIVITY_CACHE_TTL_MS;
+  return Number.isFinite(cache?.timestamp) && Date.now() - cache.timestamp < ACTIVITY_CACHE_TTL_MS;
 }
 
 async function fetchGitHubActivity() {

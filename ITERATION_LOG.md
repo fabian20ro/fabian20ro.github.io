@@ -184,6 +184,19 @@
 **Insight:** Fresh empty caches still need a visible terminal state; otherwise the UI can look stuck even though the cache path short-circuited correctly.
 **Promoted to Lessons Learned:** Yes
 
+### 2026-05-14 — Harden activity cache freshness checks
+
+**Context:** Make the GitHub activity cache helper safer when called with malformed timestamp data.
+**What happened:**
+
+- Updated `isCacheFresh()` in `app.js` to reject non-finite timestamps before comparing ages.
+- Added direct tests for `NaN` and `Infinity` timestamps in `tests/getRelativeTime.test.js`.
+- Ran `npm test` and `npm run check`; both passed.
+
+**Outcome:** Success
+**Insight:** Freshness helpers should validate timestamps as numbers before doing arithmetic, otherwise malformed cache data can look valid by accident.
+**Promoted to Lessons Learned:** Yes
+
 <!-- New entries above this line, most recent first -->
 
 ### 2026-04-06
