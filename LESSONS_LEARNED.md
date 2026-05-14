@@ -57,6 +57,7 @@ Obsolete lessons move to the Archive section at bottom (with date and reason). N
 
 **[2026-05-14]** Render visible states for empty fresh caches — If a fresh cache can legitimately contain zero items, render the cache anyway and show an explicit empty/error state. Skipping the render path can leave the UI stuck on a loading placeholder even though the cache was accepted.
 **[2026-05-14]** Reject non-finite freshness timestamps — Cache freshness checks should guard against `NaN` and `Infinity` before doing age math. `Number.isFinite(...)` is the simplest way to keep malformed restored data from being treated as fresh.
+**[2026-05-14]** Preserve cached activity on refresh failure — If a stale cache already rendered successfully, a failed refresh should leave the cached content visible instead of swapping the feed back to an error state.
 
 **[2026-05-07]** Clamp future relative times — Relative-time helpers should treat future-dated timestamps as "just now" (or the locale equivalent) instead of emitting negative minutes/hours. Browser clock skew and delayed event timestamps can otherwise produce confusing output.
 

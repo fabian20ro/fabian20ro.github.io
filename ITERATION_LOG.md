@@ -197,6 +197,18 @@
 **Insight:** Freshness helpers should validate timestamps as numbers before doing arithmetic, otherwise malformed cache data can look valid by accident.
 **Promoted to Lessons Learned:** Yes
 
+### 2026-05-14 — Preserve cached activity on refresh failure
+
+**Context:** Keep the README aligned with the activity-feed cache behavior when refreshes fail.
+**What happened:**
+
+- Updated the README feature summary to mention that the GitHub activity feed keeps the last rendered content visible if a refresh fails.
+- Re-ran `npm test` and `npm run check`; both passed.
+
+**Outcome:** Success
+**Insight:** User-facing cache behavior is worth documenting when it affects what the visitor sees after a network failure.
+**Promoted to Lessons Learned:** Yes
+
 <!-- New entries above this line, most recent first -->
 
 ### 2026-04-06
