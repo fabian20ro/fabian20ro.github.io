@@ -237,6 +237,18 @@
 **Insight:** Browser defaults and stored preferences should share the same normalization path so locale handling stays consistent when the accepted tag set changes.
 **Promoted to Lessons Learned:** Yes
 
+### 2026-05-15 — Document lazy-loaded activity feed
+
+**Context:** Keep the README aligned with the portfolio's current activity-feed behavior.
+**What happened:**
+
+- Updated the feature summary in `README.md` to mention that the GitHub activity feed lazy-loads when it scrolls into view, alongside the existing cache/refresh behavior.
+- Kept the change docs-only; no runtime code or tests needed.
+
+**Outcome:** Success
+**Insight:** User-facing performance affordances are worth documenting when they affect how the page behaves on first render.
+**Promoted to Lessons Learned:** No
+
 <!-- New entries above this line, most recent first -->
 
 ### 2026-04-06

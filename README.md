@@ -8,7 +8,7 @@ Static portfolio page for live demos, repositories, and recent GitHub activity.
 
 - Light/dark theme with persisted preference and system-default fallback.
 - English/Romanian localization with dynamic `<html lang>` updates and normalized locale tags, including whitespace-trimmed values.
-- GitHub activity feed with local cache (10-minute TTL) to reduce API calls and keep the last rendered feed visible if refresh fails.
+- GitHub activity feed lazy-loads when it scrolls into view and uses a local cache (10-minute TTL) to reduce API calls and keep the last rendered feed visible if refresh fails.
 - DOM-based activity rendering (no raw `innerHTML` from API data).
 - Keyboard-accessible controls with visible focus states.
 
