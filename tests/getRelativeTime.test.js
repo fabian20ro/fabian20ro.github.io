@@ -3,6 +3,7 @@ const assert = require('node:assert');
 const {
   buildRepoUrl,
   getBadgeActionsUrl,
+  getDefaultLang,
   isCacheFresh,
   getRelativeTime,
   normalizeLang,
@@ -71,6 +72,39 @@ test('getRelativeTime - Romanian', (t) => {
   testCases.forEach(({ date, expected, name }) => {
     assert.strictEqual(getRelativeTime(date), expected, `Failed: ${name}`);
   });
+});
+
+test('getDefaultLang', () => {
+  const originalNavigatorDescriptor = Object.getOwnPropertyDescriptor(global, 'navigator');
+
+  try {
+    Object.defineProperty(global, 'navigator', {
+      configurable: true,
+      writable: true,
+      value: { language: ' ro-RO ' }
+    });
+    assert.strictEqual(getDefaultLang(), 'ro');
+
+    Object.defineProperty(global, 'navigator', {
+      configurable: true,
+      writable: true,
+      value: { language: 'en-US' }
+    });
+    assert.strictEqual(getDefaultLang(), 'en');
+
+    Object.defineProperty(global, 'navigator', {
+      configurable: true,
+      writable: true,
+      value: {}
+    });
+    assert.strictEqual(getDefaultLang(), 'en');
+  } finally {
+    if (originalNavigatorDescriptor) {
+      Object.defineProperty(global, 'navigator', originalNavigatorDescriptor);
+    } else {
+      delete global.navigator;
+    }
+  }
 });
 
 test('normalizeLang', () => {

@@ -223,6 +223,20 @@
 **Insight:** Freshness logic should reject both malformed and future timestamps; otherwise clock skew or restored data can make stale cache look valid.
 **Promoted to Lessons Learned:** Yes
 
+### 2026-05-15 — Reuse locale normalizer for browser defaults
+
+**Context:** Keep the browser-language fallback aligned with the existing locale normalizer.
+**What happened:**
+
+- Updated `getDefaultLang()` in `app.js` so it reuses `normalizeLang(browserLang)` instead of duplicating the Romanian detection logic.
+- Exported `getDefaultLang()` for direct regression coverage.
+- Added a focused Node test that stubs `navigator.language` and verifies trimmed Romanian tags default to `ro` while English and missing values still fall back to `en`.
+- Ran `npm test` and `npm run check`; both passed.
+
+**Outcome:** Success
+**Insight:** Browser defaults and stored preferences should share the same normalization path so locale handling stays consistent when the accepted tag set changes.
+**Promoted to Lessons Learned:** Yes
+
 <!-- New entries above this line, most recent first -->
 
 ### 2026-04-06

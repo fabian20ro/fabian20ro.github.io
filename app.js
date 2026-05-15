@@ -326,7 +326,7 @@ function normalizeLang(lang) {
 
 function getDefaultLang() {
   const browserLang = navigator.language || (navigator.languages && navigator.languages[0]) || 'en';
-  return browserLang.toLowerCase().startsWith('ro') ? 'ro' : 'en';
+  return normalizeLang(browserLang);
 }
 
 function getPreferredTheme() {
@@ -913,6 +913,7 @@ if (typeof window !== 'undefined') {
 
 if (typeof module !== 'undefined' && module.exports) {
   module.exports = {
+    getDefaultLang,
     getRelativeTime,
     getBadgeActionsUrl,
     isCacheFresh,
