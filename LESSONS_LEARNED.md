@@ -55,6 +55,8 @@ Obsolete lessons move to the Archive section at bottom (with date and reason). N
 
 ## Common Mistakes
 
+**[2026-05-15]** One-time refresh after a long gap — If the page stores a last-seen timestamp, trigger a single refresh when the gap exceeds the reopen threshold so cached UI can catch up without looping.
+
 **[2026-05-13]** Directly test documented TTL boundaries — When the UI or docs promise a fixed freshness window, add a focused boundary test for the exact cutoff instead of relying only on indirect integration coverage.
 
 **[2026-05-14]** Render visible states for empty fresh caches — If a fresh cache can legitimately contain zero items, render the cache anyway and show an explicit empty/error state. Skipping the render path can leave the UI stuck on a loading placeholder even though the cache was accepted.

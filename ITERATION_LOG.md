@@ -249,6 +249,18 @@
 **Insight:** User-facing performance affordances are worth documenting when they affect how the page behaves on first render.
 **Promoted to Lessons Learned:** No
 
+### 2026-05-15 — Document long-gap activity refresh
+
+**Context:** Keep the portfolio README aligned with the reopen-refresh behavior around the GitHub activity feed.
+**What happened:**
+
+- Updated the README feature summary to mention that the activity feed lazy-loads on intersection, refreshes once after a long away period, and still preserves the cached feed on refresh failure.
+- Added a reusable lesson for the one-time reopen refresh guard.
+
+**Outcome:** Success
+**Insight:** User-facing cache behavior includes both TTLs and reopen thresholds; the docs should mention both when they affect what visitors see after returning to the page.
+**Promoted to Lessons Learned:** Yes
+
 <!-- New entries above this line, most recent first -->
 
 ### 2026-04-06
