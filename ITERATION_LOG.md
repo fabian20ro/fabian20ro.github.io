@@ -261,6 +261,18 @@
 **Insight:** User-facing cache behavior includes both TTLs and reopen thresholds; the docs should mention both when they affect what visitors see after returning to the page.
 **Promoted to Lessons Learned:** Yes
 
+### 2026-05-16 — Cover localized UI chrome updates
+
+**Context:** Add regression coverage for the language toggle updating page chrome and persistent card affordances.
+**What happened:**
+
+- Added a Node test that proves `setLang('ro')` updates `document.documentElement.lang`, translated text nodes, card-link `aria-label`/`title`, and the language/theme toggle labels.
+- Ran `npm test` and `npx prettier --check tests/getRelativeTime.test.js`; both passed after formatting the test file.
+
+**Outcome:** Success
+**Insight:** Locale switches should be tested against visible chrome and ARIA labels, not only normalization helpers.
+**Promoted to Lessons Learned:** Yes
+
 <!-- New entries above this line, most recent first -->
 
 ### 2026-04-06
