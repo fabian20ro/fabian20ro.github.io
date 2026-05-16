@@ -3,7 +3,7 @@
 const GITHUB_USERNAME = 'fabian20ro';
 const ACTIVITY_LIMIT = 10;
 const ACTIVITY_CACHE_KEY = 'github-activity-cache-v1';
-const ACTIVITY_CACHE_TTL_MS = 3 * 60 * 1000;
+const ACTIVITY_CACHE_TTL_MS = 10 * 60 * 1000;
 const PAGE_REFRESH_MARKER_KEY = 'page-refresh-marker-v1';
 const PAGE_LAST_SEEN_AT_KEY = 'page-last-seen-at-v1';
 const PAGE_STALE_REOPEN_THRESHOLD_MS = 12 * 60 * 60 * 1000;
@@ -314,12 +314,19 @@ function t(key) {
 }
 
 function normalizeLang(lang) {
-  return lang === 'ro' ? 'ro' : 'en';
+  if (typeof lang !== 'string') {
+    return 'en';
+  }
+
+  const normalized = lang.trim().toLowerCase();
+  return normalized === 'ro' || normalized.startsWith('ro-') || normalized.startsWith('ro_')
+    ? 'ro'
+    : 'en';
 }
 
 function getDefaultLang() {
   const browserLang = navigator.language || (navigator.languages && navigator.languages[0]) || 'en';
-  return browserLang.toLowerCase().startsWith('ro') ? 'ro' : 'en';
+  return normalizeLang(browserLang);
 }
 
 function getPreferredTheme() {
@@ -542,6 +549,10 @@ function getRelativeTime(dateString) {
   }
 
   const diffMs = Date.now() - date.getTime();
+  if (diffMs < 0) {
+    return t('justNow');
+  }
+
   const diffMins = Math.floor(diffMs / 60000);
   const diffHours = Math.floor(diffMs / 3600000);
   const diffDays = Math.floor(diffMs / 86400000);
@@ -761,7 +772,12 @@ function writeActivityCache(events) {
 }
 
 function isCacheFresh(cache) {
-  return Date.now() - cache.timestamp < ACTIVITY_CACHE_TTL_MS;
+  if (!Number.isFinite(cache?.timestamp)) {
+    return false;
+  }
+
+  const ageMs = Date.now() - cache.timestamp;
+  return ageMs >= 0 && ageMs < ACTIVITY_CACHE_TTL_MS;
 }
 
 async function fetchGitHubActivity() {
@@ -782,7 +798,7 @@ async function fetchGitHubActivity() {
 async function loadGitHubActivity() {
   const cache = readActivityCache();
 
-  if (cache && Array.isArray(cache.events) && cache.events.length > 0) {
+  if (cache) {
     activityEvents = cache.events;
     renderActivity(activityEvents);
   }
@@ -897,7 +913,14 @@ if (typeof window !== 'undefined') {
 
 if (typeof module !== 'undefined' && module.exports) {
   module.exports = {
+    getDefaultLang,
     getRelativeTime,
+    getBadgeActionsUrl,
+    isCacheFresh,
+    loadGitHubActivity,
+    normalizeLang,
+    parseRepoName,
+    buildRepoUrl,
     t,
     translations,
     setLang
