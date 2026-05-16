@@ -44,6 +44,7 @@ Obsolete lessons move to the Archive section at bottom (with date and reason). N
 **[2026-05-12]** Locale tag normalization — When a UI accepts language codes from storage or browser APIs, normalize them defensively (trim, lowercase, and accept locale tags like `ro-RO` / `ro_RO`) so valid regional variants don't fall back to the wrong language.
 
 **[2026-05-16]** Test localized chrome, not just normalization — When a locale toggle updates persistent UI chrome, regression tests should cover the page `lang` attribute, translated text, and ARIA labels/titles on always-visible controls.
+**[2026-05-16]** Document locale-toggle chrome updates — When a language switch updates always-visible labels or ARIA affordances, mention those visible chrome updates in the README alongside `<html lang>` so the public docs match the tested surface.
 
 <!-- Format: **[YYYY-MM-DD]** Brief title — Explanation -->
 

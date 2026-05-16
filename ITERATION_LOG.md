@@ -273,6 +273,18 @@
 **Insight:** Locale switches should be tested against visible chrome and ARIA labels, not only normalization helpers.
 **Promoted to Lessons Learned:** Yes
 
+### 2026-05-16 — Sync README with localized chrome behavior
+
+**Context:** Keep the portfolio README aligned with the language toggle's visible chrome updates.
+**What happened:**
+
+- Updated the README feature summary to mention that the locale toggle also refreshes visible labels and ARIA affordances in both languages.
+- No runtime code changed; this was a docs-only sync.
+
+**Outcome:** Success
+**Insight:** Docs should name user-visible chrome updates when a toggle changes more than the `<html lang>` attribute.
+**Promoted to Lessons Learned:** No
+
 <!-- New entries above this line, most recent first -->
 
 ### 2026-04-06
