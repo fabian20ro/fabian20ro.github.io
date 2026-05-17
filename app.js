@@ -409,6 +409,10 @@ function toggleLang() {
 }
 
 function getBadgeActionsUrl(badgeUrl) {
+  if (typeof badgeUrl !== 'string') {
+    return '';
+  }
+
   const match = badgeUrl.match(/^https:\/\/github\.com\/[^/]+\/[^/]+/);
   return match ? match[0] + '/actions' : badgeUrl;
 }

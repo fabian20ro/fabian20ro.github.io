@@ -285,6 +285,19 @@
 **Insight:** Docs should name user-visible chrome updates when a toggle changes more than the `<html lang>` attribute.
 **Promoted to Lessons Learned:** No
 
+### 2026-05-17 — Harden badge URL helper inputs
+
+**Context:** Make the exported badge-actions URL helper safer for malformed project metadata.
+**What happened:**
+
+- Added a string-type guard to `getBadgeActionsUrl()` so nullish or non-string values do not throw.
+- Added regression assertions for `null` and `undefined` inputs.
+- Verified the touched files with unit, lint, and focused formatting checks.
+
+**Outcome:** Success
+**Insight:** Exported helpers that process optional project metadata should fail closed instead of throwing when callers pass absent values.
+**Promoted to Lessons Learned:** No
+
 <!-- New entries above this line, most recent first -->
 
 ### 2026-04-06

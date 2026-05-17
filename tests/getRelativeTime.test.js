@@ -326,6 +326,8 @@ test('getBadgeActionsUrl', () => {
     getBadgeActionsUrl('https://example.com/badge.svg'),
     'https://example.com/badge.svg'
   );
+  assert.strictEqual(getBadgeActionsUrl(null), '');
+  assert.strictEqual(getBadgeActionsUrl(undefined), '');
 });
 
 test('isCacheFresh', () => {
