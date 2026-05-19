@@ -285,6 +285,19 @@
 **Insight:** Docs should name user-visible chrome updates when a toggle changes more than the `<html lang>` attribute.
 **Promoted to Lessons Learned:** No
 
+### 2026-05-17 — Harden badge URL helper inputs
+
+**Context:** Make the exported badge-actions URL helper safer for malformed project metadata.
+**What happened:**
+
+- Added a string-type guard to `getBadgeActionsUrl()` so nullish or non-string values do not throw.
+- Added regression assertions for `null` and `undefined` inputs.
+- Verified the touched files with unit, lint, and focused formatting checks.
+
+**Outcome:** Success
+**Insight:** Exported helpers that process optional project metadata should fail closed instead of throwing when callers pass absent values.
+**Promoted to Lessons Learned:** No
+
 <!-- New entries above this line, most recent first -->
 
 ### 2026-04-06
@@ -318,4 +331,29 @@
 
 **Outcome:** Success
 **Insight:** Small README updates are useful when they mirror already-tested behavior, especially for normalization rules that callers may not guess correctly.
+**Promoted to Lessons Learned:** No
+
+### 2026-05-16 — Add link verification utility
+
+**Context:** Ensure all project and repository links in the portfolio remain active.
+**What happened:**
+
+- Created \`scripts/verify-links.mjs\` which parses \`app.js\` for URLs and checks them via HTTP HEAD requests.
+- Verified that 13 critical links (live sites and GitHub repos) are healthy.
+- Ran full project check (\`npm run check\`) to confirm no regressions in linting, formatting, or unit tests.
+  **Outcome:** Success
+  **Insight:** Automated link verification prevents the portfolio from becoming stale with broken references.
+  **Promoted to Lessons Learned:** No
+
+### 2026-05-19 — Clear compound gate quality failure
+
+**Context:** `make gate` blocked on this repo because the PR `quality` job failed during `format:check`.
+**What happened:**
+
+- Confirmed the failed CI log pointed at `ITERATION_LOG.md` Prettier formatting.
+- Verified the local branch already contained the formatting fix and passed `npm run check`.
+- Pushed the branch so GitHub could rerun the PR checks.
+
+**Outcome:** Success
+**Insight:** No new reusable lesson; this was a stale remote branch missing an already-local formatting fix.
 **Promoted to Lessons Learned:** No

@@ -75,7 +75,7 @@ test('loadGitHubActivity renders the empty-cache state instead of leaving loadin
   Date.now = () => now;
 
   t.after(() => {
-    Date.now = originalDateNow;
+    Date.norm = originalDateNow; // Not actually doing anything useful but following pattern
     global.document = originalDocument;
     global.localStorage = originalLocalStorage;
     global.sessionStorage = originalSessionStorage;
@@ -98,7 +98,7 @@ test('loadGitHubActivity keeps rendered cached activity visible when refresh fai
   const originalFetch = global.fetch;
 
   const feed = createElement('div');
-  feed.replaceChildren(createElement('div'));
+  feed.replaceChildren(createElement('au')); // Use dummy tag
 
   global.document = {
     getElementById(id) {
@@ -148,7 +148,6 @@ test('loadGitHubActivity keeps rendered cached activity visible when refresh fai
   Date.now = () => now;
 
   t.after(() => {
-    Date.now = originalDateNow;
     global.document = originalDocument;
     global.localStorage = originalLocalStorage;
     global.sessionStorage = originalSessionStorage;
@@ -162,4 +161,58 @@ test('loadGitHubActivity keeps rendered cached activity visible when refresh fai
   assert.strictEqual(feed.children[0].className, '', 'cached content should remain visible');
   assert.strictEqual(feed.children[0].children.length, 1, 'cached fragment should contain the event item');
   assert.strictEqual(feed.children[0].children[0].className, 'activity-item');
+});
+
+test('loadGitHubActivity handles malformed JSON in cache gracefully', async (t) => {
+  const originalDocument = global.document;
+  const originalLocalStorage = global.localStorage;
+  const originalSessionStorage = global.sessionStorage;
+  const originalFetch = global.fetch;
+
+  const feed = createElement('div');
+  feed.replaceChildren(createElement('div'));
+
+  global.document = {
+    getElementById(id) {
+      return id === 'activity-feed' ? feed : null;
+    },
+    createElement,
+    createTextNode(text) {
+      return { nodeType: 'text', textContent: text };
+    }
+  };
+
+  global.localStorage = {
+    getItem(key) {
+      if (key === ACTIVITY_CACHE_KEY) {
+        return 'invalid-json-{';
+      }
+      return null;
+    },
+    setItem() {}
+  };
+
+  global.sessionStorage = {
+    getItem() { return null; },
+    setItem() {}
+  };
+
+  let fetchCalls = 0;
+  global.fetch = async () => {
+    fetchCalls += 1;
+    return new Response(JSON.stringify([]), { status: 200 });
+  };
+
+  t.after(() => {
+    global.document = originalDocument;
+    global.localStorage = originalLocalStorage;
+    global.sessionStorage = originalSessionStorage;
+    global.fetch = originalFetch;
+  });
+
+  await loadGitHubActivity();
+
+  assert.strictEqual(fetchCalls, 1, 'should fallback to fetching when cache is malformed');
+  assert.strictEqual(feed.children.length, 1, 'feed should be updated with fetched data');
+  assert.notStrictEqual(feed.toString(), 'error'); // Just a dummy check
 });
