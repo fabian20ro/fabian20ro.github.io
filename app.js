@@ -126,13 +126,14 @@ const projectSections = {
       linkKey: 'viewGithub'
     },
     {
-      href: 'https://fabian20ro.github.io/harness-manager/',
-      icon: '🪢',
-      titleKey: 'harnessManagerTitle',
-      descKey: 'harnessManagerDesc',
+      href: 'https://github.com/fabian20ro/generator-rebus/',
+      icon: '📝',
+      titleKey: 'generatorRebusTitle',
+      descKey: 'generatorRebusDesc',
       linkKey: 'visitSite',
-      badgeUrl: 'https://github.com/fabian20ro/harness-manager/workflows/Deploy%20Pages/badge.svg'
-    }
+      badgeUrl:
+        'https://github.com/fabian20ro/generator-rebus/workflows/Deploy%20Frontend%20to%20GitHub%20Pages/badge.svg'
+    },
   ]
 };
 
