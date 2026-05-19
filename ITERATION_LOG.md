@@ -344,3 +344,16 @@
   **Outcome:** Success
   **Insight:** Automated link verification prevents the portfolio from becoming stale with broken references.
   **Promoted to Lessons Learned:** No
+
+### 2026-05-19 — Clear compound gate quality failure
+
+**Context:** `make gate` blocked on this repo because the PR `quality` job failed during `format:check`.
+**What happened:**
+
+- Confirmed the failed CI log pointed at `ITERATION_LOG.md` Prettier formatting.
+- Verified the local branch already contained the formatting fix and passed `npm run check`.
+- Pushed the branch so GitHub could rerun the PR checks.
+
+**Outcome:** Success
+**Insight:** No new reusable lesson; this was a stale remote branch missing an already-local formatting fix.
+**Promoted to Lessons Learned:** No
