@@ -334,11 +334,13 @@
 **Promoted to Lessons Learned:** No
 
 ### 2026-05-16 — Add link verification utility
+
 **Context:** Ensure all project and repository links in the portfolio remain active.
 **What happened:**
+
 - Created \`scripts/verify-links.mjs\` which parses \`app.js\` for URLs and checks them via HTTP HEAD requests.
 - Verified that 13 critical links (live sites and GitHub repos) are healthy.
 - Ran full project check (\`npm run check\`) to confirm no regressions in linting, formatting, or unit tests.
-**Outcome:** Success
-**Insight:** Automated link verification prevents the portfolio from becoming stale with broken references.
-**Promoted to Lessons Learned:** No
+  **Outcome:** Success
+  **Insight:** Automated link verification prevents the portfolio from becoming stale with broken references.
+  **Promoted to Lessons Learned:** No
