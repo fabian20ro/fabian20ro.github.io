@@ -133,7 +133,7 @@ const projectSections = {
       linkKey: 'visitSite',
       badgeUrl:
         'https://github.com/fabian20ro/generator-rebus/workflows/Deploy%20Frontend%20to%20GitHub%20Pages/badge.svg'
-    },
+    }
   ]
 };
 
@@ -403,6 +403,7 @@ function setLang(lang) {
   if (activityEvents.length > 0) {
     renderActivity(activityEvents);
   }
+  renderProjectCards();
 }
 
 function toggleLang() {
