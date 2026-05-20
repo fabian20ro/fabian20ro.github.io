@@ -342,6 +342,9 @@ test('isCacheFresh', () => {
     assert.strictEqual(isCacheFresh({ timestamp: now + 60 * 1000 }), false);
     assert.strictEqual(isCacheFresh({ timestamp: Number.NaN }), false);
     assert.strictEqual(isCacheFresh({ timestamp: Infinity }), false);
+    assert.strictEqual(isCacheFresh(null), false);
+    assert.strictEqual(isCacheFresh(undefined), false);
+    assert.strictEqual(isCacheFresh({}), false);
   } finally {
     Date.now = originalDateNow;
   }
