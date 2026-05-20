@@ -337,6 +337,7 @@ test('isCacheFresh', () => {
 
   try {
     assert.strictEqual(isCacheFresh({ timestamp: now - 9 * 60 * 1000 }), true);
+    assert.strictEqual(isCacheFresh({ timestamp: now }), true);
     assert.strictEqual(isCacheFresh({ timestamp: now - 10 * 60 * 1000 }), false);
     assert.strictEqual(isCacheFresh({ timestamp: now - 11 * 60 * 1000 }), false);
     assert.strictEqual(isCacheFresh({ timestamp: now + 60 * 1000 }), false);
