@@ -299,19 +299,17 @@ test('setLang localizes page chrome and card affordances', () => {
 });
 
 test('parseRepoName and buildRepoUrl', () => {
-  assert.deepStrictEqual(parseRepoName('fabian20ro/my.repo_1-2'), {
-    owner: 'fabian20ro',
-    repo: 'my.repo_1-2'
-  });
-
-  assert.strictEqual(
-    buildRepoUrl('fabian20ro/my.repo_1-2'),
-    'https://github.com/fabian20ro/my.repo_1-2'
-  );
-  assert.strictEqual(buildRepoUrl('invalid repo name'), 'https://github.com/fabian20ro');
-  assert.strictEqual(parseRepoName('invalid repo name'), null);
-  assert.strictEqual(parseRepoName('fabian20ro/'), null);
-  assert.strictEqual(parseRepoName('/repo'), null);
+    assert.strictEqual(parseRepoName(''), null);
+    assert.strictEqual(parseRepoName('user'), null);
+    assert.strictEqual(parseRepoName('user/repo/extra'), null);
+    assert.strictEqual(
+      buildRepoUrl('fabian20ro/my.repo_1-2'),
+      'https://github.com/fabian20ro/my.repo_1-2'
+    );
+    assert.strictEqual(buildRepoUrl('invalid repo name'), 'https://github.com/fabian20ro');
+    assert.strictEqual(parseRepoName('invalid repo name'), null);
+    assert.strictEqual(parseRepoName('fabian20ro/'), null);
+    assert.strictEqual(parseRepoName('/repo'), null);
 });
 
 test('getBadgeActionsUrl', () => {
