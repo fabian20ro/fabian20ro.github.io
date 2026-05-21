@@ -815,10 +815,11 @@ async function loadGitHubActivity() {
 
   try {
     const events = await fetchGitHubActivity();
-    activityEvents = events;
     writeActivityCache(events);
-    renderActivity(activityEvents);
-  } catch {
+    renderActivity(events);
+    // eslint-disable-next-line require-atomic-updates
+    activityEvents = events;
+  } catch (e) {
     if (activityEvents.length === 0) {
       showActivityError();
     }
