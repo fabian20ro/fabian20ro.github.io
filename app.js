@@ -271,6 +271,8 @@ const translations = {
     daysAgo: 'zile în urmă',
     item: 'element',
     in: 'în',
+    harnessManagerTitle: 'Harness Manager',
+    harnessManagerDesc: 'Vezi rapid ce fișiere procesează editorul și configurațiile tale în proiectele Git.',
     unknownRepo: 'depozit'
   }
 };
