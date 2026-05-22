@@ -8,6 +8,83 @@ const PAGE_REFRESH_MARKER_KEY = 'page-refresh-marker-v1';
 const PAGE_LAST_SEEN_AT_KEY = 'page-last-seen-at-v1';
 const PAGE_STALE_REOPEN_THRESHOLD_MS = 12 * 60 * 60 * 1000;
 
+let thankYouOrder = [];
+let thankYouIndex = 0;
+let thankYouInterval = null;
+
+const THANK_YOU_LANGUAGES = [
+  {
+    name: { en: 'Spanish', ro: 'Spaniolă' },
+    thankYou: 'Gracias',
+    thankYouPhonetic: '/gra-see-as/',
+    welcome: 'De nada',
+    welcomePhonetic: '/deh nah-dah/'
+  },
+  {
+    name: { en: 'French', ro: 'Franceză' },
+    thankYou: 'Merci',
+    thankYouPhonetic: '/mer-see/',
+    welcome: 'De rien',
+    welcomePhonetic: '/duh ree-en/'
+  },
+  {
+    name: { en: 'Japanese', ro: 'Japoneză' },
+    thankYou: 'Arigatou',
+    thankYouPhonetic: '/ah-ree-gah-toh/',
+    welcome: 'Douitashimashite',
+    welcomePhonetic: '/doh-ee-tah-shee-mah-sheh-teh/'
+  },
+  {
+    name: { en: 'German', ro: 'Germană' },
+    thankYou: 'Danke',
+    thankYouPhonetic: '/dahn-kuh/',
+    welcome: 'Bitte',
+    welcomePhonetic: '/bih-tuh/'
+  },
+  {
+    name: { en: 'Italian', ro: 'Italiană' },
+    thankYou: 'Grazie',
+    thankYouPhonetic: '/graht-see-eh/',
+    welcome: 'Prego',
+    welcomePhonetic: '/preh-goh/'
+  },
+  {
+    name: { en: 'Portuguese', ro: 'Portugheză' },
+    thankYou: 'Obrigado',
+    thankYouPhonetic: '/oh-bree-gah-doh/',
+    welcome: 'De nada',
+    welcomePhonetic: '/deh nah-dah/'
+  },
+  {
+    name: { en: 'Russian', ro: 'Rusă' },
+    thankYou: 'Spasibo',
+    thankYouPhonetic: '/spah-see-boh/',
+    welcome: 'Pozhaluysta',
+    welcomePhonetic: '/pah-zhah-loo-stah/'
+  },
+  {
+    name: { en: 'Mandarin', ro: 'Mandarină' },
+    thankYou: 'Xièxiè',
+    thankYouPhonetic: '/shee-eh shee-eh/',
+    welcome: 'Bù kèqì',
+    welcomePhonetic: '/boo kuh-chee/'
+  },
+  {
+    name: { en: 'Arabic', ro: 'Arabă' },
+    thankYou: 'Shukran',
+    thankYouPhonetic: '/shoo-krahn/',
+    welcome: 'Afwan',
+    welcomePhonetic: '/ahf-wahn/'
+  },
+  {
+    name: { en: 'Korean', ro: 'Coreeană' },
+    thankYou: 'Gamsahamnida',
+    thankYouPhonetic: '/gahm-sah-hahm-nee-dah/',
+    welcome: 'Cheonmaneyo',
+    welcomePhonetic: '/chun-mahn-eh-yo/'
+  }
+];
+
 const EVENT_ICONS = {
   PushEvent: '📤',
   CreateEvent: '✨',
@@ -361,6 +438,7 @@ function toggleTheme() {
 
 function setLang(lang) {
   currentLang = normalizeLang(lang);
+  renderThankYouMessage();
 
   if (typeof document === 'undefined') {
     return;
@@ -873,8 +951,57 @@ function setupReopenRefreshGuard() {
   });
 }
 
+function shuffleThankYouOrder() {
+  thankYouOrder = Array.from({ length: THANK_YOU_LANGUAGES.length }, (_, i) => i);
+  for (let i = thankYouOrder.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [thankYouOrder[i], thankYouOrder[j]] = [thankYouOrder[j], thankYouOrder[i]];
+  }
+}
+
+function renderThankYouMessage() {
+  if (typeof document === 'undefined') return;
+  const container = document.getElementById('thank-you-container');
+  if (!container || THANK_YOU_LANGUAGES.length === 0) return;
+
+  if (thankYouOrder.length !== THANK_YOU_LANGUAGES.length) {
+    shuffleThankYouOrder();
+  }
+
+  const langIndex = thankYouOrder[thankYouIndex];
+  const langData = THANK_YOU_LANGUAGES[langIndex];
+
+  // Use currentLang if available (it resolves to 'ro' or 'en' typically), fallback to 'en'
+  const langName = langData.name[currentLang] ? langData.name[currentLang] : langData.name['en'];
+
+  // Format: "English:" "Thank you" "<phonetical thank you>" - "You're welcome" "<phonetical you're welcome>"
+  container.textContent = `${langName}: "${langData.thankYou}" ${langData.thankYouPhonetic} - "${langData.welcome}" ${langData.welcomePhonetic}`;
+}
+
+function startThankYouRotation() {
+  if (THANK_YOU_LANGUAGES.length === 0) return;
+
+  shuffleThankYouOrder();
+  thankYouIndex = 0;
+  renderThankYouMessage();
+
+  if (thankYouInterval) {
+    clearInterval(thankYouInterval);
+  }
+
+  thankYouInterval = setInterval(() => {
+    thankYouIndex++;
+    if (thankYouIndex >= THANK_YOU_LANGUAGES.length) {
+      shuffleThankYouOrder();
+      thankYouIndex = 0;
+    }
+    renderThankYouMessage();
+  }, 15000);
+}
+
 function init() {
   setupReopenRefreshGuard();
+  startThankYouRotation();
   renderProjectCards();
 
   const langToggle = document.getElementById('lang-toggle');
