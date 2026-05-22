@@ -46,3 +46,7 @@ Translations are managed within `app.js`. To add a new language:
 ## Monitoring Plan
 
 See `docs/sentry-rollout-plan.md` for a safe-by-default rollout plan for Sentry statistics.
+
+## Maintenance
+
+This project is maintained via automated composer runs.
