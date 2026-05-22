@@ -198,6 +198,7 @@ test('normalizeLang', () => {
   assert.strictEqual(normalizeLang(' ro-RO '), 'ro');
   assert.strictEqual(normalizeLang('ro_RO'), 'ro');
   assert.strictEqual(normalizeLang(' ro_RO '), 'ro');
+  assert.strictEqual(normalizeLang(''), 'en');
   assert.strictEqual(normalizeLang('en'), 'en');
   assert.strictEqual(normalizeLang('road'), 'en');
   assert.strictEqual(normalizeLang(' road '), 'en');
