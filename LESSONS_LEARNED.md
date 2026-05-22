@@ -80,3 +80,8 @@ Obsolete lessons move to the Archive section at bottom (with date and reason). N
 ## Archive
 
 <!-- Format: **[YYYY-MM-DD] Archived [YYYY-MM-DD]** Title — Reason for archival -->
+
+### Thank You Logic Updates (May 22)
+
+- Fisher-Yates array shuffling is a clean mathematical approach to generating a randomized sequence guarantees non-repeating coverage of all items compared to raw random index pulling.
+- `setInterval` based UI updates should always provide a fallback check `if (typeof document === 'undefined') return;` to prevent breaking SSR or unit tests (like `getRelativeTime.test.js`) that invoke the rotation setup passively via initialization or `setLang` hooks.
