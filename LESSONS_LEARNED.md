@@ -85,3 +85,7 @@ Obsolete lessons move to the Archive section at bottom (with date and reason). N
 
 - Fisher-Yates array shuffling is a clean mathematical approach to generating a randomized sequence guarantees non-repeating coverage of all items compared to raw random index pulling.
 - `setInterval` based UI updates should always provide a fallback check `if (typeof document === 'undefined') return;` to prevent breaking SSR or unit tests (like `getRelativeTime.test.js`) that invoke the rotation setup passively via initialization or `setLang` hooks.
+
+### Thank You Layout Refactor (May 23)
+
+- When converting simple text content to multi-line, styled layouts inside JavaScript, dynamically creating DOM elements (e.g. `document.createElement('div')`) combined with Flexbox CSS classes provides a safer and more robust approach than relying on `<br>` tags or `innerHTML` strings. This ensures better separation of concerns and avoids XSS vulnerabilities when dealing with translated strings.

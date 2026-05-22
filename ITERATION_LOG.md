@@ -365,3 +365,12 @@
 - Display randomly updates every 15 seconds ensuring even distribution using Fisher-Yates array shuffle.
 - Safely handled DOM update routines inside node environment bypassing `document is not defined` errors.
 - Handled text replacement dynamically in `app.js` instead of defining a static HTML block so that the label (e.g. Spanish vs Spaniolă) updates immediately during language toggle.
+
+### May 23 Iteration - Multilingual Thank You Update
+
+- Added 40 new languages to the `THANK_YOU_LANGUAGES` array, bringing the total to 50.
+- Included all major European languages and common global languages (e.g., Mandarin, Hindi, Arabic) to reach 50.
+- Updated `renderThankYouMessage` to create 3 distinct lines using HTML elements instead of a single string.
+- Styled the language name and flags to be bold on the first line.
+- Styled the phonetic pronunciations to be italicized on lines 2 and 3.
+- Refactored `.thank-you-message` CSS to use Flexbox (`display: flex`, `flex-direction: column`, `align-items: center`) to properly structure and align the 3 lines cleanly on both mobile and desktop.
