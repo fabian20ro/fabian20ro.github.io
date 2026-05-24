@@ -274,27 +274,31 @@ const translations = {
     unknownRepo: 'depozit'
   },
   fr: {
-    title: "Les projets de Fabian",
-    intro: "Salut, je suis Fabian. Voici une collection de mes projets open source.",
+    title: 'Les projets de Fabian',
+    intro: 'Salut, je suis Fabian. Voici une collection de mes projets open source.',
     liveProjects: 'Projections en direct',
     repositories: 'Dépôts',
     recentActivity: 'Activité récente',
     emotIdTitle: 'Emot-ID',
     emotIdDesc: "Outil d'identification des émotions.",
     betterStbTitle: 'Autre STB App',
-    betterStbDesc: 'Une alternative plus simple, avec toutes les données sur téléphone et le code source public. Le but n\'est pas de remplacer l\'application officielle, InfoTB.',
+    betterStbDesc:
+      "Une alternative plus simple, avec toutes les données sur téléphone et le code source public. Le but n'est pas de remplacer l'application officielle, InfoTB.",
     imagePromptTitle: 'Image Prompt Expander',
     imagePromptDesc: 'Un outil qui aide à améliorer les prompts pour images générées par IA.',
     propozitiiTitle: 'Phrases absurdes',
     propozitiiDesc: 'Des phrases aléatoires, toujours absurdes, parfois nostalgiques.',
     passwordGenTitle: 'Générateur de mot de passe',
-    passwordGenDesc: 'Génère des mots de passe sûrs via l\'API Web Crypto. Cinq mots de passe en un clic.',
+    passwordGenDesc:
+      "Génère des mots de passe sûrs via l'API Web Crypto. Cinq mots de passe en un clic.",
     articleVoiceTitle: "Lecteur d'articles",
-    articleVoiceDesc: 'Collez une URL, lisez une version propre ou écoutez-la (TTS). Extrait le contenu en markdown et supporte l\'usage hors ligne.',
+    articleVoiceDesc:
+      "Collez une URL, lisez une version propre ou écoutez-la (TTS). Extrait le contenu en markdown et supporte l'usage hors ligne.",
     findBookTitle: 'Trouver le livre',
     findBookDesc: 'Pointez la caméra vers une étagère pour identifier les livres instantanément.',
     horrorScopeTitle: 'Horror-Scope',
-    horrorScopeDesc: "Votre navigateur détermine votre signe astrologique. Les astérisme ne vous ont pas demandé votre avis.",
+    horrorScopeDesc:
+      'Votre navigateur détermine votre signe astrologique. Les astérisme ne vous ont pas demandé votre avis.',
     generatorRebusTitle: 'Générateur de rébus',
     generatorRebusDesc: 'Complétez des énigmes avec les mots du dictionnaire Scrabble.',
     deployStatus: 'Dernier statut : ',
@@ -312,9 +316,9 @@ const translations = {
     viewAllGithub: 'Voir tous les projets sur GitHub →',
     toggleLanguage: 'Changer la langue',
     toggleTheme: 'Changer le thème',
-    activityLoading: 'Chargement de l\'activité...',
-    activityError: 'Impossible de charger l\'activité.',
-    activityViewGithub: 'Voir l\'activité sur GitHub',
+    activityLoading: "Chargement de l'activité...",
+    activityError: "Impossible de charger l'activité.",
+    activityViewGithub: "Voir l'activité sur GitHub",
     pushedTo: 'a poussé dans',
     created: 'a créé',
     starred: 'a mis une étoile sur',
@@ -323,7 +327,7 @@ const translations = {
     openedPR: 'a ouvert une pull request dans',
     commentedOn: 'a commenté',
     activityIn: 'activité dans',
-    justNow: 'à l\'instant',
+    justNow: "à l'instant",
     minuteAgo: 'il y a 1 minute',
     minutesAgo: 'minutes',
     hourAgo: 'il y a 1 heure',
@@ -333,7 +337,7 @@ const translations = {
     item: 'élément',
     in: 'dans',
     unknownRepo: 'dépôt'
-  },
+  }
 };
 
 let currentLang = 'en';
