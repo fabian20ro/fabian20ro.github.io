@@ -8,6 +8,413 @@ const PAGE_REFRESH_MARKER_KEY = 'page-refresh-marker-v1';
 const PAGE_LAST_SEEN_AT_KEY = 'page-last-seen-at-v1';
 const PAGE_STALE_REOPEN_THRESHOLD_MS = 12 * 60 * 60 * 1000;
 
+let thankYouOrder = [];
+let thankYouIndex = 0;
+let thankYouInterval = null;
+
+const THANK_YOU_LANGUAGES = [
+  {
+    name: { en: 'English', ro: 'Engleză' },
+    flag: '🇬🇧',
+    thankYou: 'Thank you',
+    thankYouPhonetic: '/thangk yoo/',
+    welcome: "You're welcome",
+    welcomePhonetic: '/yoor wel-kuhm/'
+  },
+  {
+    name: { en: 'Spanish', ro: 'Spaniolă' },
+    flag: '🇪🇸',
+    thankYou: 'Gracias',
+    thankYouPhonetic: '/gra-see-as/',
+    welcome: 'De nada',
+    welcomePhonetic: '/deh nah-dah/'
+  },
+  {
+    name: { en: 'French', ro: 'Franceză' },
+    flag: '🇫🇷',
+    thankYou: 'Merci',
+    thankYouPhonetic: '/mer-see/',
+    welcome: 'De rien',
+    welcomePhonetic: '/duh ree-en/'
+  },
+  {
+    name: { en: 'German', ro: 'Germană' },
+    flag: '🇩🇪',
+    thankYou: 'Danke',
+    thankYouPhonetic: '/dahn-kuh/',
+    welcome: 'Bitte',
+    welcomePhonetic: '/bih-tuh/'
+  },
+  {
+    name: { en: 'Italian', ro: 'Italiană' },
+    flag: '🇮🇹',
+    thankYou: 'Grazie',
+    thankYouPhonetic: '/graht-see-eh/',
+    welcome: 'Prego',
+    welcomePhonetic: '/preh-goh/'
+  },
+  {
+    name: { en: 'Portuguese', ro: 'Portugheză' },
+    flag: '🇵🇹',
+    thankYou: 'Obrigado',
+    thankYouPhonetic: '/oh-bree-gah-doo/',
+    welcome: 'De nada',
+    welcomePhonetic: '/deh nah-dah/'
+  },
+  {
+    name: { en: 'Dutch', ro: 'Olandeză' },
+    flag: '🇳🇱',
+    thankYou: 'Dank je',
+    thankYouPhonetic: '/dahnk yuh/',
+    welcome: 'Graag gedaan',
+    welcomePhonetic: '/hrahkh huh-dahn/'
+  },
+  {
+    name: { en: 'Romanian', ro: 'Română' },
+    flag: '🇷🇴',
+    thankYou: 'Mulțumesc',
+    thankYouPhonetic: '/mool-tsoo-mesk/',
+    welcome: 'Cu plăcere',
+    welcomePhonetic: '/koo pluh-cheh-reh/'
+  },
+  {
+    name: { en: 'Greek', ro: 'Greacă' },
+    flag: '🇬🇷',
+    thankYou: 'Ευχαριστώ',
+    thankYouPhonetic: '/ef-ha-ri-sto/',
+    welcome: 'Παρακαλώ',
+    welcomePhonetic: '/pa-ra-ka-lo/'
+  },
+  {
+    name: { en: 'Polish', ro: 'Poloneză' },
+    flag: '🇵🇱',
+    thankYou: 'Dziękuję',
+    thankYouPhonetic: '/jen-koo-yeh/',
+    welcome: 'Proszę',
+    welcomePhonetic: '/pro-sheh/'
+  },
+  {
+    name: { en: 'Russian', ro: 'Rusă' },
+    flag: '🇷🇺',
+    thankYou: 'Спасибо',
+    thankYouPhonetic: '/spa-see-ba/',
+    welcome: 'Пожалуйста',
+    welcomePhonetic: '/pa-zhal-sta/'
+  },
+  {
+    name: { en: 'Czech', ro: 'Cehă' },
+    flag: '🇨🇿',
+    thankYou: 'Děkuji',
+    thankYouPhonetic: '/dyeh-koo-yi/',
+    welcome: 'Prosím',
+    welcomePhonetic: '/pro-seem/'
+  },
+  {
+    name: { en: 'Hungarian', ro: 'Maghiară' },
+    flag: '🇭🇺',
+    thankYou: 'Köszönöm',
+    thankYouPhonetic: '/ko-so-nom/',
+    welcome: 'Szívesen',
+    welcomePhonetic: '/see-veh-shen/'
+  },
+  {
+    name: { en: 'Swedish', ro: 'Suedeză' },
+    flag: '🇸🇪',
+    thankYou: 'Tack',
+    thankYouPhonetic: '/tahk/',
+    welcome: 'Varsågod',
+    welcomePhonetic: '/vahr-so-good/'
+  },
+  {
+    name: { en: 'Danish', ro: 'Daneză' },
+    flag: '🇩🇰',
+    thankYou: 'Tak',
+    thankYouPhonetic: '/tahg/',
+    welcome: 'Selv tak',
+    welcomePhonetic: '/sel tahg/'
+  },
+  {
+    name: { en: 'Finnish', ro: 'Finlandeză' },
+    flag: '🇫🇮',
+    thankYou: 'Kiitos',
+    thankYouPhonetic: '/kee-tos/',
+    welcome: 'Ole hyvä',
+    welcomePhonetic: '/oh-leh hoo-va/'
+  },
+  {
+    name: { en: 'Norwegian', ro: 'Norvegiană' },
+    flag: '🇳🇴',
+    thankYou: 'Takk',
+    thankYouPhonetic: '/tahk/',
+    welcome: 'Bare hyggelig',
+    welcomePhonetic: '/bah-ruh hig-guh-lee/'
+  },
+  {
+    name: { en: 'Slovak', ro: 'Slovacă' },
+    flag: '🇸🇰',
+    thankYou: 'Ďakujem',
+    thankYouPhonetic: '/dya-koo-yem/',
+    welcome: 'Prosím',
+    welcomePhonetic: '/pro-seem/'
+  },
+  {
+    name: { en: 'Bulgarian', ro: 'Bulgară' },
+    flag: '🇧🇬',
+    thankYou: 'Благодаря',
+    thankYouPhonetic: '/bla-go-da-rya/',
+    welcome: 'Моля',
+    welcomePhonetic: '/mo-lya/'
+  },
+  {
+    name: { en: 'Croatian', ro: 'Croată' },
+    flag: '🇭🇷',
+    thankYou: 'Hvala',
+    thankYouPhonetic: '/hva-la/',
+    welcome: 'Molim',
+    welcomePhonetic: '/mo-leem/'
+  },
+  {
+    name: { en: 'Serbian', ro: 'Sârbă' },
+    flag: '🇷🇸',
+    thankYou: 'Хвала',
+    thankYouPhonetic: '/hva-la/',
+    welcome: 'Молим',
+    welcomePhonetic: '/mo-leem/'
+  },
+  {
+    name: { en: 'Slovenian', ro: 'Slovenă' },
+    flag: '🇸🇮',
+    thankYou: 'Hvala',
+    thankYouPhonetic: '/hva-la/',
+    welcome: 'Prosim',
+    welcomePhonetic: '/pro-seem/'
+  },
+  {
+    name: { en: 'Ukrainian', ro: 'Ucraineană' },
+    flag: '🇺🇦',
+    thankYou: 'Дякую',
+    thankYouPhonetic: '/dya-koo-yu/',
+    welcome: 'Будь ласка',
+    welcomePhonetic: '/bood las-ka/'
+  },
+  {
+    name: { en: 'Belarusian', ro: 'Bielorusă' },
+    flag: '🇧🇾',
+    thankYou: 'Дзякуй',
+    thankYouPhonetic: '/dzya-kooy/',
+    welcome: 'Калі ласка',
+    welcomePhonetic: '/ka-lee las-ka/'
+  },
+  {
+    name: { en: 'Lithuanian', ro: 'Lituaniană' },
+    flag: '🇱🇹',
+    thankYou: 'Ačiū',
+    thankYouPhonetic: '/ah-choo/',
+    welcome: 'Prašom',
+    welcomePhonetic: '/pra-shom/'
+  },
+  {
+    name: { en: 'Latvian', ro: 'Letonă' },
+    flag: '🇱🇻',
+    thankYou: 'Paldies',
+    thankYouPhonetic: '/pal-dyes/',
+    welcome: 'Lūdzu',
+    welcomePhonetic: '/loo-dzoo/'
+  },
+  {
+    name: { en: 'Estonian', ro: 'Estonă' },
+    flag: '🇪🇪',
+    thankYou: 'Aitäh',
+    thankYouPhonetic: '/eye-tah/',
+    welcome: 'Palun',
+    welcomePhonetic: '/pa-loon/'
+  },
+  {
+    name: { en: 'Icelandic', ro: 'Islandeză' },
+    flag: '🇮🇸',
+    thankYou: 'Takk',
+    thankYouPhonetic: '/tahk/',
+    welcome: 'Ekkert að þakka',
+    welcomePhonetic: '/eh-kert ath thah-ka/'
+  },
+  {
+    name: { en: 'Irish', ro: 'Irlandeză' },
+    flag: '🇮🇪',
+    thankYou: 'Go raibh maith agat',
+    thankYouPhonetic: '/guh rev mah a-gut/',
+    welcome: 'Fáilte',
+    welcomePhonetic: '/fawl-cha/'
+  },
+  {
+    name: { en: 'Maltese', ro: 'Malteză' },
+    flag: '🇲🇹',
+    thankYou: 'Grazzi',
+    thankYouPhonetic: '/grats-ee/',
+    welcome: 'Mhux problem',
+    welcomePhonetic: '/mush prob-lem/'
+  },
+  {
+    name: { en: 'Albanian', ro: 'Albaneză' },
+    flag: '🇦🇱',
+    thankYou: 'Faleminderit',
+    thankYouPhonetic: '/fa-le-min-de-rit/',
+    welcome: 'Të lutem',
+    welcomePhonetic: '/tuh loo-tem/'
+  },
+  {
+    name: { en: 'Macedonian', ro: 'Macedoneană' },
+    flag: '🇲🇰',
+    thankYou: 'Благодарам',
+    thankYouPhonetic: '/bla-go-da-ram/',
+    welcome: 'Молам',
+    welcomePhonetic: '/mo-lam/'
+  },
+  {
+    name: { en: 'Bosnian', ro: 'Bosniacă' },
+    flag: '🇧🇦',
+    thankYou: 'Hvala',
+    thankYouPhonetic: '/hva-la/',
+    welcome: 'Nema na čemu',
+    welcomePhonetic: '/ne-ma na che-moo/'
+  },
+  {
+    name: { en: 'Catalan', ro: 'Catalană' },
+    flag: '🇦🇩',
+    thankYou: 'Gràcies',
+    thankYouPhonetic: '/gra-see-uhs/',
+    welcome: 'De res',
+    welcomePhonetic: '/duh res/'
+  },
+  {
+    name: { en: 'Basque', ro: 'Bască' },
+    flag: '🇪🇸',
+    thankYou: 'Eskerrik asko',
+    thankYouPhonetic: '/es-ker-rik as-ko/',
+    welcome: 'Ez horregatik',
+    welcomePhonetic: '/ez or-re-ga-tik/'
+  },
+  {
+    name: { en: 'Galician', ro: 'Galiciană' },
+    flag: '🇪🇸',
+    thankYou: 'Grazas',
+    thankYouPhonetic: '/gra-thas/',
+    welcome: 'De nada',
+    welcomePhonetic: '/deh na-da/'
+  },
+  {
+    name: { en: 'Welsh', ro: 'Galeză' },
+    flag: '🏴󠁧󠁢󠁷󠁬󠁳󠁿',
+    thankYou: 'Diolch',
+    thankYouPhonetic: '/dee-olch/',
+    welcome: 'Croeso',
+    welcomePhonetic: '/kroy-so/'
+  },
+  {
+    name: { en: 'Mandarin', ro: 'Mandarină' },
+    flag: '🇨🇳',
+    thankYou: '谢谢 (Xièxiè)',
+    thankYouPhonetic: '/shyeh-shyeh/',
+    welcome: '不客气 (Bù kèqì)',
+    welcomePhonetic: '/boo kuh-chee/'
+  },
+  {
+    name: { en: 'Hindi', ro: 'Hindi' },
+    flag: '🇮🇳',
+    thankYou: 'धन्यवाद (Dhanyavaad)',
+    thankYouPhonetic: '/dhun-yuh-vahd/',
+    welcome: 'स्वागत है (Swagat hai)',
+    welcomePhonetic: '/swah-gut hay/'
+  },
+  {
+    name: { en: 'Arabic', ro: 'Arabă' },
+    flag: '🇸🇦',
+    thankYou: 'شكراً (Shukran)',
+    thankYouPhonetic: '/shook-ran/',
+    welcome: 'عفواً (Afwan)',
+    welcomePhonetic: '/af-wan/'
+  },
+  {
+    name: { en: 'Bengali', ro: 'Bengaleză' },
+    flag: '🇧🇩',
+    thankYou: 'ধন্যবাদ (Dhonnobad)',
+    thankYouPhonetic: '/dhon-no-bad/',
+    welcome: 'স্বাগতম (Shagotom)',
+    welcomePhonetic: '/sha-go-tom/'
+  },
+  {
+    name: { en: 'Brazilian Portuguese', ro: 'Portugheză Braziliană' },
+    flag: '🇧🇷',
+    thankYou: 'Obrigado',
+    thankYouPhonetic: '/oh-bree-gah-doo/',
+    welcome: 'De nada',
+    welcomePhonetic: '/deh nah-dah/'
+  },
+  {
+    name: { en: 'Urdu', ro: 'Urdu' },
+    flag: '🇵🇰',
+    thankYou: 'شکریہ (Shukriya)',
+    thankYouPhonetic: '/shook-ree-ya/',
+    welcome: 'خوش آمدید (Khush amdeed)',
+    welcomePhonetic: '/khoosh am-deed/'
+  },
+  {
+    name: { en: 'Indonesian', ro: 'Indoneziană' },
+    flag: '🇮🇩',
+    thankYou: 'Terima kasih',
+    thankYouPhonetic: '/tuh-ree-mah kah-see/',
+    welcome: 'Sama-sama',
+    welcomePhonetic: '/sah-mah sah-mah/'
+  },
+  {
+    name: { en: 'Japanese', ro: 'Japoneză' },
+    flag: '🇯🇵',
+    thankYou: 'ありがとう (Arigatou)',
+    thankYouPhonetic: '/ah-ree-gah-toh/',
+    welcome: 'どういたしまして (Douitashimashite)',
+    welcomePhonetic: '/doh-ee-tah-shee-mah-sheh-teh/'
+  },
+  {
+    name: { en: 'Swahili', ro: 'Swahili' },
+    flag: '🇰🇪',
+    thankYou: 'Asante',
+    thankYouPhonetic: '/ah-sahn-teh/',
+    welcome: 'Karibu',
+    welcomePhonetic: '/kah-ree-boo/'
+  },
+  {
+    name: { en: 'Turkish', ro: 'Turcă' },
+    flag: '🇹🇷',
+    thankYou: 'Teşekkür ederim',
+    thankYouPhonetic: '/teh-sheh-koor eh-deh-reem/',
+    welcome: 'Rica ederim',
+    welcomePhonetic: '/ree-jah eh-deh-reem/'
+  },
+  {
+    name: { en: 'Korean', ro: 'Coreeană' },
+    flag: '🇰🇷',
+    thankYou: '감사합니다 (Gamsahamnida)',
+    thankYouPhonetic: '/gahm-sah-hahm-nee-dah/',
+    welcome: '천만에요 (Cheonmaneyo)',
+    welcomePhonetic: '/chun-mahn-eh-yo/'
+  },
+  {
+    name: { en: 'Vietnamese', ro: 'Vietnameză' },
+    flag: '🇻🇳',
+    thankYou: 'Cảm ơn',
+    thankYouPhonetic: '/kahm uhn/',
+    welcome: 'Không có chi',
+    welcomePhonetic: '/khong koh chee/'
+  },
+  {
+    name: { en: 'Thai', ro: 'Thailandeză' },
+    flag: '🇹🇭',
+    thankYou: 'ขอบคุณ (Khop khun)',
+    thankYouPhonetic: '/kop koon/',
+    welcome: 'ยินดี (Yin dee)',
+    welcomePhonetic: '/yin dee/'
+  }
+];
+
 const EVENT_ICONS = {
   PushEvent: '📤',
   CreateEvent: '✨',
@@ -427,6 +834,7 @@ function toggleTheme() {
 
 function setLang(lang) {
   currentLang = normalizeLang(lang);
+  renderThankYouMessage();
 
   if (typeof document === 'undefined') {
     return;
@@ -940,8 +1348,81 @@ function setupReopenRefreshGuard() {
   });
 }
 
+function shuffleThankYouOrder() {
+  thankYouOrder = Array.from({ length: THANK_YOU_LANGUAGES.length }, (_, i) => i);
+  for (let i = thankYouOrder.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [thankYouOrder[i], thankYouOrder[j]] = [thankYouOrder[j], thankYouOrder[i]];
+  }
+}
+
+function renderThankYouMessage() {
+  if (typeof document === 'undefined') return;
+  const container = document.getElementById('thank-you-container');
+  if (!container || THANK_YOU_LANGUAGES.length === 0) return;
+
+  if (thankYouOrder.length !== THANK_YOU_LANGUAGES.length) {
+    shuffleThankYouOrder();
+  }
+
+  const langIndex = thankYouOrder[thankYouIndex];
+  const langData = THANK_YOU_LANGUAGES[langIndex];
+
+  // Use currentLang if available (it resolves to 'ro' or 'en' typically), fallback to 'en'
+  const langName = langData.name[currentLang] ? langData.name[currentLang] : langData.name['en'];
+
+  // Clear previous content
+  container.innerHTML = '';
+
+  // Line 1: Flag Language Flag
+  const nameLine = document.createElement('div');
+  const nameStrong = document.createElement('strong');
+  nameStrong.textContent = `${langData.flag} ${langName} ${langData.flag}`;
+  nameLine.appendChild(nameStrong);
+
+  // Line 2: Thank you /phonetic/
+  const thankYouLine = document.createElement('div');
+  thankYouLine.appendChild(document.createTextNode(`"${langData.thankYou}" `));
+  const tyItalic = document.createElement('i');
+  tyItalic.textContent = langData.thankYouPhonetic;
+  thankYouLine.appendChild(tyItalic);
+
+  // Line 3: You're welcome /phonetic/
+  const welcomeLine = document.createElement('div');
+  welcomeLine.appendChild(document.createTextNode(`"${langData.welcome}" `));
+  const wItalic = document.createElement('i');
+  wItalic.textContent = langData.welcomePhonetic;
+  welcomeLine.appendChild(wItalic);
+
+  container.appendChild(nameLine);
+  container.appendChild(thankYouLine);
+  container.appendChild(welcomeLine);
+}
+
+function startThankYouRotation() {
+  if (THANK_YOU_LANGUAGES.length === 0) return;
+
+  shuffleThankYouOrder();
+  thankYouIndex = 0;
+  renderThankYouMessage();
+
+  if (thankYouInterval) {
+    clearInterval(thankYouInterval);
+  }
+
+  thankYouInterval = setInterval(() => {
+    thankYouIndex++;
+    if (thankYouIndex >= THANK_YOU_LANGUAGES.length) {
+      shuffleThankYouOrder();
+      thankYouIndex = 0;
+    }
+    renderThankYouMessage();
+  }, 15000);
+}
+
 function init() {
   setupReopenRefreshGuard();
+  startThankYouRotation();
   renderProjectCards();
 
   const langToggle = document.getElementById('lang-toggle');
