@@ -376,3 +376,17 @@
 - Refactored `.thank-you-message` CSS to use Flexbox (`display: flex`, `flex-direction: column`, `align-items: center`) to properly structure and align the 3 lines cleanly on both mobile and desktop.
 
 - 2026-05-25: Renamed header language button id in index.html from `lang-template` to `lang-toggle` so it matches `app.js` selectors in `init()` and `setLang()`. Verified no remaining `lang-template` references via ripgrep.
+
+### 2026-05-25 — Language toggle shows target arrow+flag affordance
+
+**Context:** Update the EN/RO language switcher so it clearly shows the target language as arrow + flag, per UX request.
+**What happened:**
+
+- Updated `setLang()` to render the language toggle as `➡️ 🇷🇴` when current language is English, and `➡️ 🇬🇧` when current language is Romanian.
+- Added explicit localized action labels for accessibility: `switchToRomanian` / `switchToEnglish` in both EN and RO translations, and wired them to the toggle `aria-label` and `title`.
+- Updated the localization regression test to validate the new toggle text and ARIA/title behavior.
+- Ran `npm test` and `npm run check` successfully.
+
+**Outcome:** Success
+**Insight:** For language switchers, showing the destination language (not current state) reduces ambiguity and makes the control feel responsive.
+**Promoted to Lessons Learned:** No

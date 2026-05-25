@@ -589,6 +589,8 @@ const translations = {
     viewGithub: 'View on GitHub →',
     viewAllGithub: 'View all projects on GitHub →',
     toggleLanguage: 'Toggle language',
+    switchToRomanian: 'Switch to Romanian',
+    switchToEnglish: 'Switch to English',
     toggleTheme: 'Toggle theme',
     activityLoading: 'Loading activity...',
     activityError: 'Could not load activity.',
@@ -656,6 +658,8 @@ const translations = {
     viewGithub: 'Vezi pe GitHub →',
     viewAllGithub: 'Vezi toate proiectele pe GitHub →',
     toggleLanguage: 'Schimbă limba',
+    switchToRomanian: 'Schimbă în română',
+    switchToEnglish: 'Schimbă în engleză',
     toggleTheme: 'Schimbă tema',
     activityLoading: 'Se încarcă activitatea...',
     activityError: 'Nu s-a putut încărca activitatea.',
@@ -797,8 +801,13 @@ function setLang(lang) {
   const themeToggle = document.getElementById('theme-toggle');
 
   if (langToggle) {
-    langToggle.textContent = currentLang.toUpperCase();
-    langToggle.setAttribute('aria-label', t('toggleLanguage'));
+    const targetLang = currentLang === 'en' ? 'ro' : 'en';
+    const targetFlag = targetLang === 'ro' ? '🇷🇴' : '🇬🇧';
+    const targetLabelKey = targetLang === 'ro' ? 'switchToRomanian' : 'switchToEnglish';
+
+    langToggle.textContent = `➡️ ${targetFlag}`;
+    langToggle.setAttribute('aria-label', t(targetLabelKey));
+    langToggle.setAttribute('title', t(targetLabelKey));
   }
 
   if (themeToggle) {
