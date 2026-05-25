@@ -288,8 +288,9 @@ test('setLang localizes page chrome and card affordances', () => {
     assert.strictEqual(statusNode.textContent, 'Ultimul status: ');
     assert.strictEqual(cardLinkNode.attributes['aria-label'], 'Vizitează →');
     assert.strictEqual(cardLinkNode.attributes.title, 'Vizitează →');
-    assert.strictEqual(langToggle.textContent, 'RO');
-    assert.strictEqual(langToggle.attributes['aria-label'], 'Schimbă limba');
+    assert.strictEqual(langToggle.textContent, '➡️ 🇬🇧');
+    assert.strictEqual(langToggle.attributes['aria-label'], 'Schimbă în engleză');
+    assert.strictEqual(langToggle.attributes.title, 'Schimbă în engleză');
     assert.strictEqual(themeToggle.attributes['aria-label'], 'Schimbă tema');
   } finally {
     global.document = originalDocument;
