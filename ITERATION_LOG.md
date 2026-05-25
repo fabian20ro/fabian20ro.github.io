@@ -374,3 +374,5 @@
 - Styled the language name and flags to be bold on the first line.
 - Styled the phonetic pronunciations to be italicized on lines 2 and 3.
 - Refactored `.thank-you-message` CSS to use Flexbox (`display: flex`, `flex-direction: column`, `align-items: center`) to properly structure and align the 3 lines cleanly on both mobile and desktop.
+
+- 2026-05-25: Renamed header language button id in index.html from `lang-template` to `lang-toggle` so it matches `app.js` selectors in `init()` and `setLang()`. Verified no remaining `lang-template` references via ripgrep.
