@@ -19,3 +19,6 @@ node_modules/
 .idea/
 *.iml
 .vscode/
+
+# Compound Autopilot infrastructure metadata
+.compound-autopilot/

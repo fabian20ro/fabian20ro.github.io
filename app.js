@@ -533,12 +533,13 @@ const projectSections = {
       linkKey: 'viewGithub'
     },
     {
-      href: 'https://fabian20ro.github.io/harness-manager/',
-      icon: '🪢',
-      titleKey: 'harnessManagerTitle',
-      descKey: 'harnessManagerDesc',
+      href: 'https://github.com/fabian20ro/generator-rebus/',
+      icon: '📝',
+      titleKey: 'generatorRebusTitle',
+      descKey: 'generatorRebusDesc',
       linkKey: 'visitSite',
-      badgeUrl: 'https://github.com/fabian20ro/harness-manager/workflows/Deploy%20Pages/badge.svg'
+      badgeUrl:
+        'https://github.com/fabian20ro/generator-rebus/workflows/Deploy%20Frontend%20to%20GitHub%20Pages/badge.svg'
     }
   ]
 };
@@ -682,6 +683,71 @@ const translations = {
     item: 'element',
     in: 'în',
     unknownRepo: 'depozit'
+  },
+  fr: {
+    title: 'Les projets de Fabian',
+    intro: 'Salut, je suis Fabian. Voici une collection de mes projets open source.',
+    liveProjects: 'Projections en direct',
+    repositories: 'Dépôts',
+    recentActivity: 'Activité récente',
+    emotIdTitle: 'Emot-ID',
+    emotIdDesc: "Outil d'identification des émotions.",
+    betterStbTitle: 'Autre STB App',
+    betterStbDesc:
+      "Une alternative plus simple, avec toutes les données sur téléphone et le code source public. Le but n'est pas de remplacer l'application officielle, InfoTB.",
+    imagePromptTitle: 'Image Prompt Expander',
+    imagePromptDesc: 'Un outil qui aide à améliorer les prompts pour images générées par IA.',
+    propozitiiTitle: 'Phrases absurdes',
+    propozitiiDesc: 'Des phrases aléatoires, toujours absurdes, parfois nostalgiques.',
+    passwordGenTitle: 'Générateur de mot de passe',
+    passwordGenDesc:
+      "Génère des mots de passe sûrs via l'API Web Crypto. Cinq mots de passe en un clic.",
+    articleVoiceTitle: "Lecteur d'articles",
+    articleVoiceDesc:
+      "Collez une URL, lisez une version propre ou écoutez-la (TTS). Extrait le contenu en markdown et supporte l'usage hors ligne.",
+    findBookTitle: 'Trouver le livre',
+    findBookDesc: 'Pointez la caméra vers une étagère pour identifier les livres instantanément.',
+    horrorScopeTitle: 'Horror-Scope',
+    horrorScopeDesc:
+      'Votre navigateur détermine votre signe astrologique. Les astérisme ne vous ont pas demandé votre avis.',
+    generatorRebusTitle: 'Générateur de rébus',
+    generatorRebusDesc: 'Complétez des énigmes avec les mots du dictionnaire Scrabble.',
+    deployStatus: 'Dernier statut : ',
+    liveSite: 'Site en direct',
+    wordRarityTitle: 'Classificateur de rareté des mots',
+    wordRarityDesc: 'Un classificateur qui évalue et catégorise la rareté des mots.',
+    sudokuTitle: 'Sudoku Python',
+    sudokuDesc: 'Un solveur et générateur de Sudoku en Python.',
+    bookingTitle: 'Filtre de réservation',
+    bookingDesc: 'Une extension pour filtrante les résultats de booking.com (lieux pet-friendly).',
+    harnessManagerTitle: 'Harness Manager',
+    harnessManagerDesc: 'Visualisez quels fichiers votre éditeur traite dans vos projets Git.',
+    visitSite: 'Visiter le site →',
+    viewGithub: 'Voir sur GitHub →',
+    viewAllGithub: 'Voir tous les projets sur GitHub →',
+    toggleLanguage: 'Changer la langue',
+    toggleTheme: 'Changer le thème',
+    activityLoading: "Chargement de l'activité...",
+    activityError: "Impossible de charger l'activité.",
+    activityViewGithub: "Voir l'activité sur GitHub",
+    pushedTo: 'a poussé dans',
+    created: 'a créé',
+    starred: 'a mis une étoile sur',
+    forked: 'a forké',
+    openedIssue: 'a ouvert un issue dans',
+    openedPR: 'a ouvert une pull request dans',
+    commentedOn: 'a commenté',
+    activityIn: 'activité dans',
+    justNow: "à l'instant",
+    minuteAgo: 'il y a 1 minute',
+    minutesAgo: 'minutes',
+    hourAgo: 'il y a 1 heure',
+    hoursAgo: 'heures',
+    dayAgo: 'il y a 1 jour',
+    daysAgo: 'jours',
+    item: 'élément',
+    in: 'dans',
+    unknownRepo: 'dépôt'
   }
 };
 
@@ -819,6 +885,7 @@ function setLang(lang) {
   if (activityEvents.length > 0) {
     renderActivity(activityEvents);
   }
+  renderProjectCards();
 }
 
 function toggleLang() {

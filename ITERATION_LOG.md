@@ -358,6 +358,19 @@
 **Insight:** No new reusable lesson; this was a stale remote branch missing an already-local formatting fix.
 **Promoted to Lessons Learned:** No
 
+### 2026-05-24 — Restore compound branch quality checks
+
+**Context:** Replacement PR #42 failed its `quality` job after reopening the compound branch against current `main`.
+**What happened:**
+
+- Confirmed the failing CI log pointed to Prettier formatting in `app.js`.
+- Ran `npx prettier --write app.js`.
+- Verified locally with `npm run check`.
+
+**Outcome:** Success
+**Insight:** No new reusable lesson; branch drift left the code valid but not formatted for current CI.
+**Promoted to Lessons Learned:** No
+
 ### May 22 Iteration
 
 - Implemented Thank You multilingual phrase rotation feature
