@@ -8,7 +8,8 @@ const {
   getRelativeTime,
   normalizeLang,
   parseRepoName,
-  setLang
+  setLang,
+  t
 } = require('../app.js');
 
 test('getRelativeTime - English', (t) => {
@@ -351,4 +352,27 @@ test('isCacheFresh', () => {
   } finally {
     Date.now = originalDateNow;
   }
+});
+
+test('t() translation lookup', () => {
+  // English: known key returns translation
+  setLang('en');
+  assert.strictEqual(t('title'), "Fabian's Projects");
+  assert.strictEqual(t('liveProjects'), 'Live Projects');
+
+  // Romanian: known key returns translation
+  setLang('ro');
+  assert.strictEqual(t('title'), 'Proiectele lui Fabian');
+  assert.strictEqual(t('liveProjects'), 'Proiecte Live');
+
+  // Unknown key falls back to the key itself
+  setLang('en');
+  assert.strictEqual(t('nonexistent_key_xyz'), 'nonexistent_key_xyz');
+
+  // Key missing in current lang falls back to English
+  setLang('ro');
+  assert.strictEqual(t('nonexistent_key_xyz'), 'nonexistent_key_xyz');
+
+  // Reset to English for other tests
+  setLang('en');
 });
