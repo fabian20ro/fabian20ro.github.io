@@ -400,5 +400,9 @@ test('getRelativeTime - Romanian new cases', (t) => {
   assert.strictEqual(getRelativeTime(new Date(now - 31 * 24 * 60 * 60 * 1000).toISOString()), 'acum 1 lună');
   assert.strictEqual(getRelativeTime(new Date(now - 62 * 24 * 60 * 60 * 1000).toISOString()), '2 luni în urmă');
   assert.strictEqual(getRelativeTime(new Date(now - 400 * 24 * 60 * 60 * 1000).toISOString()), 'acum 1 an');
-  assert.strictEqual(getRelativeTime(new Date(now - 800 * 24 * 60 * 60 * 1000).toISOString()), '2 ani în urmă');
+  setLang('fr');
+  assert.strictEqual(getRelativeTime(new Date(now - 31 * 24 * 60 * 60 * 1000).toISOString()), 'il y a 1 mois');
+  assert.strictEqual(getRelativeTime(new Date(now - 62 * 24 * 60 * 60 * 1000).toISOString()), '2 mois');
+  assert.strictEqual(getRelativeTime(new Date(now - 400 * 24 * 60 * 60 * 1000).toISOString()), 'il y a 1 an');
+  assert.strictEqual(getRelativeTime(new Date(now - 800 * 24 * 60 * 60 * 1000).toISOString()), '2 ans');
 });

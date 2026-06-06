@@ -755,7 +755,11 @@ const translations = {
     daysAgo: 'jours',
     item: 'élément',
     in: 'dans',
-    unknownRepo: 'dépôt'
+    unknownRepo: 'dépôt',
+    monthAgo: 'il y a 1 mois',
+    monthsAgo: 'mois',
+    yearAgo: 'il y a 1 an',
+    yearsAgo: 'ans'
   }
 };
 
@@ -804,9 +808,13 @@ function normalizeLang(lang) {
   }
 
   const normalized = lang.trim().toLowerCase();
-  return normalized === 'ro' || normalized.startsWith('ro-') || normalized.startsWith('ro_')
-    ? 'ro'
-    : 'en';
+  if (normalized === 'ro' || normalized.startsWith('ro-') || normalized.startsWith('ro_')) {
+    return 'ro';
+  }
+  if (normalized === 'fr' || normalized.startsWith('fr-') || normalized.startsWith('fr_')) {
+    return 'fr';
+  }
+  return 'en';
 }
 
 function getDefaultLang() {
