@@ -75,7 +75,7 @@ test('loadGitHubActivity renders the empty-cache state instead of leaving loadin
   Date.now = () => now;
 
   t.after(() => {
-    Date.norm = originalDateNow; // Not actually doing anything useful but following pattern
+    Date.now = originalDateNow;
     global.document = originalDocument;
     global.localStorage = originalLocalStorage;
     global.sessionStorage = originalSessionStorage;

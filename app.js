@@ -611,6 +611,10 @@ const translations = {
     hoursAgo: 'hours ago',
     dayAgo: '1 day ago',
     daysAgo: 'days ago',
+    monthAgo: '1 month ago',
+    monthsAgo: 'months ago',
+    yearAgo: '1 year ago',
+    yearsAgo: 'years ago',
     item: 'item',
     in: 'in',
     unknownRepo: 'repository'
@@ -680,6 +684,10 @@ const translations = {
     hoursAgo: 'ore în urmă',
     dayAgo: 'acum 1 zi',
     daysAgo: 'zile în urmă',
+    monthAgo: 'acum 1 lună',
+    monthsAgo: 'luni în urmă',
+    yearAgo: 'acum 1 an',
+    yearsAgo: 'ani în urmă',
     item: 'element',
     in: 'în',
     unknownRepo: 'depozit'
@@ -747,7 +755,11 @@ const translations = {
     daysAgo: 'jours',
     item: 'élément',
     in: 'dans',
-    unknownRepo: 'dépôt'
+    unknownRepo: 'dépôt',
+    monthAgo: 'il y a 1 mois',
+    monthsAgo: 'mois',
+    yearAgo: 'il y a 1 an',
+    yearsAgo: 'ans'
   }
 };
 
@@ -796,9 +808,13 @@ function normalizeLang(lang) {
   }
 
   const normalized = lang.trim().toLowerCase();
-  return normalized === 'ro' || normalized.startsWith('ro-') || normalized.startsWith('ro_')
-    ? 'ro'
-    : 'en';
+  if (normalized === 'ro' || normalized.startsWith('ro-') || normalized.startsWith('ro_')) {
+    return 'ro';
+  }
+  if (normalized === 'fr' || normalized.startsWith('fr-') || normalized.startsWith('fr_')) {
+    return 'fr';
+  }
+  return 'en';
 }
 
 function getDefaultLang() {
@@ -822,6 +838,10 @@ function getPreferredTheme() {
 function setTheme(theme) {
   const resolvedTheme = theme === 'dark' ? 'dark' : 'light';
   const icon = document.querySelector('.theme-icon');
+  const themeToggle = document.getElementById('theme-toggle');
+  if (themeToggle) {
+    themeToggle.setAttribute('aria-label', t('toggleTheme'));
+  }
 
   document.documentElement.setAttribute('data-theme', resolvedTheme);
   if (icon) {
@@ -1041,17 +1061,24 @@ function getRelativeTime(dateString) {
     return t('justNow');
   }
 
-  const diffMins = Math.floor(diffMs / 60000);
-  const diffHours = Math.floor(diffMs / 3600000);
-  const diffDays = Math.floor(diffMs / 86400000);
+  const diffSec = Math.floor(diffMs / 1000);
+  const diffMins = Math.floor(diffSec / 60);
+  const diffHours = Math.floor(diffMins / 60);
+  const diffDays = Math.floor(diffHours / 24);
+  const diffMonths = Math.floor(diffDays / 30);
+  const diffYears = Math.floor(diffDays / 365);
 
-  if (diffMins < 1) return t('justNow');
+  if (diffSec < 60) return t('justNow');
   if (diffMins === 1) return t('minuteAgo');
   if (diffMins < 60) return `${diffMins} ${t('minutesAgo')}`;
   if (diffHours === 1) return t('hourAgo');
   if (diffHours < 24) return `${diffHours} ${t('hoursAgo')}`;
   if (diffDays === 1) return t('dayAgo');
-  return `${diffDays} ${t('daysAgo')}`;
+  if (diffDays < 30) return `${diffDays} ${t('daysAgo')}`;
+  if (diffMonths === 1) return t('monthAgo');
+  if (diffMonths < 12) return `${diffMonths} ${t('monthsAgo')}`;
+  if (diffYears === 1) return t('yearAgo');
+  return `${diffYears} ${t('yearsAgo')}`;
 }
 
 function getEventIcon(type) {
