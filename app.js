@@ -604,13 +604,17 @@ const translations = {
     openedPR: 'opened a pull request in',
     commentedOn: 'commented on',
     activityIn: 'activity in',
-    justNow: 'just now',
-    minuteAgo: '1 minute ago',
-    minutesAgo: 'minutes ago',
-    hourAgo: '1 hour ago',
-    hoursAgo: 'hours ago',
-    dayAgo: '1 day ago',
-    daysAgo: 'days ago',
+  justNow: 'just now',
+  minuteAgo: '1 minute ago',
+  minutesAgo: 'minutes ago',
+  hourAgo: '1 hour ago',
+  hoursAgo: 'hours ago',
+  dayAgo: '1 day ago',
+  daysAgo: 'days ago',
+  monthAgo: '1 month ago',
+  monthsAgo: 'months ago',
+  yearAgo: '1 year ago',
+  yearsAgo: 'years ago',
     item: 'item',
     in: 'in',
     unknownRepo: 'repository'
@@ -673,13 +677,17 @@ const translations = {
     openedPR: 'a deschis un pull request în',
     commentedOn: 'a comentat la',
     activityIn: 'activitate în',
-    justNow: 'chiar acum',
-    minuteAgo: 'acum 1 minut',
-    minutesAgo: 'minute în urmă',
-    hourAgo: 'acum 1 oră',
-    hoursAgo: 'ore în urmă',
-    dayAgo: 'acum 1 zi',
-    daysAgo: 'zile în urmă',
+  justNow: 'chiar acum',
+  minuteAgo: 'acum 1 minut',
+  minutesAgo: 'minute în urmă',
+  hourAgo: 'acum 1 oră',
+  hoursAgo: 'ore în urmă',
+  dayAgo: 'acum 1 zi',
+  daysAgo: 'zile în urmă',
+  monthAgo: 'acum 1 lună',
+  monthsAgo: 'luni în urmă',
+  yearAgo: 'acum 1 an',
+  yearsAgo: 'ani în urmă',
     item: 'element',
     in: 'în',
     unknownRepo: 'depozit'
@@ -1041,17 +1049,24 @@ function getRelativeTime(dateString) {
     return t('justNow');
   }
 
-  const diffMins = Math.floor(diffMs / 60000);
-  const diffHours = Math.floor(diffMs / 3600000);
-  const diffDays = Math.floor(diffMs / 86400000);
+  const diffSec = Math.floor(diffMs / 1000);
+  const diffMins = Math.floor(diffSec / 60);
+  const diffHours = Math.floor(diffMins / 60);
+  const diffDays = Math.floor(diffHours / 24);
+  const diffMonths = Math.floor(diffDays / 30);
+  const diffYears = Math.floor(diffDays / 365);
 
-  if (diffMins < 1) return t('justNow');
+  if (diffSec < 60) return t('justNow');
   if (diffMins === 1) return t('minuteAgo');
   if (diffMins < 60) return `${diffMins} ${t('minutesAgo')}`;
   if (diffHours === 1) return t('hourAgo');
   if (diffHours < 24) return `${diffHours} ${t('hoursAgo')}`;
   if (diffDays === 1) return t('dayAgo');
-  return `${diffDays} ${t('daysAgo')}`;
+  if (diffDays < 30) return `${diffDays} ${t('daysAgo')}`;
+  if (diffMonths === 1) return t('monthAgo');
+  if (diffMonths < 12) return `${diffMonths} ${t('monthsAgo')}`;
+  if (diffYears === 1) return t('yearAgo');
+  return `${diffYears} ${t('yearsAgo')}`;
 }
 
 function getEventIcon(type) {
