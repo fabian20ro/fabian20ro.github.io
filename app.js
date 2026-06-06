@@ -838,6 +838,10 @@ function getPreferredTheme() {
 function setTheme(theme) {
   const resolvedTheme = theme === 'dark' ? 'dark' : 'light';
   const icon = document.querySelector('.theme-icon');
+  const themeToggle = document.getElementById('theme-toggle');
+  if (themeToggle) {
+    themeToggle.setAttribute('aria-label', t('toggleTheme'));
+  }
 
   document.documentElement.setAttribute('data-theme', resolvedTheme);
   if (icon) {
