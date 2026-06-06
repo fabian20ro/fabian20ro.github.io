@@ -403,3 +403,31 @@
 **Outcome:** Success
 **Insight:** For language switchers, showing the destination language (not current state) reduces ambiguity and makes the control feel responsive.
 **Promoted to Lessons Learned:** No
+
+### 2026-06-06 — Expand thank-you exercise with phonetic dedup
+
+**Context:** Refocus the multilingual thank-you rotation so each entry teaches a distinct spoken thank-you cue for choosing the correct "you're welcome" response.
+**What happened:**
+
+- Removed current exact phonetic duplicates from `THANK_YOU_LANGUAGES`, including repeated `Obrigado`, `Takk`, and `Hvala` groups.
+- Added a broad global candidate set through Latin, keeping distinct normalized `thankYouPhonetic` values.
+- Verified the final list has 157 entries and zero duplicate normalized thank-you phonetic keys.
+- Ran `node --check app.js` and `npm run format:check`; `npm run lint` could not run because local `eslint` was not installed.
+
+**Outcome:** Success
+**Insight:** For this exercise, the dedup key should be the opponent's spoken thank-you cue, not the written language label or script.
+**Promoted to Lessons Learned:** Yes
+
+### 2026-06-06 — Split thank-you language data from app logic
+
+**Context:** Keep the expanded thank-you phrase list without making `app.js` carry the full data payload.
+**What happened:**
+
+- Moved the expanded `THANK_YOU_LANGUAGES` data into `thank-you-languages.js`.
+- Added a small guarded loader in `app.js` so browsers read `window.THANK_YOU_LANGUAGES` and Node/CommonJS reads the data file directly.
+- Updated `index.html` to load `thank-you-languages.js` before `app.js`, and bumped the script cache keys.
+- Verified both JS files parse and the data file still has 157 entries with zero duplicate normalized thank-you phonetic keys.
+
+**Outcome:** Success
+**Insight:** Large static browser data can live in a separate UMD-style script while preserving the existing non-module app and CommonJS test import pattern.
+**Promoted to Lessons Learned:** Yes

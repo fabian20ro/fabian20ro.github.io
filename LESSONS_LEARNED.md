@@ -29,6 +29,8 @@ Obsolete lessons move to the Archive section at bottom (with date and reason). N
 
 ## Architecture
 
+**[2026-06-06]** Split large static browser data into UMD-style data files — When a classic-script browser app also supports CommonJS imports for tests, large static datasets can move out of `app.js` into a separate script that assigns to `globalThis` in the browser and `module.exports` in Node. Load the data script before `app.js` and keep a guarded loader in app logic.
+
 <!-- Format: **[YYYY-MM-DD]** Brief title — Explanation -->
 
 ## Accessibility
@@ -36,6 +38,8 @@ Obsolete lessons move to the Archive section at bottom (with date and reason). N
 <!-- Format: **[YYYY-MM-DD]** Brief title — Explanation -->
 
 ## Localization
+
+**[2026-06-06]** Deduplicate thank-you exercises by spoken cue — For the multilingual thank-you rotation, the learning key is the opponent's spoken `thankYouPhonetic`, not the written phrase, script, country, or language label. Keep only one entry per normalized thank-you sound unless a variant has a genuinely distinct common spoken cue.
 
 **[2026-05-15]** Reuse the locale normalizer for browser defaults — The browser-language fallback should call the same normalization path as stored preferences so one code path handles trimming, regional tags, and future locale tweaks consistently.
 
