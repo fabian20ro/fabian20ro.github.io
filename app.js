@@ -1109,6 +1109,7 @@ function init() {
 if (typeof window !== 'undefined') {
   init();
 }
+module.exports = { THANK_YOU_LANGUAGES };
 
 if (typeof module !== 'undefined' && module.exports) {
   module.exports = {
@@ -1122,6 +1123,7 @@ if (typeof module !== 'undefined' && module.exports) {
     buildRepoUrl,
     t,
     translations,
-    setLang
+    setLang,
+    THANK_YOU_LANGUAGES
   };
 }
