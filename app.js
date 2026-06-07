@@ -545,7 +545,9 @@ function createCopyButton(href, title) {
       await navigator.clipboard.writeText(href);
       const originalIcon = btn.innerHTML;
       btn.innerHTML = '✅';
-      setTimeout(() => { btn.innerHTML = originalIcon; }, 2000);
+      setTimeout(() => {
+        btn.innerHTML = originalIcon;
+      }, 2000);
     } catch (err) {
       console.error('Failed to copy:', err);
     }
@@ -584,7 +586,6 @@ function createCardHeader(card) {
   }
   return headerNode;
 }
-
 
 function createCardFooter(card) {
   if (!card.badgeUrl && !card.liveSiteUrl) {
