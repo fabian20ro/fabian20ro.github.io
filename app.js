@@ -200,6 +200,8 @@ const translations = {
     visitSite: 'Visit site →',
     viewGithub: 'View on GitHub →',
     viewAllGithub: 'View all projects on GitHub →',
+    copy: 'Copy link',
+    copyTitle: 'Copy-link to clipboard',
     toggleLanguage: 'Toggle language',
     switchToRomanian: 'Switch to Romanian',
     switchToEnglish: 'Switch to English',
@@ -532,6 +534,27 @@ function getBadgeActionsUrl(badgeUrl) {
   return match ? match[0] + '/actions' : badgeUrl;
 }
 
+function createCopyButton(href, title) {
+  const btn = document.createElement('button');
+  btn.className = 'card-copy-btn';
+  btn.setAttribute('title', title);
+  btn.innerHTML = '📋';
+  btn.addEventListener('click', async (e) => {
+    e.stopPropagation();
+    try {
+      await navigator.clipboard.writeText(href);
+      const originalIcon = btn.innerHTML;
+      btn.innerHTML = '✅';
+      setTimeout(() => {
+        btn.innerHTML = originalIcon;
+      }, 2000);
+    } catch (err) {
+      console.error('Failed to copy:', err);
+    }
+  });
+  return btn;
+}
+
 function createCardHeader(card) {
   const iconNode = document.createElement('span');
   iconNode.className = 'card-icon';
@@ -558,6 +581,9 @@ function createCardHeader(card) {
   titleRowNode.append(iconNode, titleNode);
 
   headerNode.append(titleRowNode, linkNode);
+  if (card.href) {
+    headerNode.append(createCopyButton(card.href, t(card.copyTitle || 'Copy link')));
+  }
   return headerNode;
 }
 
