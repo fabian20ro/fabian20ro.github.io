@@ -1124,6 +1124,7 @@ if (typeof module !== 'undefined' && module.exports) {
     t,
     translations,
     setLang,
-    THANK_YOU_LANGUAGES
+    THANK_YOU_LANGUAGES,
+    projectSections
   };
 }
