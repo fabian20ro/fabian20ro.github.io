@@ -76,7 +76,32 @@ test('getRelativeTime - English', (t) => {
       expected: 'just now',
       name: 'future date'
     },
-    { date: 'invalid-date', expected: 'just now', name: 'invalid date' }
+    { date: 'invalid-date', expected: 'just now', name: 'invalid date' },
+    {
+      date: new Date(now - 31 * 24 * 60 * 60 * 1000).toISOString(),
+      expected: '1 month ago',
+      name: '1 month ago'
+    },
+    {
+      date: new Date(now - 11 * 30 * 24 * 60 * 60 * 1000).toISOString(),
+      expected: '11 months ago',
+      name: '11 months ago'
+    },
+    {
+      date: new Date(now - 365 * 24 * 60 * 60 * 1000).toISOString(),
+      expected: '1 year ago',
+      name: '1 year ago'
+    },
+    {
+      date: new Date(now - 365 * 2 * 24 * 60 * 60 * 1000).toISOString(),
+      expected: '2 years ago',
+      name: '2 years ago'
+    },
+    {
+      date: new Date(now - 365 * 10 * 24 * 60 * 60 * 1000).toISOString(),
+      expected: '10 years ago',
+      name: '10 years ago'
+    }
   ];
 
   testCases.forEach(({ date, expected, name }) => {
