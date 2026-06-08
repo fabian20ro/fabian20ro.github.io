@@ -199,7 +199,9 @@ const translations = {
       'See which files your editor and configurations actually process in your Git projects.',
     visitSite: 'Visit site →',
     viewGithub: 'View on GitHub →',
-    viewAllGithub: 'View all projects on GitHub →',
+    copySuccess: 'Copied!',
+    viewAllGithub: 'View all projects on GitHub &rarr;',
+    next_thought: 'Next thought',
     copy: 'Copy link',
     copyTitle: 'Copy-link to clipboard',
     toggleLanguage: 'Toggle language',
@@ -275,6 +277,8 @@ const translations = {
     visitSite: 'Vizitează →',
     viewGithub: 'Vezi pe GitHub →',
     viewAllGithub: 'Vezi toate proiectele pe GitHub →',
+    copySuccess: 'Copiat!',
+    next_thought: 'Următoarea gândire',
     toggleLanguage: 'Schimbă limba',
     switchToRomanian: 'Schimbă în română',
     switchToEnglish: 'Schimbă în engleză',
@@ -544,7 +548,7 @@ function createCopyButton(href, title) {
     try {
       await navigator.clipboard.writeText(href);
       const originalIcon = btn.innerHTML;
-      btn.innerHTML = '✅';
+      btn.innerHTML = `<span>✅</span> <small>${t('copySuccess')}</small>`;
       setTimeout(() => {
         btn.innerHTML = originalIcon;
       }, 2000);
