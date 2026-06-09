@@ -73,3 +73,13 @@ test('getBadgeActionsUrl edge cases', () => {
   assert.strictEqual(getBadgeActionsUrl('https://github.com/user/repo/actions/workflows/deploy/badge.png'), 'https://github.com/user/repo/actions');
   assert.strictEqual(getBadgeActionsUrl('https://example.com/foo/bar.svg'), 'https://example.com/foo/bar.svg');
 });
+
+test('translations', () => {
+  setLang('ro');
+  assert.strictEqual(t('intro'), 'Salut, sunt Fabian. Aici vei găsi o colecție de proiecte open source.');
+  assert.strictEqual(t('title'), 'Proiectele lui Fabian');
+  
+  setLang('fr');
+  assert.strictEqual(t('intro'), 'Salut, je suis Fabian. Voici une collection de mes projets open source.');
+  assert.strictEqual(t('title'), 'Les projets de Fabian');
+});
