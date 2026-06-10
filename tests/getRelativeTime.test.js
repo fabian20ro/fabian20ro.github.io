@@ -430,4 +430,11 @@ test('getRelativeTime - Romanian new cases', (t) => {
   assert.strictEqual(getRelativeTime(new Date(now - 62 * 24 * 60 * 60 * 1000).toISOString()), '2 mois');
   assert.strictEqual(getRelativeTime(new Date(now - 400 * 24 * 60 * 60 * 1000).toISOString()), 'il y a 1 an');
   assert.strictEqual(getRelativeTime(new Date(now - 800 * 24 * 60 * 60 * 1000).toISOString()), '2 ans');
+});test("getRelativeTime - extreme years", (t) => {
+  const now = Date.now();
+  const originalDateNow = Date.now;
+  Date.now = () => now;
+  setLang("en");
+  t.after(() => { Date.now = originalDateNow; });
+  assert.strictEqual(getRelativeTime(new Date(now - 365 * 24 * 60 * 60 * 1000 * 100).toISOString()), "100 years ago", "100 years ago");
 });
