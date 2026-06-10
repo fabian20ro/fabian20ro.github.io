@@ -6,7 +6,7 @@ const APP_JS_PATH = path.join(process.cwd(), 'app.js');
 async function verifyLinks() {
   console.log('🚀 Starting Link Verification...');
   const content = fs.readFileSync(APP_JS_PATH, 'utf8');
-  
+
   // Regex to find href: '...' or href: "..." within the app.js context
   // This is a bit fragile but works for this specific project structure.
   const hrefRegex = /href:\s*['"]([^'"]+)['"]/g;
@@ -22,7 +22,7 @@ async function verifyLinks() {
   }
 
   console.log(`Found ${links.length} potential links to verify.`);
-  
+
   let brokenLinks = 0;
   const verifiedLinks = [];
 
@@ -46,7 +46,7 @@ async function verifyLinks() {
   console.log(`Total links checked: ${links.length}`);
   console.log(`Passed: ${links.length - brokenLinks}`);
   console.log(`Failed: ${brokenLinks}`);
-  
+
   if (brokenLinks > 0) {
     process.exit(1);
   } else {

@@ -31,18 +31,23 @@ When creating a new agent, produce:
 [One-line description.]
 
 ## When to Activate
+
 Use PROACTIVELY when:
+
 - [Trigger 1]
 - [Trigger 2]
 - [Trigger 3]
 
 ## Role
+
 You are [specific role]. You [what you do / don't do].
 
 ## Output Format
+
 [Concrete template(s) with fenced code blocks and placeholder fields.]
 
 ## Principles
+
 - [3-5 actionable principles, not generic platitudes]
 - Read `LESSONS_LEARNED.md` before [agent's primary action].
 ```

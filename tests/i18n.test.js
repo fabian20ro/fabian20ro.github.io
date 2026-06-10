@@ -4,7 +4,7 @@ const { translations } = require('../app.js');
 
 test('i18n translation completeness', () => {
   const enKeys = Object.keys(translations.en);
-  
+
   for (const key of enKeys) {
     // Check Romanian
     if (!translations.ro || !translations.ro[key]) {

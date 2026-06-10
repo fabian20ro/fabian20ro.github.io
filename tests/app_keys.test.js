@@ -5,15 +5,18 @@ try {
   console.log('Running translation key contract tests...');
 
   const languages = Object.keys(translations);
-  languages.forEach(lang => {
+  languages.forEach((lang) => {
     console.log(`Checking language: ${lang}`);
     const trans = translations[lang];
 
     const check_keys = (section_name, items) => {
       items.forEach((item, i) => {
-        ['titleKey', 'descKey', 'linkKey'].forEach(key => {
+        ['titleKey', 'descKey', 'linkKey'].forEach((key) => {
           if (item[key]) {
-            assert.ok(trans[item[key]], `${section_name}[${i}] missing translation key: ${key} (${item[key]}) in language: ${lang}`);
+            assert.ok(
+              trans[item[key]],
+              `${section_name}[${i}] missing translation key: ${key} (${item[key]}) in language: ${lang}`
+            );
           }
         });
       });
