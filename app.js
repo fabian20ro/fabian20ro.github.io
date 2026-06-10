@@ -278,7 +278,7 @@ const translations = {
     viewGithub: 'Vezi pe GitHub →',
     viewAllGithub: 'Vezi toate proiectele pe GitHub →',
     copySuccess: 'Copiat!',
-    copyTitle: "Copiere link către clipboard",
+    copyTitle: 'Copiere link către clipboard',
     copy: 'Copiere',
     next_thought: 'Următoarea gândire',
     toggleLanguage: 'Schimbă limba',
