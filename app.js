@@ -278,6 +278,7 @@ const translations = {
     viewGithub: 'Vezi pe GitHub →',
     viewAllGithub: 'Vezi toate proiectele pe GitHub →',
     copySuccess: 'Copiat!',
+    copyTitle: "Copiere link către clipboard",
     copy: 'Copiere',
     next_thought: 'Următoarea gândire',
     toggleLanguage: 'Schimbă limba',
@@ -352,6 +353,7 @@ const translations = {
     viewGithub: 'Voir sur GitHub →',
     viewAllGithub: 'Voir tous les projets sur GitHub →',
     copySuccess: 'Copié !',
+    copyTitle: "Copier le lien dans le presse-papiers",
     copy: 'Copier',
     next_thought: 'La pensée suivante',
     toggleLanguage: 'Changer la langue',
@@ -380,7 +382,9 @@ const translations = {
     monthAgo: 'il y a 1 mois',
     monthsAgo: 'mois',
     yearAgo: 'il y a 1 an',
-    yearsAgo: 'ans'
+    yearsAgo: 'ans',
+    switchToRomanian: 'Passer en roumain',
+    switchToEnglish: 'Passer en anglais'
   }
 };
 
