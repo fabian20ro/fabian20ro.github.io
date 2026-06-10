@@ -353,7 +353,7 @@ const translations = {
     viewGithub: 'Voir sur GitHub →',
     viewAllGithub: 'Voir tous les projets sur GitHub →',
     copySuccess: 'Copié !',
-    copyTitle: "Copier le lien dans le presse-papiers",
+    copyTitle: 'Copier le lien dans le presse-papier',
     copy: 'Copier',
     next_thought: 'La pensée suivante',
     toggleLanguage: 'Changer la langue',
