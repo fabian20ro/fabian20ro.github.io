@@ -159,7 +159,11 @@ test('loadGitHubActivity keeps rendered cached activity visible when refresh fai
   assert.strictEqual(fetchCalls, 1, 'stale cache should trigger one refresh attempt');
   assert.strictEqual(feed.children.length, 1, 'feed should still contain rendered cached content');
   assert.strictEqual(feed.children[0].className, '', 'cached content should remain visible');
-  assert.strictEqual(feed.children[0].children.length, 1, 'cached fragment should contain the event item');
+  assert.strictEqual(
+    feed.children[0].children.length,
+    1,
+    'cached fragment should contain the event item'
+  );
   assert.strictEqual(feed.children[0].children[0].className, 'activity-item');
 });
 
@@ -193,7 +197,9 @@ test('loadGitHubActivity handles malformed JSON in cache gracefully', async (t) 
   };
 
   global.sessionStorage = {
-    getItem() { return null; },
+    getItem() {
+      return null;
+    },
     setItem() {}
   };
 

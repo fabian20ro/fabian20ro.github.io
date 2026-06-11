@@ -13,7 +13,8 @@ const {
   translations,
   setLang,
   THANK_YOU_LANGUAGES,
-  projectSections
+  projectSections,
+  getEventIcon
 } = require('../app.js');
 
 test('parseRepoName', () => {
@@ -36,12 +37,12 @@ test('t() edge cases', () => {
   setLang('en');
   assert.strictEqual(t('nonexistent'), 'nonexistent');
   assert.strictEqual(t('title'), "Fabian's Projects");
-  
+
   setLang('ro');
   assert.strictEqual(t('title'), 'Proiectele lui Fabian');
-  
+
   setLang('fr');
-  assert.strictEqual(t('title'), "Les projets de Fabian");
+  assert.strictEqual(t('title'), 'Les projets de Fabian');
 });
 
 test('normalizeLang edge cases', () => {
@@ -69,17 +70,38 @@ test('isCacheFresh edge cases', () => {
 });
 
 test('getBadgeActionsUrl edge cases', () => {
-  assert.strictEqual(getBadgeActionsUrl('https://github.com/user/repo/actions/workflows/deploy/badge.svg'), 'https://github.com/user/repo/actions');
-  assert.strictEqual(getBadgeActionsUrl('https://github.com/user/repo/actions/workflows/deploy/badge.png'), 'https://github.com/user/repo/actions');
-  assert.strictEqual(getBadgeActionsUrl('https://example.com/foo/bar.svg'), 'https://example.com/foo/bar.svg');
+  assert.strictEqual(
+    getBadgeActionsUrl('https://github.com/user/repo/actions/workflows/deploy/badge.svg'),
+    'https://github.com/user/repo/actions'
+  );
+  assert.strictEqual(
+    getBadgeActionsUrl('https://github.com/user/repo/actions/workflows/deploy/badge.png'),
+    'https://github.com/user/repo/actions'
+  );
+  assert.strictEqual(
+    getBadgeActionsUrl('https://example.com/foo/bar.svg'),
+    'https://example.com/foo/bar.svg'
+  );
+});
+
+test('getEventIcon', () => {
+  assert.strictEqual(getEventIcon('PushEvent'), '📤');
+  assert.strictEqual(getEventIcon('CreateEvent'), '✨');
+  assert.strictEqual(getEventIcon('UnknownEvent'), '📌');
 });
 
 test('translations', () => {
   setLang('ro');
-  assert.strictEqual(t('intro'), 'Salut, sunt Fabian. Aici vei găsi o colecție de proiecte open source.');
+  assert.strictEqual(
+    t('intro'),
+    'Salut, sunt Fabian. Aici vei găsi o colecție de proiecte open source.'
+  );
   assert.strictEqual(t('title'), 'Proiectele lui Fabian');
-  
+
   setLang('fr');
-  assert.strictEqual(t('intro'), 'Salut, je suis Fabian. Voici une collection de mes projets open source.');
+  assert.strictEqual(
+    t('intro'),
+    'Salut, je suis Fabian. Voici une collection de mes projets open source.'
+  );
   assert.strictEqual(t('title'), 'Les projets de Fabian');
 });

@@ -32,9 +32,9 @@ test('getRelativeTime - English', (t) => {
     },
     { date: new Date(now - 59 * 1000).toISOString(), expected: 'just now', name: '59 seconds ago' },
     {
-      date: new Date(now - 60 * 1000).toISOString(),
-      expected: '1 minute ago',
-      name: '1 minute ago'
+      date: new Date(now - 121 * 1000).toISOString(),
+      expected: '2 minutes ago',
+      name: '2 minutes ago'
     },
     {
       date: new Date(now - 59 * 60 * 1000 - 59 * 1000).toISOString(),
@@ -96,6 +96,11 @@ test('getRelativeTime - English', (t) => {
       date: new Date(now - 365 * 2 * 24 * 60 * 60 * 1000).toISOString(),
       expected: '2 years ago',
       name: '2 years ago'
+    },
+    {
+      date: new Date(now - 50 * 365 * 24 * 60 * 60 * 1000).toISOString(),
+      expected: '50 years ago',
+      name: '50 years ago'
     },
     {
       date: new Date(now - 365 * 10 * 24 * 60 * 60 * 1000).toISOString(),
@@ -407,12 +412,26 @@ test('getRelativeTime - English new cases', (t) => {
   const originalDateNow = Date.now;
   Date.now = () => now;
   setLang('en');
-  t.after(() => { Date.now = originalDateNow; });
+  t.after(() => {
+    Date.now = originalDateNow;
+  });
 
-  assert.strictEqual(getRelativeTime(new Date(now - 31 * 24 * 60 * 60 * 1000).toISOString()), '1 month ago');
-  assert.strictEqual(getRelativeTime(new Date(now - 62 * 24 * 60 * 60 * 1000).toISOString()), '2 months ago');
-  assert.strictEqual(getRelativeTime(new Date(now - 400 * 24 * 60 * 60 * 1000).toISOString()), '1 year ago');
-  assert.strictEqual(getRelativeTime(new Date(now - 800 * 24 * 60 * 60 * 1000).toISOString()), '2 years ago');
+  assert.strictEqual(
+    getRelativeTime(new Date(now - 31 * 24 * 60 * 60 * 1000).toISOString()),
+    '1 month ago'
+  );
+  assert.strictEqual(
+    getRelativeTime(new Date(now - 62 * 24 * 60 * 60 * 1000).toISOString()),
+    '2 months ago'
+  );
+  assert.strictEqual(
+    getRelativeTime(new Date(now - 400 * 24 * 60 * 60 * 1000).toISOString()),
+    '1 year ago'
+  );
+  assert.strictEqual(
+    getRelativeTime(new Date(now - 800 * 24 * 60 * 60 * 1000).toISOString()),
+    '2 years ago'
+  );
 });
 
 test('getRelativeTime - Romanian new cases', (t) => {
@@ -420,21 +439,51 @@ test('getRelativeTime - Romanian new cases', (t) => {
   const originalDateNow = Date.now;
   Date.now = () => now;
   setLang('ro');
-  t.after(() => { Date.now = originalDateNow; });
+  t.after(() => {
+    Date.now = originalDateNow;
+  });
 
-  assert.strictEqual(getRelativeTime(new Date(now - 31 * 24 * 60 * 60 * 1000).toISOString()), 'acum 1 lună');
-  assert.strictEqual(getRelativeTime(new Date(now - 62 * 24 * 60 * 60 * 1000).toISOString()), '2 luni în urmă');
-  assert.strictEqual(getRelativeTime(new Date(now - 400 * 24 * 60 * 60 * 1000).toISOString()), 'acum 1 an');
+  assert.strictEqual(
+    getRelativeTime(new Date(now - 31 * 24 * 60 * 60 * 1000).toISOString()),
+    'acum 1 lună'
+  );
+  assert.strictEqual(
+    getRelativeTime(new Date(now - 62 * 24 * 60 * 60 * 1000).toISOString()),
+    '2 luni în urmă'
+  );
+  assert.strictEqual(
+    getRelativeTime(new Date(now - 400 * 24 * 60 * 60 * 1000).toISOString()),
+    'acum 1 an'
+  );
   setLang('fr');
-  assert.strictEqual(getRelativeTime(new Date(now - 31 * 24 * 60 * 60 * 1000).toISOString()), 'il y a 1 mois');
-  assert.strictEqual(getRelativeTime(new Date(now - 62 * 24 * 60 * 60 * 1000).toISOString()), '2 mois');
-  assert.strictEqual(getRelativeTime(new Date(now - 400 * 24 * 60 * 60 * 1000).toISOString()), 'il y a 1 an');
-  assert.strictEqual(getRelativeTime(new Date(now - 800 * 24 * 60 * 60 * 1000).toISOString()), '2 ans');
-});test("getRelativeTime - extreme years", (t) => {
+  assert.strictEqual(
+    getRelativeTime(new Date(now - 31 * 24 * 60 * 60 * 1000).toISOString()),
+    'il y a 1 mois'
+  );
+  assert.strictEqual(
+    getRelativeTime(new Date(now - 62 * 24 * 60 * 60 * 1000).toISOString()),
+    '2 mois'
+  );
+  assert.strictEqual(
+    getRelativeTime(new Date(now - 400 * 24 * 60 * 60 * 1000).toISOString()),
+    'il y a 1 an'
+  );
+  assert.strictEqual(
+    getRelativeTime(new Date(now - 800 * 24 * 60 * 60 * 1000).toISOString()),
+    '2 ans'
+  );
+});
+test('getRelativeTime - extreme years', (t) => {
   const now = Date.now();
   const originalDateNow = Date.now;
   Date.now = () => now;
-  setLang("en");
-  t.after(() => { Date.now = originalDateNow; });
-  assert.strictEqual(getRelativeTime(new Date(now - 365 * 24 * 60 * 60 * 1000 * 100).toISOString()), "100 years ago", "100 years ago");
+  setLang('en');
+  t.after(() => {
+    Date.now = originalDateNow;
+  });
+  assert.strictEqual(
+    getRelativeTime(new Date(now - 365 * 24 * 60 * 60 * 1000 * 100).toISOString()),
+    '100 years ago',
+    '100 years ago'
+  );
 });

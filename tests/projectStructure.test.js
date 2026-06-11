@@ -4,7 +4,10 @@ try {
   console.log('Running project structure tests...');
 
   // Test liveProjects
-  assert(Array.isArray(projectSections.liveProjects), 'projectSections.liveProjects should be an array');
+  assert(
+    Array.isArray(projectSections.liveProjects),
+    'projectSections.liveProjects should be an array'
+  );
   projectSections.liveProjects.forEach((card, i) => {
     assert(card.href, `LiveProject[${i}] missing href`);
     assert(card.icon, `LiveProject[${i}] missing icon`);
@@ -14,7 +17,10 @@ try {
   });
 
   // Test repositories
-  assert(Array.isArray(projectSections.repositories), 'projectSections.repositories should be an array');
+  assert(
+    Array.isArray(projectSections.repositories),
+    'projectSections.repositories should be an array'
+  );
   projectSections.repositories.forEach((repo, i) => {
     assert(repo.href, `Repo[${i}] missing href`);
     assert(repo.icon, `Repo[${i}] missing icon`);

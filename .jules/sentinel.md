@@ -1,4 +1,5 @@
 ## 2024-04-06 - Content Security Policy (CSP) Enhancement
+
 **Vulnerability:** Missing Content Security Policy (CSP) headers in `index.html`. While no specific XSS vectors were found in the current implementation, the lack of CSP meant a lack of defense in depth if a vulnerability were introduced in the future.
 **Learning:** Even static HTML/JS sites connecting to external APIs (like the GitHub API here) should implement strict CSP headers to restrict allowed origins for scripts, styles, images, and connections. This serves as a safety net against injection attacks.
 **Prevention:** Added a `<meta http-equiv="Content-Security-Policy">` tag to `index.html` allowing only 'self' and explicit necessary domains (`https://github.com` for badge images and `https://api.github.com` for fetching activity events). Future additions of external integrations should update this CSP allowlist.
