@@ -1163,6 +1163,7 @@ if (typeof module !== 'undefined' && module.exports) {
     translations,
     setLang,
     THANK_YOU_LANGUAGES,
-    projectSections
+    projectSections,
+    getEventIcon
   };
 }

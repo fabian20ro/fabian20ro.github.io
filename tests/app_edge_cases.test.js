@@ -13,7 +13,8 @@ const {
   translations,
   setLang,
   THANK_YOU_LANGUAGES,
-  projectSections
+  projectSections,
+  getEventIcon
 } = require('../app.js');
 
 test('parseRepoName', () => {
@@ -81,6 +82,12 @@ test('getBadgeActionsUrl edge cases', () => {
     getBadgeActionsUrl('https://example.com/foo/bar.svg'),
     'https://example.com/foo/bar.svg'
   );
+});
+
+test('getEventIcon', () => {
+  assert.strictEqual(getEventIcon('PushEvent'), '📤');
+  assert.strictEqual(getEventIcon('CreateEvent'), '✨');
+  assert.strictEqual(getEventIcon('UnknownEvent'), '📌');
 });
 
 test('translations', () => {
