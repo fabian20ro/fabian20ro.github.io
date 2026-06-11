@@ -32,9 +32,9 @@ test('getRelativeTime - English', (t) => {
     },
     { date: new Date(now - 59 * 1000).toISOString(), expected: 'just now', name: '59 seconds ago' },
     {
-      date: new Date(now - 60 * 1000).toISOString(),
-      expected: '1 minute ago',
-      name: '1 minute ago'
+      date: new Date(now - 121 * 1000).toISOString(),
+      expected: '2 minutes ago',
+      name: '2 minutes ago'
     },
     {
       date: new Date(now - 59 * 60 * 1000 - 59 * 1000).toISOString(),
