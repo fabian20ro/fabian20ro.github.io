@@ -98,6 +98,11 @@ test('getRelativeTime - English', (t) => {
       name: '2 years ago'
     },
     {
+      date: new Date(now - 50 * 365 * 24 * 60 * 60 * 1000).toISOString(),
+      expected: '50 years ago',
+      name: '50 years ago'
+    },
+    {
       date: new Date(now - 365 * 10 * 24 * 60 * 60 * 1000).toISOString(),
       expected: '10 years ago',
       name: '10 years ago'
