@@ -15,8 +15,8 @@ try {
     assert.ok(lang.welcomePhonetic, `Index ${index}: Missing welcomePhonetic string`);
 
     // Check language name object keys
-    Object.keys(lang.name).forEach((l) => {
-      assert.ok(l !== '', `Index ${index}: Empty language key`);
+    ['en', 'ro'].forEach(langKey => {
+      assert.ok(lang.name[langKey], `Index ${index}: Missing key '${langKey}' in lang.name`);
     });
   });
   console.log('App contract tests passed!');
