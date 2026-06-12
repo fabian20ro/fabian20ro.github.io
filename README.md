@@ -36,7 +36,7 @@ CI runs the same checks on push and pull requests.
 
 ## Localization
 
-The project supports English (EN) and Romanian (RO).
+The project supports English (EN), Romanian (RO), Spanish (ES), German (DE), Italian (IT), and Portuguese (PT).
 Locale tags are normalized defensively, so values like `ro-RO`, `ro_RO`, or whitespace-padded variants still resolve to Romanian.
 Translations are managed within `app.js`. To add a new language:
 
