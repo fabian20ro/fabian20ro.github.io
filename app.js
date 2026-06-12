@@ -59,8 +59,8 @@ const projectSections = {
     {
       href: 'https://fabian20ro.github.io/propozitii-nostime/',
       icon: '🇷🇴',
-      titleKey: 'propozitiiTitle',
-      descKey: 'propozitiiDesc',
+      titleKey: 'propositionsTitle',
+      descKey: 'propositionsDesc',
       linkKey: 'visitSite',
       badgeUrl:
         'https://github.com/fabian20ro/propozitii-nostime/workflows/Deploy%20Frontend%20to%20GitHub%20Pages/badge.svg'
@@ -169,8 +169,8 @@ const translations = {
     imagePromptTitle: 'Image Prompt Expander',
     imagePromptDesc:
       'A tool that helps expand and enhance image generation prompts for better AI-generated images.',
-    propozitiiTitle: 'Propozitii Absurde',
-    propozitiiDesc: 'Sentences made from random words, always absurd, sometimes funny.',
+    propositionsTitle: 'Absurd Propositions',
+    propositionsDesc: 'Sentences made from random words, always absurd, sometimes funny.',
     passwordGenTitle: 'Password Generator',
     passwordGenDesc:
       'Generates cryptographically secure passwords using the Web Crypto API. Five strong passwords at a click.',
@@ -248,8 +248,8 @@ const translations = {
     imagePromptTitle: 'Image Prompt Expander',
     imagePromptDesc:
       'Instrument care ajută la extinderea și îmbunătățirea prompt-urilor pentru imagini generate de AI.',
-    propozitiiTitle: 'Propoziții Absurde',
-    propozitiiDesc: 'Propoziții din cuvinte aleatoare, mereu absurde, uneori nostime.',
+    propositionsTitle: 'Propoziții Absurde',
+    propositionsDesc: 'Propoziții din cuvinte aleatoare, mereu absurde, uneori nostime.',
     passwordGenTitle: 'Generator de Parole',
     passwordGenDesc:
       'Generează parole sigure criptografic prin Web Crypto API. Cinci parole solide dintr-o singură apăsare.',
@@ -324,8 +324,8 @@ const translations = {
       "Une alternative plus simple, avec toutes les données sur téléphone et le code source public. Le but n'est pas de remplacer l'application officielle, InfoTB.",
     imagePromptTitle: 'Image Prompt Expander',
     imagePromptDesc: 'Un outil qui aide à améliorer les prompts pour images générées par IA.',
-    propozitiiTitle: 'Phrases absurdes',
-    propozitiiDesc: 'Des phrases aléatoires, toujours absurdes, parfois nostalgiques.',
+    propositionsTitle: 'Phrases absurdes',
+    propositionsDesc: 'Des phrases aléatoires, toujours absurdes, parfois nostalgiques.',
     passwordGenTitle: 'Générateur de mot de passe',
     passwordGenDesc:
       "Génère des mots de passe sûrs via l'API Web Crypto. Cinq mots de passe en un clic.",
@@ -400,8 +400,8 @@ const translations = {
     imagePromptTitle: 'Expansor de prompts de imagen',
     imagePromptDesc:
       'Una herramienta que ayuda a mejorar los prompts para imágenes generadas por IA.',
-    propozitiiTitle: 'Frases absurdas',
-    propozitiiDesc: 'Frases aleatorias, siempre absurdas, a veces nostálgicas.',
+    propositionsTitle: 'Frases absurdas',
+    propositionsDesc: 'Frases aleatorias, siempre absurdas, a veces nostálgicas.',
     passwordGenTitle: 'Generador de contraseñas',
     passwordGenDesc:
       'Genera contraseñas seguras mediante la API Web Crypto. Cinco contraseñas robustas con un clic.',
@@ -478,8 +478,8 @@ const translations = {
       'Eine einfachere Alternative, mit allen Daten auf dem Telefon und Quellcode öffentlich. Das Ziel ist nicht, die offizielle App, InfoTB, zu ersetzen.',
     imagePromptTitle: 'Bild-Prompt-Erweiterer',
     imagePromptDesc: 'Ein Tool, das hilft, Prompts für KI-generierte Bilder zu verbessern.',
-    propozitiiTitle: 'Absurde Sätze',
-    propozitiiDesc: 'Zufällige Sätze, immer absurd, manchmal nostalgisch.',
+    propositionsTitle: 'Absurde Sätze',
+    propositionsDesc: 'Zufällige Sätze, immer absurd, manchmal nostalgisch.',
     passwordGenTitle: 'Passwortgenerator',
     passwordGenDesc:
       'Generiert kryptografisch sichere Passwörter über die Web Crypto API. Fünf starke Passwörter mit einem Klick.',
@@ -556,8 +556,8 @@ const translations = {
       "Un'alternativa più semplice, con tutti i dati sul telefono e codice sorgente pubblico. L'obiettivo non è sostituire l'app ufficiale, InfoTB.",
     imagePromptTitle: 'Espansore di prompt per immagini',
     imagePromptDesc: 'Uno strumento che aiuta a migliorare i prompt per immagini generate da IA.',
-    propozitiiTitle: 'Frasi assurde',
-    propozitiiDesc: 'Frasi casuali, sempre assurde, a volte nostalgiche.',
+    propositionsTitle: 'Frasi assurde',
+    propositionsDesc: 'Frasi casuali, sempre assurde, a volte nostalgiche.',
     passwordGenTitle: 'Generatore di password',
     passwordGenDesc:
       "Genera password sicure tramite l'API Web Crypto. Cinque password robuste con un clic.",
@@ -634,8 +634,8 @@ const translations = {
       'Uma alternativa mais simples, com todos os dados no telefone e código fonte público. O objetivo não é substituir a aplicação oficial, InfoTB.',
     imagePromptTitle: 'Expansor de prompts de imagem',
     imagePromptDesc: 'Uma ferramenta que ajuda a melhorar os prompts para imagens geradas por IA.',
-    propozitiiTitle: 'Frases absurdas',
-    propozitiiDesc: 'Frases aleatórias, sempre absurdas, às vezes nostálgicas.',
+    propositionsTitle: 'Frases absurdas',
+    propositionsDesc: 'Frases aleatórias, sempre absurdas, às vezes nostálgicas.',
     passwordGenTitle: 'Gerador de senhas',
     passwordGenDesc:
       'Gera senhas seguras através da API Web Crypto. Cinco senhas robustas com um clique.',
@@ -746,12 +746,15 @@ function normalizeLang(lang) {
   }
 
   const normalized = lang.trim().toLowerCase();
-  if (normalized === 'ro' || normalized.startsWith('ro-') || normalized.startsWith('ro_')) {
-    return 'ro';
+  const supported = ['en', 'ro', 'es', 'fr', 'de', 'it', 'pt'];
+
+  // Check for exact match or prefix match (e.g., 'ro-RO', 'ro_RO')
+  for (const s of supported) {
+    if (normalized === s || normalized.startsWith(s + '-') || normalized.startsWith(s + '_')) {
+      return s;
+    }
   }
-  if (normalized === 'fr' || normalized.startsWith('fr-') || normalized.startsWith('fr_')) {
-    return 'fr';
-  }
+
   return 'en';
 }
 
@@ -1276,7 +1279,7 @@ async function loadGitHubActivity() {
   const cache = readActivityCache();
 
   if (cache) {
-    activityEvents = cache.events;
+    activityEvents = cache.events.slice(0, ACTIVITY_LIMIT);
     renderActivity(activityEvents);
   }
 
@@ -1286,7 +1289,7 @@ async function loadGitHubActivity() {
 
   try {
     const events = await fetchGitHubActivity();
-    activityEvents = events;
+    activityEvents = events.slice(0, ACTIVITY_LIMIT);
     writeActivityCache(events);
     renderActivity(activityEvents);
   } catch {

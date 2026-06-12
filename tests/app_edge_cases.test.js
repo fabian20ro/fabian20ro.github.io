@@ -61,6 +61,11 @@ test('normalizeLang edge cases', () => {
   assert.strictEqual(normalizeLang('en-US'), 'en');
   assert.strictEqual(normalizeLang('fr-FR'), 'fr');
   assert.strictEqual(normalizeLang('fr_FR'), 'fr');
+  assert.strictEqual(normalizeLang('es-ES'), 'es');
+  assert.strictEqual(normalizeLang('es_ES'), 'es');
+  assert.strictEqual(normalizeLang('de-DE'), 'de');
+  assert.strictEqual(normalizeLang('it-IT'), 'it');
+  assert.strictEqual(normalizeLang('pt-PT'), 'pt');
   assert.strictEqual(normalizeLang('anything'), 'en');
   assert.strictEqual(normalizeLang(undefined), 'en');
   assert.strictEqual(normalizeLang(''), 'en');
