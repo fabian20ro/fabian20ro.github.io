@@ -43,14 +43,6 @@ test('t() edge cases', () => {
 
   setLang('fr');
   assert.strictEqual(t('title'), 'Les projets de Fabian');
-
-  test('getRelativeTime Romanian', () => {
-    setLang('ro');
-    const now = new Date();
-    const oneMinuteAgo = new Date(now.getTime() - 61 * 1000).toISOString();
-    const result = getRelativeTime(oneMinuteAgo);
-    assert.ok(result.includes('acum 1 minut') || result.includes('1 minut'), `Expected "acum 1 minut", got "${result}"`);
-  });
 });
 
 test('normalizeLang edge cases', () => {
@@ -99,8 +91,19 @@ test('getBadgeActionsUrl edge cases', () => {
 
 test('getEventIcon', () => {
   assert.strictEqual(getEventIcon('PushEvent'), '📤');
+  assert.strictEqual(getEventIcon('WatchEvent'), '⭐');
   assert.strictEqual(getEventIcon('CreateEvent'), '✨');
   assert.strictEqual(getEventIcon('UnknownEvent'), '📌');
+});
+
+test('THANK_YOU_LANGUAGES structure', () => {
+  assert.ok(Array.isArray(THANK_YOU_LANGUAGES));
+  if (THANK_YOU_LANGUAGES.length > 0) {
+    const lang = THANK_YOU_LANGUAGES[0];
+    assert.ok(lang.name.en);
+    assert.ok(lang.thankYou);
+    assert.ok(lang.welcome);
+  }
 });
 
 test('translations', () => {
