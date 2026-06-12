@@ -1460,23 +1460,19 @@ function init() {
 if (typeof window !== 'undefined') {
   init();
 }
-module.exports = { THANK_YOU_LANGUAGES };
-
-if (typeof module !== 'undefined' && module.exports) {
-  module.exports = {
-    getDefaultLang,
-    getRelativeTime,
-    getBadgeActionsUrl,
-    isCacheFresh,
-    loadGitHubActivity,
-    normalizeLang,
-    parseRepoName,
-    buildRepoUrl,
-    t,
-    translations,
-    setLang,
-    THANK_YOU_LANGUAGES,
-    projectSections,
-    getEventIcon
-  };
-}
+module.exports = {
+  THANK_YOU_LANGUAGES,
+  getDefaultLang,
+  getRelativeTime,
+  getBadgeActionsUrl,
+  isCacheFresh,
+  loadGitHubActivity,
+  normalizeLang,
+  parseRepoName,
+  buildRepoUrl,
+  t,
+  translations,
+  setLang,
+  projectSections,
+  getEventIcon
+};
