@@ -746,12 +746,15 @@ function normalizeLang(lang) {
   }
 
   const normalized = lang.trim().toLowerCase();
-  if (normalized === 'ro' || normalized.startsWith('ro-') || normalized.startsWith('ro_')) {
-    return 'ro';
+  const supported = ['en', 'ro', 'es', 'fr', 'de', 'it', 'pt'];
+  
+  // Check for exact match or prefix match (e.g., 'ro-RO', 'ro_RO')
+  for (const s of supported) {
+    if (normalized === s || normalized.startsWith(s + '-') || normalized.startsWith(s + '_')) {
+      return s;
+    }
   }
-  if (normalized === 'fr' || normalized.startsWith('fr-') || normalized.startsWith('fr_')) {
-    return 'fr';
-  }
+  
   return 'en';
 }
 
