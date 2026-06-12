@@ -1279,7 +1279,7 @@ async function loadGitHubActivity() {
   const cache = readActivityCache();
 
   if (cache) {
-    activityEvents = cache.events;
+    activityEvents = cache.events.slice(0, ACTIVITY_LIMIT);
     renderActivity(activityEvents);
   }
 
@@ -1289,7 +1289,7 @@ async function loadGitHubActivity() {
 
   try {
     const events = await fetchGitHubActivity();
-    activityEvents = events;
+    activityEvents = events.slice(0, ACTIVITY_LIMIT);
     writeActivityCache(events);
     renderActivity(activityEvents);
   } catch {
