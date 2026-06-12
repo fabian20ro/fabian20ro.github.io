@@ -747,14 +747,14 @@ function normalizeLang(lang) {
 
   const normalized = lang.trim().toLowerCase();
   const supported = ['en', 'ro', 'es', 'fr', 'de', 'it', 'pt'];
-  
+
   // Check for exact match or prefix match (e.g., 'ro-RO', 'ro_RO')
   for (const s of supported) {
     if (normalized === s || normalized.startsWith(s + '-') || normalized.startsWith(s + '_')) {
       return s;
     }
   }
-  
+
   return 'en';
 }
 
