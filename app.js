@@ -1017,6 +1017,9 @@ function renderProjectCards() {
 }
 
 function getRelativeTime(dateString) {
+  if (!dateString) {
+    return t('justNow');
+  }
   const date = new Date(dateString);
   if (Number.isNaN(date.getTime())) {
     return t('justNow');

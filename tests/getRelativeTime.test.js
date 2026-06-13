@@ -19,18 +19,35 @@ async function runTests() {
       { lang: 'en', date: new Date(mockDate.getTime() - 120000).toISOString(), expected: `2 ${translations.en.minutesAgo}` },
       { lang: 'en', date: new Date(mockDate.getTime() + 3600000).toISOString(), expected: translations.en.justNow }, // Future date
       { lang: 'en', date: 'invalid', expected: translations.en.justNow }, // Invalid date
+      { lang: 'en', date: undefined, expected: translations.en.justNow }, // Undefined
+      { lang: 'en', date: null, expected: translations.en.justNow }, // Null
       { lang: 'en', date: new Date('2050-01-01T12:00:00Z').toISOString(), expected: translations.en.justNow }, // Extreme year (future)
       { lang: 'en', date: new Date('1900-01-01T12:00:00Z').toISOString(), expected: `126 ${translations.en.yearsAgo}` }, // Extreme past year
+      { lang: 'en', date: new Date(mockDate.getTime() - 5000).toISOString(), expected: translations.en.justNow }, // 5 seconds ago
       
       // Romanian
       { lang: 'ro', date: new Date(mockDate.getTime() - 3600000).toISOString(), expected: translations.ro.hourAgo },
       { lang: 'ro', date: new Date(mockDate.getTime()).toISOString(), expected: translations.ro.justNow },
       { lang: 'ro', date: new Date(mockDate.getTime() - 120000).toISOString(), expected: `2 ${translations.ro.minutesAgo}` },
+      { lang: 'ro', date: new Date(mockDate.getTime() + 3600000).toISOString(), expected: translations.ro.justNow }, // Future date
+      { lang: 'ro', date: 'invalid', expected: translations.ro.justNow }, // Invalid date
+      { lang: 'ro', date: undefined, expected: translations.ro.justNow }, // Undefined
+      { lang: 'ro', date: null, expected: translations.ro.justNow }, // Null
+      { lang: 'ro', date: new Date('2050-01-01T12:00:00Z').toISOString(), expected: translations.ro.justNow }, // Extreme year (future)
+      { lang: 'ro', date: new Date('1900-01-01T12:00:00Z').toISOString(), expected: `126 ${translations.ro.yearsAgo}` }, // Extreme past year
+      { lang: 'ro', date: new Date(mockDate.getTime() - 5000).toISOString(), expected: translations.ro.justNow }, // 5 seconds ago
       
       // Spanish
       { lang: 'es', date: new Date(mockDate.getTime() - 3600000).toISOString(), expected: translations.es.hourAgo },
       { lang: 'es', date: new Date(mockDate.getTime()).toISOString(), expected: translations.es.justNow },
       { lang: 'es', date: new Date(mockDate.getTime() - 120000).toISOString(), expected: `2 ${translations.es.minutesAgo}` },
+      { lang: 'es', date: new Date(mockDate.getTime() + 3600000).toISOString(), expected: translations.es.justNow }, // Future date
+      { lang: 'es', date: 'invalid', expected: translations.es.justNow }, // Invalid date
+      { lang: 'es', date: undefined, expected: translations.es.justNow }, // Undefined
+      { lang: 'es', date: null, expected: translations.es.justNow }, // Null
+      { lang: 'es', date: new Date('2050-01-01T12:00:00Z').toISOString(), expected: translations.es.justNow }, // Extreme year (future)
+      { lang: 'es', date: new Date('1900-01-01T12:00:00Z').toISOString(), expected: `126 ${translations.es.yearsAgo}` }, // Extreme past year
+      { lang: 'es', date: new Date(mockDate.getTime() - 5000).toISOString(), expected: translations.es.justNow }, // 5 seconds ago
     ];
 
     for (const tc of testCases) {
