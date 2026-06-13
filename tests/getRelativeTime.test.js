@@ -1,3 +1,5 @@
+'use strict';
+
 const app = require('../app.js');
 const { getRelativeTime, setLang, translations } = app;
 const assert = require('node:assert');
@@ -15,6 +17,10 @@ async function runTests() {
       { lang: 'en', date: new Date(mockDate.getTime() - 3600000).toISOString(), expected: translations.en.hourAgo },
       { lang: 'en', date: new Date(mockDate.getTime()).toISOString(), expected: translations.en.justNow },
       { lang: 'en', date: new Date(mockDate.getTime() - 120000).toISOString(), expected: `2 ${translations.en.minutesAgo}` },
+      { lang: 'en', date: new Date(mockDate.getTime() + 3600000).toISOString(), expected: translations.en.justNow }, // Future date
+      { lang: 'en', date: 'invalid', expected: translations.en.justNow }, // Invalid date
+      { lang: 'en', date: new Date('2050-01-01T12:00:00Z').toISOString(), expected: translations.en.justNow }, // Extreme year (future)
+      { lang: 'en', date: new Date('1900-01-01T12:00:00Z').toISOString(), expected: `126 ${translations.en.yearsAgo}` }, // Extreme past year
       
       // Romanian
       { lang: 'ro', date: new Date(mockDate.getTime() - 3600000).toISOString(), expected: translations.ro.hourAgo },
