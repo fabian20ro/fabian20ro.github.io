@@ -72,6 +72,7 @@ test('isCacheFresh edge cases', () => {
   assert.strictEqual(isCacheFresh({ timestamp: NaN }), false);
   assert.strictEqual(isCacheFresh(null), false);
   assert.strictEqual(isCacheFresh({}), false);
+  assert.strictEqual(isCacheFresh({ timestamp: now + 1000 }), false);
 });
 
 test('getBadgeActionsUrl edge cases', () => {
