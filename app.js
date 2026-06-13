@@ -148,7 +148,7 @@ const projectSections = {
       icon: '📝',
       titleKey: 'generatorRebusTitle',
       descKey: 'generatorRebusDesc',
-      linkKey: 'visitSite',
+      linkKey: 'viewGithub',
       badgeUrl:
         'https://github.com/fabian20ro/generator-rebus/workflows/Deploy%20Frontend%20to%20GitHub%20Pages/badge.svg',
       liveSiteUrl: 'https://fabian20ro.github.io/generator-rebus/'
