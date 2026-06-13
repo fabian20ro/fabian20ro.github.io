@@ -42,6 +42,25 @@ async function runTests() {
     }
 
     console.log('getRelativeTime tests passed!');
+
+    console.log('Testing getDefaultLang and normalizeLang...');
+    const defaultLang = app.getDefaultLang();
+    assert.strictEqual(typeof defaultLang, 'string');
+    assert.strictEqual(app.normalizeLang('EN'), 'en');
+    assert.strictEqual(app.normalizeLang('RO'), 'ro');
+    console.log('getDefaultLang and normalizeLang tests passed!');
+
+    console.log('Testing t() and setLang...');
+    app.setLang('ro');
+    assert.strictEqual(app.t('justNow'), 'chiar acum');
+    
+    app.setLang('en');
+    assert.strictEqual(app.t('justNow'), 'just now');
+    assert.strictEqual(app.t('hourAgo'), '1 hour ago');
+    assert.strictEqual(app.t('minutesAgo'), 'minutes ago');
+    assert.strictEqual(app.t('daysAgo'), 'days ago');
+    assert.strictEqual(app.t('yearsAgo'), 'years ago');
+    console.log('t() and setLang tests passed!');
   } catch (err) {
     console.error('getRelativeTime tests failed:');
     console.error(err.message);
