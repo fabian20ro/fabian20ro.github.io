@@ -1371,7 +1371,7 @@ function renderThankYouMessage() {
   const langData = THANK_YOU_LANGUAGES[langIndex];
 
   // Use currentLang if available (it resolves to 'ro' or 'en' typically), fallback to 'en'
-  const langName = langData.name[currentLang] ? langData.name[currentLang] : langData.name['en'];
+  const langName = langData.name[currentLang] || langData.name['en'];
 
   // Clear previous content
   container.innerHTML = '';
