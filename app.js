@@ -127,21 +127,24 @@ const projectSections = {
       icon: '📊',
       titleKey: 'wordRarityTitle',
       descKey: 'wordRarityDesc',
-      linkKey: 'viewGithub'
+      linkKey: 'viewGithub',
+      liveSiteUrl: 'https://fabian20ro.github.io/word-rarity-classifier/'
     },
     {
       href: 'https://github.com/fabian20ro/booking-filter-out',
       icon: '🔍',
       titleKey: 'bookingTitle',
       descKey: 'bookingDesc',
-      linkKey: 'viewGithub'
+      linkKey: 'viewGithub',
+      liveSiteUrl: 'https://fabian20ro.github.io/booking-filter-out/'
     },
     {
       href: 'https://github.com/fabian20ro/sudoku-python',
       icon: '🧩',
       titleKey: 'sudokuTitle',
       descKey: 'sudokuDesc',
-      linkKey: 'viewGithub'
+      linkKey: 'viewGithub',
+      liveSiteUrl: 'https://fabian20ro.github.io/sudoku-python/'
     },
     {
       href: 'https://github.com/fabian20ro/generator-rebus/',
