@@ -347,7 +347,7 @@ const translations = {
     sudokuTitle: 'Sudoku Python',
     sudokuDesc: 'Un solveur et générateur de Sudoku en Python.',
     bookingTitle: 'Filtre de réservation',
-    bookingDesc: 'Une extension pour filtrante les résultats de booking.com (lieux pet-friendly).',
+    bookingDesc: 'Une extension pour filtrer les résultats de booking.com (lieux pet-friendly).',
     harnessManagerTitle: 'Harness Manager',
     harnessManagerDesc: 'Visualisez quels fichiers votre éditeur traite dans vos projets Git.',
     visitSite: 'Visiter le site →',
