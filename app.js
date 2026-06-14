@@ -166,7 +166,8 @@ const translations = {
     emotIdTitle: 'Emot-ID',
     emotIdDesc: 'An emotion identification tool.',
     betterStbTitle: 'Another STB App',
-    betterStbDesc: 'An alternative STB utility app with a different workflow and outputs.',
+    betterStbDesc:
+      'A simpler alternative with all data on your phone and open source code. The goal is not to replace the official app, InfoTB.',
     imagePromptTitle: 'Image Prompt Expander',
     imagePromptDesc:
       'A tool that helps expand and enhance image generation prompts for better AI-generated images.',
@@ -271,7 +272,8 @@ const translations = {
     sudokuTitle: 'Sudoku Python',
     sudokuDesc: 'Rezolvă și generează puzzle-uri Sudoku, scris în Python.',
     bookingTitle: 'Booking Filter Out',
-    bookingDesc: 'O extensie de browser pentru a filtra rezultatele booking.com, eliminând locațiile care nu acceptă animale de companie.',
+    bookingDesc:
+      'O extensie de browser pentru a filtra rezultatele booking.com, eliminând locațiile care nu acceptă animale de companie.',
     harnessManagerTitle: 'Harness Manager',
     harnessManagerDesc:
       'Vezi rapid ce fișiere procesează editorul și configurațiile tale în proiectele Git.',
