@@ -49,9 +49,10 @@ test('normalizeLang edge cases', () => {
   assert.strictEqual(normalizeLang('RO'), 'ro');
   assert.strictEqual(normalizeLang('ro-RO'), 'ro');
   assert.strictEqual(normalizeLang('ro_RO'), 'ro');
-  assert.strictEqual(normalizeLang('EN'), 'en');
-  assert.strictEqual(normalizeLang('en-US'), 'en');
-  assert.strictEqual(normalizeLang('fr-FR'), 'fr');
+  assert.strictEqual(normalizeLang('  ro-RO  '), 'ro');
+  assert.strictEqual(normalizeLang('EN-US'), 'en');
+  assert.strictEqual(normalizeLang('en-US '), 'en');
+  assert  .strictEqual(normalizeLang('fr-FR'), 'fr');
   assert.strictEqual(normalizeLang('fr_FR'), 'fr');
   assert.strictEqual(normalizeLang('es-ES'), 'es');
   assert.strictEqual(normalizeLang('es_ES'), 'es');
@@ -60,7 +61,10 @@ test('normalizeLang edge cases', () => {
   assert.strictEqual(normalizeLang('pt-PT'), 'pt');
   assert.strictEqual(normalizeLang('anything'), 'en');
   assert.strictEqual(normalizeLang(undefined), 'en');
+  assert.strictEqual(normalizeLang(null), 'en');
   assert.strictEqual(normalizeLang(''), 'en');
+  assert.strictEqual(normalizeLang(123), 'en');
+  assert.strictEqual(normalizeLang('  '), 'en');
 });
 
 test('isCacheFresh edge cases', () => {
