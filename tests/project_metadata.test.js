@@ -2,7 +2,7 @@ const test = require('node:test');
 const assert = require('node:assert');
 const { projectSections, translations } = require('../app.js');
 
-const languages = ['en', 'ro', 'fr', 'es'];
+const languages = ['en', 'ro', 'fr', 'es', 'de', 'it', 'pt'];
 
 test('projectSections metadata translation completeness', () => {
   for (const lang of languages) {
