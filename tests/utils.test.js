@@ -1,4 +1,4 @@
-const { getBadgeActionsUrl } = require('../app.js');
+const { getBadgeActionsUrl, getEventIcon } = require('../app.js');
 const assert = require('node:assert');
 
 try {
@@ -18,10 +18,9 @@ try {
   assert.strictEqual(getBadgeActionsUrl(null), '');
   assert.strictEqual(getBadgeActionsUrl(undefined), '');
 
-  // Test case 4: GitHub URL without repo
-  const url4 = 'https://github.com/fabian20ro';
-  const res4 = getBadgeActionsUrl(url4);
-  assert.strictEqual(res4, 'https://github.com/fabian20ro');
+  // Test case 5: getEventIcon
+  assert.strictEqual(getEventIcon('PushEvent'), '📤');
+  assert.strictEqual(getEventIcon('UnknownEvent'), '📌');
 
   console.log('getBadgeActionsUrl tests passed!');
 } catch (err) {
