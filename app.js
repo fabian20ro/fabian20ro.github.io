@@ -1036,29 +1036,28 @@ function getRelativeTime(dateString) {
   }
 
   const diffSec = Math.floor(diffMs / 1000);
-  const diffMins = Math.floor(diffSec / 60);
-  const diffHours = Math.floor(diffMins / 60);
-  const diffDays = Math.floor(diffHours / 24);
-  const diffMonths = Math.floor(diffDays / 30);
-  const diffYears = Math.floor(diffDays / 365);
-
   if (diffSec < 60) return t('justNow');
+  const diffMins = Math.floor(diffSec / 60);
   if (diffMins === 1) return t('minuteAgo');
   if (diffMins < 60) return `${diffMins} ${t('minutesAgo')}`;
+  const diffHours = Math.floor(diffMins / 60);
   if (diffHours === 1) return t('hourAgo');
   if (diffHours < 24) return `${diffHours} ${t('hoursAgo')}`;
+  const diffDays = Math.floor(diffHours / 24);
   if (diffDays === 1) return t('dayAgo');
   if (diffDays < 30) return `${diffDays} ${t('daysAgo')}`;
+  const diffMonths = Math.floor(diffDays / 30);
   if (diffMonths === 1) return t('monthAgo');
   if (diffMonths < 12) return `${diffMonths} ${t('monthsAgo')}`;
+  const diffYears = Math.floor(diffDays / 365);
   if (diffYears === 1) return t('yearAgo');
+  if (diffYears === 0 && diffMonths >= 12) return `${diffMonths} ${t('monthsAgo')}`;
   return `${diffYears} ${t('yearsAgo')}`;
 }
 
 function getEventIcon(type) {
   return EVENT_ICONS[type] || '📌';
 }
-
 function parseRepoName(repoName) {
   if (typeof repoName !== 'string') {
     return null;
