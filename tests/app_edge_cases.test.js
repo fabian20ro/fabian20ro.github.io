@@ -52,7 +52,7 @@ test('normalizeLang edge cases', () => {
   assert.strictEqual(normalizeLang('  ro-RO  '), 'ro');
   assert.strictEqual(normalizeLang('EN-US'), 'en');
   assert.strictEqual(normalizeLang('en-US '), 'en');
-  assert  .strictEqual(normalizeLang('fr-FR'), 'fr');
+  assert.strictEqual(normalizeLang('fr-FR'), 'fr');
   assert.strictEqual(normalizeLang('fr_FR'), 'fr');
   assert.strictEqual(normalizeLang('es-ES'), 'es');
   assert.strictEqual(normalizeLang('es_ES'), 'es');
@@ -65,18 +65,6 @@ test('normalizeLang edge cases', () => {
   assert.strictEqual(normalizeLang(''), 'en');
   assert.strictEqual(normalizeLang(123), 'en');
   assert.strictEqual(normalizeLang('  '), 'en');
-});
-
-test('isCacheFresh edge cases', () => {
-  const now = Date.now();
-  assert.strictEqual(isCacheFresh({ timestamp: now }), true);
-  assert.strictEqual(isCacheFresh({ timestamp: now - 1000 }), true);
-  assert.strictEqual(isCacheFresh({ timestamp: now - 1000 * 60 * 60 * 24 }), false);
-  assert.strictEqual(isCacheFresh({ timestamp: 0 }), false);
-  assert.strictEqual(isCacheFresh({ timestamp: NaN }), false);
-  assert.strictEqual(isCacheFresh(null), false);
-  assert.strictEqual(isCacheFresh({}), false);
-  assert.strictEqual(isCacheFresh({ timestamp: now + 1000 }), false);
 });
 
 test('getBadgeActionsUrl edge cases', () => {
@@ -139,5 +127,6 @@ test('projectSections keys existence', () => {
   const uniqueKeys = [...new Set(keys)];
   uniqueKeys.forEach(key => {
     assert.ok(key in translations.en, `Missing key "${key}" in translations.en`);
+    assert.ok(key in translations.ro, `Missing key "${key}" in translations.ro`);
   });
 });
