@@ -126,3 +126,18 @@ test('translations', () => {
   );
   assert.strictEqual(t('title'), 'Les projets de Fabian');
 });
+test('projectSections keys existence', () => {
+  const keys = [];
+  projectSections.liveProjects.forEach(p => {
+    keys.push(p.titleKey);
+    keys.push(p.descKey);
+  });
+  projectSections.repositories.forEach(r => {
+    keys.push(r.titleKey);
+    keys.push(r.descKey);
+  });
+  const uniqueKeys = [...new Set(keys)];
+  uniqueKeys.forEach(key => {
+    assert.ok(key in translations.en, `Missing key "${key}" in translations.en`);
+  });
+});
