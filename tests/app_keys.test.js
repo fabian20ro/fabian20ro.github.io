@@ -30,8 +30,22 @@ try {
   });
 
   console.log('Translation key contract tests passed!');
+
+  console.log('Running THANK_YOU_LANGUAGES integrity tests...');
+  app.THANK_YOU_LANGUAGES.forEach((langData, index) => {
+    assert.ok(langData.name, `Index ${index}: Missing name object`);
+    assert.ok(typeof langData.name === 'object', `Index ${index}: name must be an object`);
+    assert.ok(langData.name.en, `Index ${index}: Missing 'en' key in lang.name`);
+    assert.ok(langData.flag, `Index ${index}: Missing flag`);
+    assert.ok(langData.thankYou, `Index ${index}: Missing thankYou string`);
+    assert.ok(langData.thankYouPhonetic, `Index ${index}: Missing thankYouPhonetic string`);
+    assert.ok(langData.welcome, `Index ${index}: Missing welcome string`);
+    assert.ok(langData.welcomePhonetic, `Index ${index}: Missing welcomePhonetic string`);
+  });
+  console.log('THANK_YOU_LANGUAGES integrity tests passed!');
+
 } catch (err) {
-  console.error('Translation key contract tests failed:');
+  console.error('Translation tests failed:');
   console.error(err.message);
   process.exit(1);
 }
