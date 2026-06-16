@@ -127,30 +127,34 @@ const projectSections = {
       icon: '📊',
       titleKey: 'wordRarityTitle',
       descKey: 'wordRarityDesc',
-      linkKey: 'viewGithub'
+      linkKey: 'viewGithub',
+      liveSiteUrl: 'https://fabian20ro.github.io/word-rarity-classifier/'
     },
     {
       href: 'https://github.com/fabian20ro/booking-filter-out',
       icon: '🔍',
       titleKey: 'bookingTitle',
       descKey: 'bookingDesc',
-      linkKey: 'viewGithub'
+      linkKey: 'viewGithub',
+      liveSiteUrl: 'https://fabian20ro.github.io/booking-filter-out/'
     },
     {
       href: 'https://github.com/fabian20ro/sudoku-python',
       icon: '🧩',
       titleKey: 'sudokuTitle',
       descKey: 'sudokuDesc',
-      linkKey: 'viewGithub'
+      linkKey: 'viewGithub',
+      liveSiteUrl: 'https://fabian20ro.github.io/sudoku-python/'
     },
     {
       href: 'https://github.com/fabian20ro/generator-rebus/',
       icon: '📝',
       titleKey: 'generatorRebusTitle',
       descKey: 'generatorRebusDesc',
-      linkKey: 'visitSite',
+      linkKey: 'viewGithub',
       badgeUrl:
-        'https://github.com/fabian20ro/generator-rebus/workflows/Deploy%20Frontend%20to%20GitHub%20Pages/badge.svg'
+        'https://github.com/fabian20ro/generator-rebus/workflows/Deploy%20Frontend%20to%20GitHub%20Pages/badge.svg',
+      liveSiteUrl: 'https://fabian20ro.github.io/generator-rebus/'
     }
   ]
 };
@@ -165,7 +169,8 @@ const translations = {
     emotIdTitle: 'Emot-ID',
     emotIdDesc: 'An emotion identification tool.',
     betterStbTitle: 'Another STB App',
-    betterStbDesc: 'An alternative STB utility app with a different workflow and outputs.',
+    betterStbDesc:
+      'A simpler alternative with all data on your phone and open source code. The goal is not to replace the official app, InfoTB.',
     imagePromptTitle: 'Image Prompt Expander',
     imagePromptDesc:
       'A tool that helps expand and enhance image generation prompts for better AI-generated images.',
@@ -193,7 +198,7 @@ const translations = {
     sudokuDesc: 'A Python-based Sudoku solver and generator.',
     bookingTitle: 'Booking Filter Out',
     bookingDesc:
-      'A browser extension to filter booking.com results to greyout locations that accept pets.',
+      'A browser extension to filter out locations that do not accept pets on booking.com.',
     harnessManagerTitle: 'Harness Manager',
     harnessManagerDesc:
       'See which files your editor and configurations actually process in your Git projects.',
@@ -270,7 +275,8 @@ const translations = {
     sudokuTitle: 'Sudoku Python',
     sudokuDesc: 'Rezolvă și generează puzzle-uri Sudoku, scris în Python.',
     bookingTitle: 'Booking Filter Out',
-    bookingDesc: 'Extensie de browser care estompează locațiile pet-friendly de pe booking.com.',
+    bookingDesc:
+      'O extensie de browser pentru a filtra rezultatele booking.com, eliminând locațiile care nu acceptă animale de companie.',
     harnessManagerTitle: 'Harness Manager',
     harnessManagerDesc:
       'Vezi rapid ce fișiere procesează editorul și configurațiile tale în proiectele Git.',
@@ -346,7 +352,7 @@ const translations = {
     sudokuTitle: 'Sudoku Python',
     sudokuDesc: 'Un solveur et générateur de Sudoku en Python.',
     bookingTitle: 'Filtre de réservation',
-    bookingDesc: 'Une extension pour filtrante les résultats de booking.com (lieux pet-friendly).',
+    bookingDesc: 'Une extension pour filtrer les résultats de booking.com (lieux pet-friendly).',
     harnessManagerTitle: 'Harness Manager',
     harnessManagerDesc: 'Visualisez quels fichiers votre éditeur traite dans vos projets Git.',
     visitSite: 'Visiter le site →',
@@ -759,7 +765,8 @@ function normalizeLang(lang) {
 }
 
 function getDefaultLang() {
-  const browserLang = navigator.language || (navigator.languages && navigator.languages[0]) || 'en';
+  const nav = typeof navigator === 'undefined' ? null : navigator;
+  const browserLang = nav?.language || (nav?.languages && nav.languages[0]) || 'en';
   return normalizeLang(browserLang);
 }
 
@@ -1016,6 +1023,9 @@ function renderProjectCards() {
 }
 
 function getRelativeTime(dateString) {
+  if (!dateString) {
+    return t('justNow');
+  }
   const date = new Date(dateString);
   if (Number.isNaN(date.getTime())) {
     return t('justNow');
@@ -1027,29 +1037,28 @@ function getRelativeTime(dateString) {
   }
 
   const diffSec = Math.floor(diffMs / 1000);
-  const diffMins = Math.floor(diffSec / 60);
-  const diffHours = Math.floor(diffMins / 60);
-  const diffDays = Math.floor(diffHours / 24);
-  const diffMonths = Math.floor(diffDays / 30);
-  const diffYears = Math.floor(diffDays / 365);
-
   if (diffSec < 60) return t('justNow');
+  const diffMins = Math.floor(diffSec / 60);
   if (diffMins === 1) return t('minuteAgo');
   if (diffMins < 60) return `${diffMins} ${t('minutesAgo')}`;
+  const diffHours = Math.floor(diffMins / 60);
   if (diffHours === 1) return t('hourAgo');
   if (diffHours < 24) return `${diffHours} ${t('hoursAgo')}`;
+  const diffDays = Math.floor(diffHours / 24);
   if (diffDays === 1) return t('dayAgo');
   if (diffDays < 30) return `${diffDays} ${t('daysAgo')}`;
+  const diffMonths = Math.floor(diffDays / 30);
   if (diffMonths === 1) return t('monthAgo');
   if (diffMonths < 12) return `${diffMonths} ${t('monthsAgo')}`;
+  const diffYears = Math.floor(diffDays / 365);
   if (diffYears === 1) return t('yearAgo');
+  if (diffYears === 0 && diffMonths >= 12) return `${diffMonths} ${t('monthsAgo')}`;
   return `${diffYears} ${t('yearsAgo')}`;
 }
 
 function getEventIcon(type) {
   return EVENT_ICONS[type] || '📌';
 }
-
 function parseRepoName(repoName) {
   if (typeof repoName !== 'string') {
     return null;
@@ -1370,7 +1379,7 @@ function renderThankYouMessage() {
   const langData = THANK_YOU_LANGUAGES[langIndex];
 
   // Use currentLang if available (it resolves to 'ro' or 'en' typically), fallback to 'en'
-  const langName = langData.name[currentLang] ? langData.name[currentLang] : langData.name['en'];
+  const langName = langData.name[currentLang] || langData.name['en'];
 
   // Clear previous content
   container.innerHTML = '';

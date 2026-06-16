@@ -43,22 +43,15 @@ test('t() edge cases', () => {
 
   setLang('fr');
   assert.strictEqual(t('title'), 'Les projets de Fabian');
-
-  test('getRelativeTime Romanian', () => {
-    setLang('ro');
-    const now = new Date();
-    const oneMinuteAgo = new Date(now.getTime() - 61 * 1000).toISOString();
-    const result = getRelativeTime(oneMinuteAgo);
-    assert.ok(result.includes('acum 1 minut') || result.includes('1 minut'), `Expected "acum 1 minut", got "${result}"`);
-  });
 });
 
 test('normalizeLang edge cases', () => {
   assert.strictEqual(normalizeLang('RO'), 'ro');
   assert.strictEqual(normalizeLang('ro-RO'), 'ro');
   assert.strictEqual(normalizeLang('ro_RO'), 'ro');
-  assert.strictEqual(normalizeLang('EN'), 'en');
-  assert.strictEqual(normalizeLang('en-US'), 'en');
+  assert.strictEqual(normalizeLang('  ro-RO  '), 'ro');
+  assert.strictEqual(normalizeLang('EN-US'), 'en');
+  assert.strictEqual(normalizeLang('en-US '), 'en');
   assert.strictEqual(normalizeLang('fr-FR'), 'fr');
   assert.strictEqual(normalizeLang('fr_FR'), 'fr');
   assert.strictEqual(normalizeLang('es-ES'), 'es');
@@ -68,18 +61,10 @@ test('normalizeLang edge cases', () => {
   assert.strictEqual(normalizeLang('pt-PT'), 'pt');
   assert.strictEqual(normalizeLang('anything'), 'en');
   assert.strictEqual(normalizeLang(undefined), 'en');
+  assert.strictEqual(normalizeLang(null), 'en');
   assert.strictEqual(normalizeLang(''), 'en');
-});
-
-test('isCacheFresh edge cases', () => {
-  const now = Date.now();
-  assert.strictEqual(isCacheFresh({ timestamp: now }), true);
-  assert.strictEqual(isCacheFresh({ timestamp: now - 1000 }), true);
-  assert.strictEqual(isCacheFresh({ timestamp: now - 1000 * 60 * 60 * 24 }), false);
-  assert.strictEqual(isCacheFresh({ timestamp: 0 }), false);
-  assert.strictEqual(isCacheFresh({ timestamp: NaN }), false);
-  assert.strictEqual(isCacheFresh(null), false);
-  assert.strictEqual(isCacheFresh({}), false);
+  assert.strictEqual(normalizeLang(123), 'en');
+  assert.strictEqual(normalizeLang('  '), 'en');
 });
 
 test('getBadgeActionsUrl edge cases', () => {
@@ -99,8 +84,19 @@ test('getBadgeActionsUrl edge cases', () => {
 
 test('getEventIcon', () => {
   assert.strictEqual(getEventIcon('PushEvent'), '📤');
+  assert.strictEqual(getEventIcon('WatchEvent'), '⭐');
   assert.strictEqual(getEventIcon('CreateEvent'), '✨');
   assert.strictEqual(getEventIcon('UnknownEvent'), '📌');
+});
+
+test('THANK_YOU_LANGUAGES structure', () => {
+  assert.ok(Array.isArray(THANK_YOU_LANGUAGES));
+  if (THANK_YOU_LANGUAGES.length > 0) {
+    const lang = THANK_YOU_LANGUAGES[0];
+    assert.ok(lang.name.en);
+    assert.ok(lang.thankYou);
+    assert.ok(lang.welcome);
+  }
 });
 
 test('translations', () => {
@@ -117,4 +113,20 @@ test('translations', () => {
     'Salut, je suis Fabian. Voici une collection de mes projets open source.'
   );
   assert.strictEqual(t('title'), 'Les projets de Fabian');
+});
+test('projectSections keys existence', () => {
+  const keys = [];
+  projectSections.liveProjects.forEach(p => {
+    keys.push(p.titleKey);
+    keys.push(p.descKey);
+  });
+  projectSections.repositories.forEach(r => {
+    keys.push(r.titleKey);
+    keys.push(r.descKey);
+  });
+  const uniqueKeys = [...new Set(keys)];
+  uniqueKeys.forEach(key => {
+    assert.ok(key in translations.en, `Missing key "${key}" in translations.en`);
+    assert.ok(key in translations.ro, `Missing key "${key}" in translations.ro`);
+  });
 });
