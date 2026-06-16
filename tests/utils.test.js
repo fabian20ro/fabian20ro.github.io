@@ -21,6 +21,8 @@ try {
   // Test case 4: getEventIcon
   assert.strictEqual(getEventIcon('PushEvent'), '📤');
   assert.strictEqual(getEventIcon('UnknownEvent'), '📌');
+  assert.strictEqual(getEventIcon(''), '📌');
+  assert.strictEqual(getEventIcon(null), '📌');
 
   // Test case 5: getRelativeTime
   const now = Date.now();
