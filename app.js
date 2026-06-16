@@ -254,7 +254,7 @@ const translations = {
     imagePromptDesc:
       'Instrument care ajută la extinderea și îmbunătățirea prompt-urilor pentru imagini generate de AI.',
     propositionsTitle: 'Propoziții Absurde',
-    propositionsDesc: 'Propoziții din cuvinte aleatoare, mereu absurde, uneori nostime.',
+    propositionsDesc: 'Propoziții din cuvinte aleatoare, mereu absurde, uneori amuzante.',
     passwordGenTitle: 'Generator de Parole',
     passwordGenDesc:
       'Generează parole sigure criptografic prin Web Crypto API. Cinci parole solide dintr-o singură apăsare.',
@@ -331,7 +331,7 @@ const translations = {
     imagePromptTitle: 'Image Prompt Expander',
     imagePromptDesc: 'Un outil qui aide à améliorer les prompts pour images générées par IA.',
     propositionsTitle: 'Phrases absurdes',
-    propositionsDesc: 'Des phrases aléatoires, toujours absurdes, parfois nostalgiques.',
+    propositionsDesc: 'Des phrases aléatoires, toujours absurdes, parfois drôles.',
     passwordGenTitle: 'Générateur de mot de passe',
     passwordGenDesc:
       "Génère des mots de passe sûrs via l'API Web Crypto. Cinq mots de passe en un clic.",
