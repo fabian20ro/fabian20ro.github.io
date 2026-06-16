@@ -765,7 +765,8 @@ function normalizeLang(lang) {
 }
 
 function getDefaultLang() {
-  const browserLang = navigator.language || (navigator.languages && navigator.languages[0]) || 'en';
+  const nav = typeof navigator === 'undefined' ? null : navigator;
+  const browserLang = nav?.language || (nav?.languages && nav.languages[0]) || 'en';
   return normalizeLang(browserLang);
 }
 
