@@ -1,4 +1,4 @@
-const { getBadgeActionsUrl, getEventIcon } = require('../app.js');
+const { getBadgeActionsUrl, getEventIcon, getRelativeTime } = require('../app.js');
 const assert = require('node:assert');
 
 try {
@@ -18,13 +18,23 @@ try {
   assert.strictEqual(getBadgeActionsUrl(null), '');
   assert.strictEqual(getBadgeActionsUrl(undefined), '');
 
-  // Test case 5: getEventIcon
+  // Test case 4: getEventIcon
   assert.strictEqual(getEventIcon('PushEvent'), '📤');
   assert.strictEqual(getEventIcon('UnknownEvent'), '📌');
 
+  // Test case 5: getRelativeTime
+  const now = Date.now();
+  assert.strictEqual(getRelativeTime(), 'just now');
+  assert.strictEqual(getRelativeTime(new Date(now - 1000).toISOString()), 'just now');
+  assert.strictEqual(getRelativeTime(new Date(now - 60000).toISOString()), '1 minute ago');
+  assert.strictEqual(getRelativeTime(new Date(now - 3600000).toISOString()), '1 hour ago');
+  assert.strictEqual(getRelativeTime(new Date(now - 86400000).toISOString()), '1 day ago');
+
   console.log('getBadgeActionsUrl tests passed!');
+  console.log('getEventIcon tests passed!');
+  console.log('getRelativeTime tests passed!');
 } catch (err) {
-  console.error('getBadgeActionsUrl tests failed:');
+  console.error('Tests failed:');
   console.error(err);
   process.exit(1);
 }
