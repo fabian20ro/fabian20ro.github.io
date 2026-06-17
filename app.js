@@ -603,7 +603,7 @@ const translations = {
     copyTitle: 'Copia il link negli appunti',
     copy: 'Copia',
     next_thought: 'Prossimo pensiero',
-    app_status: 'Stato dell\'applicazione',
+    app_status: "Stato dell'applicazione",
     toggleLanguage: 'Cambia lingua',
     switchToRomanian: 'Passa al rumeno',
     switchToEnglish: "Passa all'inglese",
