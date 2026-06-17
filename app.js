@@ -275,8 +275,8 @@ const translations = {
     sudokuTitle: 'Sudoku Python',
     sudokuDesc: 'Rezolvă și generează puzzle-uri Sudoku, scris în Python.',
     bookingTitle: 'Filtru de rezervări',
-      bookingDesc:
-        'O extensie de browser pentru a filtra rezultatele booking.com, eliminând locațiile care nu acceptă animale de companie.',
+    bookingDesc:
+      'O extensie de browser pentru a filtra rezultatele booking.com, eliminând locațiile care nu acceptă animale de companie.',
     harnessManagerTitle: 'Harness Manager',
     harnessManagerDesc:
       'Vezi rapid ce fișiere procesează editorul și configurațiile tale în proiectele Git.',
