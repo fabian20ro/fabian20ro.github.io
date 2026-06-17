@@ -196,9 +196,9 @@ const translations = {
     wordRarityDesc: 'A classifier that scores and categorizes word rarity.',
     sudokuTitle: 'Sudoku Python',
     sudokuDesc: 'A Python-based Sudoku solver and generator.',
-    bookingTitle: 'Booking Filter Out',
+    bookingTitle: 'Filtru de rezervări',
     bookingDesc:
-      'A browser extension to filter out locations that do not accept pets on booking.com.',
+      'O extensie de browser pentru a filtra rezultatele booking.com, eliminând locațiile care nu acceptă animale de companie.',
     harnessManagerTitle: 'Harness Manager',
     harnessManagerDesc:
       'See which files your editor and configurations actually process in your Git projects.',
@@ -274,9 +274,9 @@ const translations = {
     wordRarityDesc: 'Clasificator care punctează și categorisește raritatea cuvintelor.',
     sudokuTitle: 'Sudoku Python',
     sudokuDesc: 'Rezolvă și generează puzzle-uri Sudoku, scris în Python.',
-    bookingTitle: 'Booking Filter Out',
-    bookingDesc:
-      'O extensie de browser pentru a filtra rezultatele booking.com, eliminând locațiile care nu acceptă animale de companie.',
+    bookingTitle: 'Filtru de rezervări',
+      bookingDesc:
+        'O extensie de browser pentru a filtra rezultatele booking.com, eliminând locațiile care nu acceptă animale de companie.',
     harnessManagerTitle: 'Harness Manager',
     harnessManagerDesc:
       'Vezi rapid ce fișiere procesează editorul și configurațiile tale în proiectele Git.',
