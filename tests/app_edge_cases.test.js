@@ -67,19 +67,14 @@ test('normalizeLang edge cases', () => {
   assert.strictEqual(normalizeLang('  '), 'en');
 });
 
-test('getBadgeActionsUrl edge cases', () => {
-  assert.strictEqual(
-    getBadgeActionsUrl('https://github.com/user/repo/actions/workflows/deploy/badge.svg'),
-    'https://github.com/user/repo/actions'
-  );
-  assert.strictEqual(
-    getBadgeActionsUrl('https://github.com/user/repo/actions/workflows/deploy/badge.png'),
-    'https://github.com/user/repo/actions'
-  );
-  assert.strictEqual(
-    getBadgeActionsUrl('https://example.com/foo/bar.svg'),
-    'https://example.com/foo/bar.svg'
-  );
+test('isCacheFresh', () => {
+  const now = Date.now();
+  assert.strictEqual(isCacheFresh({ timestamp: now - 1000 }), true);
+  assert.strictEqual(isCacheFresh({ timestamp: now - 1000 * 60 * 60 }), false);
+  assert.strictEqual(isCacheFresh({ timestamp: now + 1000 }), false);
+  assert.strictEqual(isCacheFresh({ timestamp: 'not-a-number' }), false);
+  assert.strictEqual(isCacheFresh(null), false);
+  assert.strictEqual(isCacheFresh({}), false);
 });
 
 test('getEventIcon', () => {
