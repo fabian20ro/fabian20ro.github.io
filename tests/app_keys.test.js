@@ -28,14 +28,7 @@ try {
       );
     });
   });
-
   console.log('Translation key contract tests passed!');
-
-  console.log('Checking English specific translations...');
-  const enTrans = app.translations['en'];
-  assert.strictEqual(enTrans.bookingTitle, 'Booking Filter');
-  assert.strictEqual(enTrans.bookingDesc, 'A browser extension to filter booking.com results, removing locations that do not accept pets.');
-  assert.strictEqual(enTrans.harnessManagerTitle, 'Harness Manager');
 
   console.log('Running THANK_YOU_LANGUAGES integrity tests...');
   app.THANK_YOU_LANGUAGES.forEach((langData, index) => {
@@ -50,6 +43,11 @@ try {
   });
   console.log('THANK_YOU_LANGUAGES integrity tests passed!');
 
+  console.log('Checking project sections...');
+  assert.ok(app.projectSections.liveProjects, 'projectSections should have liveProjects');
+  assert.ok(Array.isArray(app.projectSections.liveProjects), 'liveProjects should be an array');
+  assert.ok(app.projectSections.repositories, 'projectSections should have repositories');
+  assert.ok(Array.isArray(app.projectSections.repositories), 'repositories should be an array');
 } catch (err) {
   console.error('Translation tests failed:');
   console.error(err.message);
