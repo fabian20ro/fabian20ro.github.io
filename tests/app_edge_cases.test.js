@@ -87,6 +87,8 @@ test('getEventIcon', () => {
   assert.strictEqual(getEventIcon('WatchEvent'), '⭐');
   assert.strictEqual(getEventIcon('CreateEvent'), '✨');
   assert.strictEqual(getEventIcon('UnknownEvent'), '📌');
+  assert.strictEqual(getEventIcon(''), '📌');
+  assert.strictEqual(getEventIcon(null), '📌');
 });
 
 test('THANK_YOU_LANGUAGES structure', () => {
@@ -114,6 +116,17 @@ test('translations', () => {
   );
   assert.strictEqual(t('title'), 'Les projets de Fabian');
 });
+
+test('isCacheFresh', () => {
+  const now = Date.now();
+  assert.strictEqual(isCacheFresh({ timestamp: now }), true);
+  assert.strictEqual(isCacheFresh({ timestamp: now - 1000 }), true);
+  assert.strictEqual(isCacheFresh({ timestamp: now - 60 * 60 * 1000 }), false);
+  assert.strictEqual(isCacheFresh({ timestamp: now + 1000 }), false);
+  assert.strictEqual(isCacheFresh(null), false);
+  assert.strictEqual(isCacheFresh({}), false);
+});
+
 test('projectSections keys existence', () => {
   const keys = [];
   projectSections.liveProjects.forEach(p => {
