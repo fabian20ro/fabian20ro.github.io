@@ -207,6 +207,7 @@ const translations = {
     copySuccess: 'Copied!',
     viewAllGithub: 'View all projects on GitHub &rarr;',
     next_thought: 'Next thought',
+    app_status: 'App status',
     copy: 'Copy link',
     copyTitle: 'Copy-link to clipboard',
     toggleLanguage: 'Toggle language',
@@ -287,6 +288,7 @@ const translations = {
     copyTitle: 'Copiere link către clipboard',
     copy: 'Copiere',
     next_thought: 'Următoarea gândire',
+    app_status: 'Statusul aplicației',
     toggleLanguage: 'Schimbă limba',
     switchToRomanian: 'Schimbă în română',
     switchToEnglish: 'Schimbă în engleză',
@@ -315,7 +317,8 @@ const translations = {
     yearsAgo: 'ani în urmă',
     item: 'element',
     in: 'în',
-    unknownRepo: 'depozit'
+    unknownRepo: 'depozit',
+    app_status: 'Statusul aplicației'
   },
   fr: {
     title: 'Les projets de Fabian',

@@ -40,6 +40,7 @@ test('t() edge cases', () => {
 
   setLang('ro');
   assert.strictEqual(t('title'), 'Proiectele lui Fabian');
+  assert.strictEqual(t('app_status'), 'Statusul aplicației');
 
   setLang('fr');
   assert.strictEqual(t('title'), 'Les projets de Fabian');
@@ -103,6 +104,7 @@ test('translations', () => {
     'Salut, sunt Fabian. Aici vei găsi o colecție de proiecte open source.'
   );
   assert.strictEqual(t('title'), 'Proiectele lui Fabian');
+  assert.strictEqual(t('app_status'), 'Statusul aplicației');
 
   setLang('fr');
   assert.strictEqual(
