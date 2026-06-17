@@ -31,6 +31,12 @@ try {
 
   console.log('Translation key contract tests passed!');
 
+  console.log('Checking English specific translations...');
+  const enTrans = app.translations['en'];
+  assert.strictEqual(enTrans.bookingTitle, 'Booking Filter');
+  assert.strictEqual(enTrans.bookingDesc, 'A browser extension to filter booking.com results, removing locations that do not accept pets.');
+  assert.strictEqual(enTrans.harnessManagerTitle, 'Harness Manager');
+
   console.log('Running THANK_YOU_LANGUAGES integrity tests...');
   app.THANK_YOU_LANGUAGES.forEach((langData, index) => {
     assert.ok(langData.name, `Index ${index}: Missing name object`);
