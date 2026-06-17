@@ -143,3 +143,11 @@ test('projectSections keys existence', () => {
     assert.ok(key in translations.ro, `Missing key "${key}" in translations.ro`);
   });
 });
+
+test('getRelativeTime edge cases', () => {
+  setLang('en');
+  assert.strictEqual(getRelativeTime(new Date(Date.now() - 60000).toISOString()), '1 minute ago');
+  assert.strictEqual(getRelativeTime(new Date(Date.now() - 60000 * 1.5).toISOString()), '1 minute ago');
+  assert.strictEqual(getRelativeTime(new Date(Date.now() - 60000 * 2).toISOString()), '2 minutes ago');
+  assert.strictEqual(getRelativeTime(new Date(Date.now() - 3600000).toISOString()), '1 hour ago');
+});
