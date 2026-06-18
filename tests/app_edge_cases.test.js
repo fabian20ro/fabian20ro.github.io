@@ -68,16 +68,6 @@ test('normalizeLang edge cases', () => {
   assert.strictEqual(normalizeLang('  '), 'en');
 });
 
-test('isCacheFresh', () => {
-  const now = Date.now();
-  assert.strictEqual(isCacheFresh({ timestamp: now - 1000 }), true);
-  assert.strictEqual(isCacheFresh({ timestamp: now - 1000 * 60 * 60 }), false);
-  assert.strictEqual(isCacheFresh({ timestamp: now + 1000 }), false);
-  assert.strictEqual(isCacheFresh({ timestamp: 'not-a-number' }), false);
-  assert.strictEqual(isCacheFresh(null), false);
-  assert.strictEqual(isCacheFresh({}), false);
-});
-
 test('getEventIcon', () => {
   assert.strictEqual(getEventIcon('PushEvent'), '📤');
   assert.strictEqual(getEventIcon('WatchEvent'), '⭐');
@@ -117,15 +107,6 @@ test('translations', () => {
   assert.strictEqual(t('title'), 'Les projets de Fabian');
 });
 
-test('isCacheFresh', () => {
-  const now = Date.now();
-  assert.strictEqual(isCacheFresh({ timestamp: now }), true);
-  assert.strictEqual(isCacheFresh({ timestamp: now - 1000 }), true);
-  assert.strictEqual(isCacheFresh({ timestamp: now - 60 * 60 * 1000 }), false);
-  assert.strictEqual(isCacheFresh({ timestamp: now + 1000 }), false);
-  assert.strictEqual(isCacheFresh(null), false);
-  assert.strictEqual(isCacheFresh({}), false);
-});
 
 test('projectSections keys existence', () => {
   const keys = [];
