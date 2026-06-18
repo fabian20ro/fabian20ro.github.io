@@ -31,7 +31,7 @@ const EVENT_ICONS = {
   CreateEvent: '✨',
   WatchEvent: '⭐',
   ForkEvent: '🍴',
-  IssuesEvent: '🐛',
+  IssueEvent: '🐛',
   PullRequestEvent: '🔀',
   IssueCommentEvent: '💬',
   PullRequestReviewCommentEvent: '💬'

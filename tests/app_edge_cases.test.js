@@ -82,6 +82,7 @@ test('getEventIcon', () => {
   assert.strictEqual(getEventIcon('PushEvent'), '📤');
   assert.strictEqual(getEventIcon('WatchEvent'), '⭐');
   assert.strictEqual(getEventIcon('CreateEvent'), '✨');
+  assert.strictEqual(getEventIcon('IssueEvent'), '🐛');
   assert.strictEqual(getEventIcon('UnknownEvent'), '📌');
   assert.strictEqual(getEventIcon(''), '📌');
   assert.strictEqual(getEventIcon(null), '📌');
