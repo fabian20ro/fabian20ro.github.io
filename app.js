@@ -324,8 +324,7 @@ const translations = {
     yearsAgo: 'ani în urmă',
     item: 'element',
     in: 'în',
-    unknownRepo: 'depozit',
-    app_status: 'Statusul aplicației'
+    unknownRepo: 'depozit'
   },
   fr: {
     title: 'Les projets de Fabian',
