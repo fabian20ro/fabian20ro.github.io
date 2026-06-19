@@ -31,7 +31,7 @@ const EVENT_ICONS = {
   CreateEvent: '✨',
   WatchEvent: '⭐',
   ForkEvent: '🍴',
-  IssuesEvent: '🐛',
+  IssueEvent: '🐛',
   PullRequestEvent: '🔀',
   IssueCommentEvent: '💬',
   PullRequestReviewCommentEvent: '💬'
@@ -155,6 +155,13 @@ const projectSections = {
       badgeUrl:
         'https://github.com/fabian20ro/generator-rebus/workflows/Deploy%20Frontend%20to%20GitHub%20Pages/badge.svg',
       liveSiteUrl: 'https://fabian20ro.github.io/generator-rebus/'
+    },
+    {
+      href: 'https://github.com/fabian20ro/harness-manager',
+      icon: '⚙️',
+      titleKey: 'harnessManagerTitle',
+      descKey: 'harnessManagerDesc',
+      linkKey: 'viewGithub'
     }
   ]
 };
@@ -196,9 +203,9 @@ const translations = {
     wordRarityDesc: 'A classifier that scores and categorizes word rarity.',
     sudokuTitle: 'Sudoku Python',
     sudokuDesc: 'A Python-based Sudoku solver and generator.',
-    bookingTitle: 'Booking Filter Out',
+    bookingTitle: 'Booking Filter',
     bookingDesc:
-      'A browser extension to filter out locations that do not accept pets on booking.com.',
+      'A browser extension to filter booking.com results, removing locations that do not accept pets.',
     harnessManagerTitle: 'Harness Manager',
     harnessManagerDesc:
       'See which files your editor and configurations actually process in your Git projects.',
@@ -207,6 +214,7 @@ const translations = {
     copySuccess: 'Copied!',
     viewAllGithub: 'View all projects on GitHub &rarr;',
     next_thought: 'Next thought',
+    app_status: 'App status',
     copy: 'Copy link',
     copyTitle: 'Copy-link to clipboard',
     toggleLanguage: 'Toggle language',
@@ -254,7 +262,7 @@ const translations = {
     imagePromptDesc:
       'Instrument care ajută la extinderea și îmbunătățirea prompt-urilor pentru imagini generate de AI.',
     propositionsTitle: 'Propoziții Absurde',
-    propositionsDesc: 'Propoziții din cuvinte aleatoare, mereu absurde, uneori nostime.',
+    propositionsDesc: 'Propoziții din cuvinte aleatoare, mereu absurde, uneori amuzante.',
     passwordGenTitle: 'Generator de Parole',
     passwordGenDesc:
       'Generează parole sigure criptografic prin Web Crypto API. Cinci parole solide dintr-o singură apăsare.',
@@ -274,7 +282,7 @@ const translations = {
     wordRarityDesc: 'Clasificator care punctează și categorisește raritatea cuvintelor.',
     sudokuTitle: 'Sudoku Python',
     sudokuDesc: 'Rezolvă și generează puzzle-uri Sudoku, scris în Python.',
-    bookingTitle: 'Booking Filter Out',
+    bookingTitle: 'Filtru de rezervări',
     bookingDesc:
       'O extensie de browser pentru a filtra rezultatele booking.com, eliminând locațiile care nu acceptă animale de companie.',
     harnessManagerTitle: 'Harness Manager',
@@ -287,6 +295,7 @@ const translations = {
     copyTitle: 'Copiere link către clipboard',
     copy: 'Copiere',
     next_thought: 'Următoarea gândire',
+    app_status: 'Statusul aplicației',
     toggleLanguage: 'Schimbă limba',
     switchToRomanian: 'Schimbă în română',
     switchToEnglish: 'Schimbă în engleză',
@@ -331,7 +340,7 @@ const translations = {
     imagePromptTitle: 'Image Prompt Expander',
     imagePromptDesc: 'Un outil qui aide à améliorer les prompts pour images générées par IA.',
     propositionsTitle: 'Phrases absurdes',
-    propositionsDesc: 'Des phrases aléatoires, toujours absurdes, parfois nostalgiques.',
+    propositionsDesc: 'Des phrases aléatoires, toujours absurdes, parfois drôles.',
     passwordGenTitle: 'Générateur de mot de passe',
     passwordGenDesc:
       "Génère des mots de passe sûrs via l'API Web Crypto. Cinq mots de passe en un clic.",
@@ -362,6 +371,7 @@ const translations = {
     copyTitle: 'Copier le lien dans le presse-papier',
     copy: 'Copier',
     next_thought: 'La pensée suivante',
+    app_status: "Statut de l'application",
     toggleLanguage: 'Changer la langue',
     toggleTheme: 'Changer le thème',
     activityLoading: "Chargement de l'activité...",
@@ -441,6 +451,7 @@ const translations = {
     copyTitle: 'Copiar enlace al portapapeles',
     copy: 'Copiar',
     next_thought: 'Próximo pensamiento',
+    app_status: 'Estado de la aplicación',
     toggleLanguage: 'Cambiar idioma',
     switchToRomanian: 'Cambiar a rumano',
     switchToEnglish: 'Cambiar a inglés',
@@ -519,6 +530,7 @@ const translations = {
     copyTitle: 'Link in die Zwischenablage kopieren',
     copy: 'Kopieren',
     next_thought: 'Nächster Gedanke',
+    app_status: 'App-Status',
     toggleLanguage: 'Sprache ändern',
     switchToRomanian: 'Auf Rumänisch umstellen',
     switchToEnglish: 'Auf Englisch umstellen',
@@ -597,6 +609,7 @@ const translations = {
     copyTitle: 'Copia il link negli appunti',
     copy: 'Copia',
     next_thought: 'Prossimo pensiero',
+    app_status: "Stato dell'applicazione",
     toggleLanguage: 'Cambia lingua',
     switchToRomanian: 'Passa al rumeno',
     switchToEnglish: "Passa all'inglese",
@@ -675,6 +688,7 @@ const translations = {
     copyTitle: 'Copiar link para a área de transferência',
     copy: 'Copiar',
     next_thought: 'Próximo pensamento',
+    app_status: 'Estado do aplicativo',
     toggleLanguage: 'Alterar idioma',
     switchToRomanian: 'Alterar para romeno',
     switchToEnglish: 'Alterar para inglês',

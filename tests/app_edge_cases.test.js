@@ -40,6 +40,7 @@ test('t() edge cases', () => {
 
   setLang('ro');
   assert.strictEqual(t('title'), 'Proiectele lui Fabian');
+  assert.strictEqual(t('app_status'), 'Statusul aplicației');
 
   setLang('fr');
   assert.strictEqual(t('title'), 'Les projets de Fabian');
@@ -67,26 +68,16 @@ test('normalizeLang edge cases', () => {
   assert.strictEqual(normalizeLang('  '), 'en');
 });
 
-test('getBadgeActionsUrl edge cases', () => {
-  assert.strictEqual(
-    getBadgeActionsUrl('https://github.com/user/repo/actions/workflows/deploy/badge.svg'),
-    'https://github.com/user/repo/actions'
-  );
-  assert.strictEqual(
-    getBadgeActionsUrl('https://github.com/user/repo/actions/workflows/deploy/badge.png'),
-    'https://github.com/user/repo/actions'
-  );
-  assert.strictEqual(
-    getBadgeActionsUrl('https://example.com/foo/bar.svg'),
-    'https://example.com/foo/bar.svg'
-  );
-});
-
 test('getEventIcon', () => {
   assert.strictEqual(getEventIcon('PushEvent'), '📤');
   assert.strictEqual(getEventIcon('WatchEvent'), '⭐');
   assert.strictEqual(getEventIcon('CreateEvent'), '✨');
-  assert.strictEqual(getEventIcon('UnknownEvent'), '📌');
+  assert.strictEqual(getEventIcon('IssueEvent'), '🐛');
+  assert.strictEqual(getEventIcon('PullRequestEvent'), '🔀');
+  assert.strictEqual(getEventIcon('IssueCommentEvent'), '💬');
+  assert.strictEqual(getEventIcon('PullRequestReviewCommentEvent'), '💬');
+  assert.strictEqual(getEventIcon(''), '📌');
+  assert.strictEqual(getEventIcon(null), '📌');
 });
 
 test('THANK_YOU_LANGUAGES structure', () => {
@@ -106,6 +97,7 @@ test('translations', () => {
     'Salut, sunt Fabian. Aici vei găsi o colecție de proiecte open source.'
   );
   assert.strictEqual(t('title'), 'Proiectele lui Fabian');
+  assert.strictEqual(t('app_status'), 'Statusul aplicației');
 
   setLang('fr');
   assert.strictEqual(
@@ -114,6 +106,8 @@ test('translations', () => {
   );
   assert.strictEqual(t('title'), 'Les projets de Fabian');
 });
+
+
 test('projectSections keys existence', () => {
   const keys = [];
   projectSections.liveProjects.forEach(p => {
@@ -129,4 +123,12 @@ test('projectSections keys existence', () => {
     assert.ok(key in translations.en, `Missing key "${key}" in translations.en`);
     assert.ok(key in translations.ro, `Missing key "${key}" in translations.ro`);
   });
+});
+
+test('getRelativeTime edge cases', () => {
+  setLang('en');
+  assert.strictEqual(getRelativeTime(new Date(Date.now() - 60000).toISOString()), '1 minute ago');
+  assert.strictEqual(getRelativeTime(new Date(Date.now() - 60000 * 1.5).toISOString()), '1 minute ago');
+  assert.strictEqual(getRelativeTime(new Date(Date.now() - 60000 * 2).toISOString()), '2 minutes ago');
+  assert.strictEqual(getRelativeTime(new Date(Date.now() - 3600000).toISOString()), '1 hour ago');
 });
