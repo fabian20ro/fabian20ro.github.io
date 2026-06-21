@@ -17,6 +17,10 @@ try {
     Object.keys(lang.name).forEach(langKey => {
       assert.ok(typeof lang.name[langKey] === 'string', `Index ${index}: Value for '${langKey}' must be a string`);
     });
+
+    // Ensure en and ro are present in name object
+    assert.ok(lang.name.en, `Index ${index}: Missing English ('en') in name object`);
+    assert.ok(lang.name.ro, `Index ${index}: Missing Romanian ('ro') in name object`);
   });
   console.log('App contract tests passed!');
 } catch (err) {
