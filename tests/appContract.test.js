@@ -6,17 +6,17 @@ try {
   assert.ok(Array.isArray(THANK_YOU_LANGUAGES), 'THANK_YOU_LANGUAGES should be an array');
 
   THANK_YOU_LANGUAGES.forEach((lang, index) => {
-    assert.ok(lang.name, `Index ${index}: Missing name object`);
-    assert.ok(typeof lang.name === 'object', `Index ${index}: name must be an object`);
-    assert.ok(lang.flag, `Index ${index}: Missing flag`);
-    assert.ok(lang.thankYou, `Index ${index}: Missing thankYou string`);
-    assert.ok(lang.thankYouPhonetic, `Index ${index}: Missing thankYouPhonetic string`);
-    assert.ok(lang.welcome, `Index ${index}: Missing welcome string`);
-    assert.ok(lang.welcomePhonetic, `Index ${index}: Missing welcomePhonetic string`);
+    assert.ok(lang.name && typeof lang.name === 'object', `Index ${index}: Missing or invalid name object`);
+    assert.ok(typeof lang.flag === 'string', `Index ${index}: Missing or invalid flag`);
+    assert.ok(typeof lang.thankYou === 'string', `Index ${index}: Missing or invalid thankYou`);
+    assert.ok(typeof lang.thankYouPhonetic === 'string', `Index ${index}: Missing or invalid thankYouPhonetic`);
+    assert.ok(typeof lang.welcome === 'string', `Index ${index}: Missing or invalid welcome`);
+    assert.ok(typeof lang.welcomePhonetic === 'string', `Index ${index}: Missing or invalid welcomePhonetic`);
 
     // Check language name object keys
     ['en', 'ro'].forEach(langKey => {
-      assert.ok(lang.name[langKey], `Index ${index}: Missing key '${langKey}' in lang.name`);
+      assert.ok(Object.prototype.hasOwnProperty.call(lang.name, langKey), `Index ${index}: Missing key '${langKey}' in lang.name`);
+      assert.ok(typeof lang.name[langKey] === 'string', `Index ${index}: Value for '${langKey}' must be a string`);
     });
   });
   console.log('App contract tests passed!');
