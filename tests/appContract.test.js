@@ -22,7 +22,26 @@ try {
     assert.ok(lang.name.en, `Index ${index}: Missing English ('en') in name object`);
     assert.ok(lang.name.ro, `Index ${index}: Missing Romanian ('ro') in name object`);
   });
+
+  // Check exported module functions
+  const app = require('../app.js');
+  const expectedFunctions = [
+    'getDefaultLang',
+    'getRelativeTime',
+    'getBadgeActionsUrl',
+    'isCacheFresh',
+    'loadGitHubActivity',
+    'normalizeLang',
+    'parseRepoName',
+    'buildRepoUrl',
+    't'
+  ];
+  expectedFunctions.forEach(fnName => {
+    assert.strictEqual(typeof app[fnName], 'function', `app.${fnName} should be a function`);
+  });
+
   console.log('App contract tests passed!');
+
 } catch (err) {
   console.error('App contract tests failed:');
   console.error(err);
