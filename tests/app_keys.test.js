@@ -34,6 +34,7 @@ test('THANK_YOU_LANGUAGES integrity', () => {
     assert.ok(langData.name, `Index ${index}: Missing name object`);
     assert.ok(typeof langData.name === 'object', `Index ${index}: name must be an object`);
     assert.ok(langData.name.en, `Index ${index}: Missing 'en' key in lang.name`);
+    assert.ok(langData.name.ro, `Index ${index}: Missing 'ro' key in lang.name`);
     assert.ok(langData.flag, `Index ${index}: Missing flag`);
     assert.ok(langData.thankYou, `Index ${index}: Missing thankYou string`);
     assert.ok(langData.thankYouPhonetic, `Index ${index}: Missing thankYouPhonetic string`);
@@ -44,23 +45,21 @@ test('THANK_YOU_LANGUAGES integrity', () => {
 
 test('project sections integrity', () => {
   console.log('Checking project sections...');
-  assert.ok(app.projectSections.liveProjects, 'projectSections should have liveProjects');
-  assert.ok(Array.isArray(app.projectSections.liveProjects), 'liveProjects should be an array');
-  assert.ok(app.projectSections.repositories, 'projectSections should have repositories');
-  assert.ok(Array.isArray(app.projectSections.repositories), 'repositories should be an array');
-
   const languages = Object.keys(app.translations);
-  app.projectSections.liveProjects.forEach((project, index) => {
-    ['titleKey', 'descKey', 'linkKey'].forEach(key => {
-      if (project[key]) {
-        languages.forEach((lang) => {
-          const trans = app.translations[lang];
-          assert.ok(
-            project[key] in trans,
-            `Missing translation key: "${project[key]}" for project index ${index} in language: ${lang}`
-          );
-        });
-      }
+  Object.entries(app.projectSections).forEach(([sectionName, sectionItems]) => {
+    assert.ok(Array.isArray(sectionItems), `Section ${sectionName} should be an array`);
+    sectionItems.forEach((item, index) => {
+      ['titleKey', 'descKey', 'linkKey'].forEach(key => {
+        if (item[key]) {
+          languages.forEach((lang) => {
+            const trans = app.translations[lang];
+            assert.ok(
+              item[key] in trans,
+              `Missing translation key: "${item[key]}" for section ${sectionName} index ${index} in language: ${lang}`
+            );
+          });
+        }
+      });
     });
   });
 });
