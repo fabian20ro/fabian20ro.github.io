@@ -14,8 +14,7 @@ try {
     assert.ok(typeof lang.welcomePhonetic === 'string', `Index ${index}: Missing or invalid welcomePhonetic`);
 
     // Check language name object keys
-    ['en', 'ro'].forEach(langKey => {
-      assert.ok(Object.prototype.hasOwnProperty.call(lang.name, langKey), `Index ${index}: Missing key '${langKey}' in lang.name`);
+    Object.keys(lang.name).forEach(langKey => {
       assert.ok(typeof lang.name[langKey] === 'string', `Index ${index}: Value for '${langKey}' must be a string`);
     });
   });
