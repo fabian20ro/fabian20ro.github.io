@@ -59,6 +59,18 @@ try {
   // Verify translation exists for existing key in 'en'
   assert.strictEqual(t('title'), "Fabian's Projects");
 
+  // 5. Strengthen: Test parseRepoName and buildRepoUrl
+  const { parseRepoName, buildRepoUrl } = app;
+  assert.deepStrictEqual(parseRepoName('owner/repo'), { owner: 'owner', repo: 'repo' });
+  assert.strictEqual(parseRepoName('invalid-repo'), null);
+  assert.strictEqual(parseRepoName(123), null);
+  assert.strictEqual(buildRepoUrl('owner/repo'), 'https://github.com/owner/repo');
+  assert.strictEqual(buildRepoUrl('invalid'), 'https://github.com/fabian20ro');
+
+  // 6. Strengthen: Test getEventIcon
+  assert.strictEqual(app.getEventIcon('PushEvent'), '📤');
+  assert.strictEqual(app.getEventIcon('UnknownEvent'), '📌');
+
   console.log('App contract tests passed!');
 
 } catch (err) {
