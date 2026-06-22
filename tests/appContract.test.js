@@ -68,8 +68,20 @@ try {
   assert.strictEqual(buildRepoUrl('invalid'), 'https://github.com/fabian20ro');
 
   // 6. Strengthen: Test getEventIcon
-  assert.strictEqual(app.getEventIcon('PushEvent'), '📤');
-  assert.strictEqual(app.getEventIcon('UnknownEvent'), '📌');
+  const eventIconMap = {
+    PushEvent: '📤',
+    CreateEvent: '✨',
+    WatchEvent: '⭐',
+    ForkEvent: '🍴',
+    IssueEvent: '🐛',
+    PullRequestEvent: '🔀',
+    IssueCommentEvent: '💬',
+    PullRequestReviewCommentEvent: '💬',
+    UnknownEvent: '📌'
+  };
+  Object.entries(eventIconMap).forEach(([event, icon]) => {
+    assert.strictEqual(app.getEventIcon(event), icon, `getEventIcon('${event}') should return '${icon}'`);
+  });
 
   console.log('App contract tests passed!');
 
