@@ -133,4 +133,7 @@ test('getRelativeTime edge cases', () => {
   assert.strictEqual(getRelativeTime(new Date(Date.now() - 60000 * 1.5).toISOString()), '1 minute ago');
   assert.strictEqual(getRelativeTime(new Date(Date.now() - 60000 * 2).toISOString()), '2 minutes ago');
   assert.strictEqual(getRelativeTime(new Date(Date.now() - 3600000).toISOString()), '1 hour ago');
+  assert.strictEqual(getRelativeTime(new Date(Date.now() - 86400000).toISOString()), '1 day ago');
+  assert.strictEqual(getRelativeTime(new Date(Date.now() - 2592000000).toISOString()), '1 month ago');
+  assert.strictEqual(getRelativeTime(new Date(Date.now() - 31536000000).toISOString()), '1 year ago');
 });
