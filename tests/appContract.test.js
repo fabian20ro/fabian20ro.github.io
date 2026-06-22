@@ -66,6 +66,15 @@ try {
   assert.strictEqual(parseRepoName(123), null);
   assert.strictEqual(buildRepoUrl('owner/repo'), 'https://github.com/owner/repo');
   assert.strictEqual(buildRepoUrl('invalid'), 'https://github.com/fabian20ro');
+  assert.strictEqual(buildRepoUrl(null), 'https://github.com/fabian20ro');
+
+  // 7. Strengthen: Test getBadgeActionsUrl
+  const { getBadgeActionsUrl } = app;
+  assert.strictEqual(getBadgeActionsUrl('https://github.com/owner/repo'), 'https://github.com/owner/repo/actions');
+  assert.strictEqual(getBadgeActionsUrl('https://github.com/owner/repo/actions'), 'https://github.com/owner/repo/actions');
+  assert.strictEqual(getBadgeActionsUrl('not-a-url'), 'not-a-url');
+  assert.strictEqual(getBadgeActionsUrl(null), '');
+  assert.strictEqual(getBadgeActionsUrl(undefined), '');
 
   // 6. Strengthen: Test getEventIcon
   const eventIconMap = {
