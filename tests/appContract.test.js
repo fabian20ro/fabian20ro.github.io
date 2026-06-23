@@ -108,9 +108,15 @@ try {
   projectSections.repositories.forEach((r, i) => {
     assert.ok(typeof r.href === 'string', `repo ${i}: href must be string`);
     assert.ok(typeof r.icon === 'string', `repo ${i}: icon must be string`);
-    assert.ok(typeof r.titleKey === 'string', `repo ${i}: titleKey must be string`);
-    assert.ok(typeof r.descKey === 'string', `repo ${i}: descKey must be string`);
-    assert.ok(typeof r.linkKey === 'string', `repo ${i}: linkKey must be string`);
+    assert.ok(typeof r.titleKey === 'string', `repo ${i}: titleKey must be a string`);
+    assert.ok(typeof r.descKey === 'string', `repo ${i}: descKey must be a string`);
+    assert.ok(typeof r.linkKey === 'string', `repo ${i}: linkKey must be a string`);
+    if (r.badgeUrl) {
+      assert.ok(typeof r.badgeUrl === 'string', `repo ${i}: badgeUrl must be string`);
+    }
+    if (r.liveSiteUrl) {
+      assert.ok(typeof r.liveSiteUrl === 'string', `repo ${i}: liveSiteUrl must be a string`);
+    }
   });
 
   console.log('App contract tests passed!');
