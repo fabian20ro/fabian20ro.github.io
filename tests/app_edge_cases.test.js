@@ -137,4 +137,8 @@ test('getRelativeTime edge cases', () => {
   assert.strictEqual(getRelativeTime(new Date(Date.now() - 2592000000).toISOString()), '1 month ago');
   assert.strictEqual(getRelativeTime(new Date(Date.now() - 31536000000).toISOString()), '1 year ago');
   assert.strictEqual(getRelativeTime(new Date(Date.now() + 60000).toISOString()), 'just now');
+  assert.strictEqual(getRelativeTime(undefined), 'just now');
+  assert.strictEqual(getRelativeTime(null), 'just now');
+  assert.strictEqual(getRelativeTime('invalid'), 'just now');
+
 });
