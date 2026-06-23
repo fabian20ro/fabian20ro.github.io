@@ -68,7 +68,7 @@ try {
   assert.strictEqual(buildRepoUrl('invalid'), 'https://github.com/fabian20ro');
   assert.strictEqual(buildRepoUrl(null), 'https://github.com/fabian20ro');
 
-  // 7. Strengthen: Test getBadgeActionsUrl
+  // 6. Strengthen: Test getBadgeActionsUrl
   const { getBadgeActionsUrl } = app;
   assert.strictEqual(getBadgeActionsUrl('https://github.com/owner/repo'), 'https://github.com/owner/repo/actions');
   assert.strictEqual(getBadgeActionsUrl('https://github.com/owner/repo/actions'), 'https://github.com/owner/repo/actions');
@@ -76,7 +76,7 @@ try {
   assert.strictEqual(getBadgeActionsUrl(null), '');
   assert.strictEqual(getBadgeActionsUrl(undefined), '');
 
-  // 6. Strengthen: Test getEventIcon
+  // 7. Strengthen: Test getEventIcon
   const eventIconMap = {
     PushEvent: '📤',
     CreateEvent: '✨',
@@ -90,6 +90,27 @@ try {
   };
   Object.entries(eventIconMap).forEach(([event, icon]) => {
     assert.strictEqual(app.getEventIcon(event), icon, `getEventIcon('${event}') should return '${icon}'`);
+  });
+
+  // 8. Strengthen: Test projectSections structure
+  const { projectSections } = app;
+  assert.ok(Array.isArray(projectSections.liveProjects), 'projectSections.liveProjects should be an array');
+  projectSections.liveProjects.forEach((p, i) => {
+    assert.ok(typeof p.href === 'string', `liveProject ${i}: href must be string`);
+    assert.ok(typeof p.icon === 'string', `liveProject ${i}: icon must be string`);
+    assert.ok(typeof p.titleKey === 'string', `liveProject ${i}: titleKey must be string`);
+    assert.ok(typeof p.descKey === 'string', `liveProject ${i}: descKey must be string`);
+    assert.ok(typeof p.linkKey === 'string', `liveProject ${i}: linkKey must be string`);
+    assert.ok(typeof p.badgeUrl === 'string', `liveProject ${i}: badgeUrl must be string`);
+  });
+
+  assert.ok(Array.isArray(projectSections.repositories), 'projectSections.repositories should be an array');
+  projectSections.repositories.forEach((r, i) => {
+    assert.ok(typeof r.href === 'string', `repo ${i}: href must be string`);
+    assert.ok(typeof r.icon === 'string', `repo ${i}: icon must be string`);
+    assert.ok(typeof r.titleKey === 'string', `repo ${i}: titleKey must be string`);
+    assert.ok(typeof r.descKey === 'string', `repo ${i}: descKey must be string`);
+    assert.ok(typeof r.linkKey === 'string', `repo ${i}: linkKey must be string`);
   });
 
   console.log('App contract tests passed!');
