@@ -999,7 +999,14 @@ function createCard(card, isSelected) {
     window.location.href = card.href;
   });
   cardNode.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter') {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      window.location.href = card.href;
+    }
+  });
+  cardNode.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
       window.location.href = card.href;
     }
   });
