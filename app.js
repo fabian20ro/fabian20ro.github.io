@@ -998,8 +998,22 @@ function createCard(card, isSelected) {
   cardNode.addEventListener('click', () => {
     window.location.href = card.href;
   });
+
   cardNode.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter') {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      window.location.href = card.href;
+    }
+  });
+  cardNode.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      window.location.href = card.href;
+    }
+  });
+  cardNode.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
       window.location.href = card.href;
     }
   });
