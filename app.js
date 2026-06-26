@@ -161,7 +161,8 @@ const projectSections = {
       icon: '⚙️',
       titleKey: 'harnessManagerTitle',
       descKey: 'harnessManagerDesc',
-      linkKey: 'viewGithub'
+      linkKey: 'viewGithub',
+      liveSiteUrl: null
     }
   ]
 };
