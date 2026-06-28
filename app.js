@@ -888,15 +888,19 @@ function createCopyButton(href, title) {
   const btn = document.createElement('button');
   btn.className = 'card-copy-btn';
   btn.setAttribute('title', title);
+  btn.setAttribute('aria-label', title);
   btn.innerHTML = '📋';
   btn.addEventListener('click', async (e) => {
     e.stopPropagation();
     try {
       await navigator.clipboard.writeText(href);
       const originalIcon = btn.innerHTML;
-      btn.innerHTML = `<span>✅</span> <small>${t('copySuccess')}</small>`;
+      const originalTitle = btn.getAttribute('title');
+      btn.innerHTML = `<span class="copy-success-icon">✅</span> <small>${t('copySuccess')}</small>`;
+      btn.setAttribute('title', t('copySuccess'));
       setTimeout(() => {
         btn.innerHTML = originalIcon;
+        btn.setAttribute('title', originalTitle);
       }, 2000);
     } catch (err) {
       console.error('Failed to copy:', err);
@@ -932,7 +936,7 @@ function createCardHeader(card) {
 
   headerNode.append(titleRowNode, linkNode);
   if (card.href) {
-    headerNode.append(createCopyButton(card.href, t(card.copyTitle || 'Copy link')));
+    headerNode.append(createCopyButton(card.href, t(card.copyTitle || 'copy')));
   }
   return headerNode;
 }
