@@ -54,10 +54,16 @@ try {
   assert.strictEqual(normalizeLang(undefined), 'en');
 
   // 4. Strengthen: Test t fallback behavior
-  const { t } = app;
+  const { t, setLang } = app;
   assert.strictEqual(t('nonexistent_key'), 'nonexistent_key');
   // Verify translation exists for existing key in 'en'
   assert.strictEqual(t('title'), "Fabian's Projects");
+
+  // Test fallback from 'ro' to 'en'
+  setLang('ro');
+  assert.strictEqual(t('title'), "Proiectele lui Fabian");
+  // Test fallback to key itself if not in 'en'
+  assert.strictEqual(t('something_completely_random_that_does_not_exist'), 'something_completely_random_that_does_not_exist');
 
   // 5. Strengthen: Test parseRepoName and buildRepoUrl
   const { parseRepoName, buildRepoUrl } = app;
