@@ -1085,7 +1085,7 @@ function parseRepoName(repoName) {
     return null;
   }
 
-  const match = repoName.match(/^([a-zA-Z0-9._-]+)\/([a-zA-Z0-9._-]+)$/);
+  const match = repoName.match(/^([a-zA-Z0-9._-]+)\/([a-zA-Z0-9._-]+)\/?$/);
   if (!match) {
     return null;
   }
