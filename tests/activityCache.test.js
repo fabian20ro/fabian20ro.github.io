@@ -222,3 +222,59 @@ test('loadGitHubActivity handles malformed JSON in cache gracefully', async (t) 
   assert.strictEqual(feed.children.length, 1, 'feed should be updated with fetched data');
   assert.notStrictEqual(feed.toString(), 'error'); // Just a dummy check
 });
+
+test('loadGitHubActivity writes updated activity to cache on successful fetch', async (t) => {
+  const now = Date.now();
+  const originalDateNow = Date.now;
+  const originalLocalStorage = global.localStorage;
+  const originalDocument = global.document;
+  const originalFetch = global.fetch;
+
+  const feed = createElement('div');
+
+  global.document = {
+    getElementById(id) {
+      return id === 'activity-feed' ? feed : null;
+    },
+    createElement,
+    createTextNode(text) {
+      return { nodeType: 'text', textContent: text };
+    }
+  };
+
+  const storage = new Map();
+  global.localStorage = {
+    getItem(key) { return storage.get(key); },
+    setItem(key, value) { storage.set(key, value); }
+  };
+
+  const mockEvents = [
+    {
+      type: 'PushEvent',
+      repo: { name: 'test-repo' },
+      created_at: new Date(now).toISOString(),
+      payload: { ref: 'refs/heads/main' }
+    }
+  ];
+
+  global.fetch = async () => {
+    return new Response(JSON.stringify(mockEvents), { status: 200 });
+  };
+  Date.now = () => now;
+
+  t.after(() => {
+    Date.now = originalDateNow;
+    global.document = originalDocument;
+    global.localStorage = originalLocalStorage;
+    global.fetch = originalFetch;
+  });
+
+  await loadGitHubActivity();
+
+  const cacheRaw = storage.get(ACTIVITY_CACHE_KEY);
+  assert.ok(cacheRaw, 'cache should be written to localStorage');
+  const cached = JSON.parse(cacheRaw);
+  assert.strictEqual(cached.timestamp, now, 'cache timestamp should match now');
+  assert.strictEqual(cached.events.length, 1, 'cache should contain fetched events');
+  assert.strictEqual(cached.events[0].repo.name, 'test-repo');
+});
