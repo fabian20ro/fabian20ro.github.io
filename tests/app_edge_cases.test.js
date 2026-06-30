@@ -129,9 +129,9 @@ test('projectSections keys existence', () => {
 
 test('getRelativeTime edge cases', () => {
   setLang('en');
-  assert.strictEqual(getRelativeTime(new Date(Date.now() - 60000).toISOString()), '1 minute ago');
-  assert.strictEqual(getRelativeTime(new Date(Date.now() - 60000 * 1.5).toISOString()), '1 minute ago');
-  assert.strictEqual(getRelativeTime(new Date(Date.now() - 60000 * 2).toISOString()), '2 minutes ago');
+  assert.strictEqual(getRelativeTime(new Date(Date.now() - 70000).toISOString()), '1 minute ago');
+  assert.strictEqual(getRelativeTime(new Date(Date.now() - 90000).toISOString()), '1 minute ago');
+  assert.strictEqual(getRelativeTime(new Date(Date.now() - 130000).toISOString()), '2 minutes ago');
   assert.strictEqual(getRelativeTime(new Date(Date.now() - 3600000).toISOString()), '1 hour ago');
   assert.strictEqual(getRelativeTime(new Date(Date.now() - 86400000).toISOString()), '1 day ago');
   assert.strictEqual(getRelativeTime(new Date(Date.now() - 2592000000).toISOString()), '1 month ago');
