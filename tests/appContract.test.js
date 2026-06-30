@@ -92,7 +92,7 @@ try {
     PullRequestEvent: '🔀',
     IssueCommentEvent: '💬',
     PullRequestReviewCommentEvent: '💬',
-    UnknownEvent: '📌'
+    'UnknownEvent': '📌'
   };
   Object.entries(eventIconMap).forEach(([event, icon]) => {
     assert.strictEqual(app.getEventIcon(event), icon, `getEventIcon('${event}') should return '${icon}'`);
