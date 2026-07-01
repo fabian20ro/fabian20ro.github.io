@@ -757,8 +757,11 @@ function sessionSet(key, value) {
   }
 }
 
-function t(key) {
-  return translations[currentLang][key] || translations.en[key] || key;
+function t(key, $lang) {
+  const lang = ($lang && normalizeLang($lang)) || currentLang;
+  if (translations[lang] && translations[lang][key]) return translations[lang][key];
+  if (translations.en && translations.en[key]) return translations.en[key];
+  return key;
 }
 
 function normalizeLang(lang) {
