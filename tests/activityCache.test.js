@@ -393,3 +393,68 @@ test('loadGitHubActivity writes updated activity to cache on successful fetch', 
   assert.strictEqual(cached.events.length, 1, 'cache should contain fetched events');
   assert.strictEqual(cached.events[0].repo.name, 'test-repo');
 });
+
+test('loadGitHubActivity expires the cache when timestamp exceeds TTL', async (t) => {
+  const now = Date.now();
+  const originalDateNow = Date.now;
+  const originalDocument = global.document;
+  const originalLocalStorage = global.localStorage;
+  const originalSessionStorage = global.sessionStorage;
+  const originalFetch = global.fetch;
+
+  const feed = createElement('div');
+  feed.replaceChildren(createElement('div'));
+
+  global.document = {
+    getElementById(id) {
+      return id === 'activity-feed' ? feed : null;
+    },
+    createElement,
+    createDocumentFragment() {
+      return createElement('fragment');
+    },
+    createTextNode(text) {
+      return { nodeType: 'text', textContent: text };
+    }
+  };
+
+  const storage = new Map();
+  global.localStorage = {
+    getItem(key) { return storage.get(key); },
+    setItem(key, value) { storage.set(key, value); }
+  };
+
+  // Write a cache with timestamp older than the 10-minute TTL (ACTIVITY_CACHE_TTL_MS = 600_000 ms)
+  const staleTimestamp = now - 11 * 60 * 1000;
+  storage.set(ACTIVITY_CACHE_KEY, JSON.stringify({
+    timestamp: staleTimestamp,
+    events: [{ type: 'PushEvent', repo: { name: 'old-repo' }, created_at: new Date(staleTimestamp).toISOString(), payload: {} }]
+  }));
+
+  global.sessionStorage = { getItem() { return null; }, setItem() {} };
+
+  let fetchCalls = 0;
+  const mockEvents = [{ type: 'WatchEvent', repo: { name: 'fresh-repo' }, created_at: new Date(now).toISOString(), payload: {} }];
+  global.fetch = async () => {
+    fetchCalls += 1;
+    return new Response(JSON.stringify(mockEvents), { status: 200 });
+  };
+  Date.now = () => now;
+
+  t.after(() => {
+    Date.now = originalDateNow;
+    global.document = originalDocument;
+    global.localStorage = originalLocalStorage;
+    global.sessionStorage = originalSessionStorage;
+    global.fetch = originalFetch;
+  });
+
+  await loadGitHubActivity();
+
+  assert.strictEqual(fetchCalls, 1, 'expired cache should trigger a fresh fetch');
+  const updatedCacheRaw = storage.get(ACTIVITY_CACHE_KEY);
+  assert.ok(updatedCacheRaw, 'new cache entry should be written');
+  const updatedCached = JSON.parse(updatedCacheRaw);
+  assert.strictEqual(updatedCached.timestamp, now, 'updated cache timestamp should equal current time');
+  assert.strictEqual(updatedCached.events[0].repo.name, 'fresh-repo', 'cache events should reflect fresh fetch data');
+});
