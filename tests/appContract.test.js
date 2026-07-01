@@ -65,7 +65,16 @@ try {
   // Test fallback to key itself if not in 'en'
   assert.strictEqual(t('something_completely_random_that_does_not_exist'), 'something_completely_random_that_does_not_exist');
 
-  // 5. Strengthen: Test parseRepoName and buildRepoUrl
+  // 5. Test t with explicit $lang parameter (inline cross-language lookup)
+  setLang('ro');
+  // Without $lang, returns current lang
+  assert.strictEqual(t('title'), "Proiectele lui Fabian");
+  // With explicit 'en', returns English regardless of current lang
+  assert.strictEqual(t('title', 'en'), "Fabian's Projects");
+  // Explicit non-existent lang falls back to key
+  assert.strictEqual(t('nonexistent_key_xyz', 'xx'), 'nonexistent_key_xyz');
+
+  // 6. Strengthen: Test parseRepoName and buildRepoUrl
   const { parseRepoName, buildRepoUrl } = app;
   assert.deepStrictEqual(parseRepoName('owner/repo'), { owner: 'owner', repo: 'repo' });
   assert.strictEqual(parseRepoName('invalid-repo'), null);
