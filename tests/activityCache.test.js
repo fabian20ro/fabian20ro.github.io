@@ -338,6 +338,68 @@ test('loadGitHubActivity falls back to fetching when the cached timestamp is mis
   assert.strictEqual(cached.timestamp, now, 'new cache should have a valid timestamp');
 });
 
+test('loadGitHubActivity ignores a cache whose parsed structure has an invalid (string) timestamp', async (t) => {
+  const now = Date.now();
+  const originalDateNow = Date.now;
+  const originalDocument = global.document;
+  const originalLocalStorage = global.localStorage;
+  const originalSessionStorage = global.sessionStorage;
+  const originalFetch = global.fetch;
+
+  const feed = createElement('div');
+  feed.replaceChildren(createElement('div'));
+
+  global.document = {
+    getElementById(id) {
+      return id === 'activity-feed' ? feed : null;
+    },
+    createElement,
+    createTextNode(text) {
+      return { nodeType: 'text', textContent: text };
+    }
+  };
+
+  const storage = new Map();
+  global.localStorage = {
+    getItem(key) { return storage.get(key); },
+    setItem(key, value) { storage.set(key, value); }
+  };
+
+  // Write a cache with valid JSON but an invalid timestamp type (string instead of number).
+  // readActivityCache should treat this as no-cache and fall back to fetching.
+  storage.set(ACTIVITY_CACHE_KEY, JSON.stringify({
+    timestamp: '1700000000',
+    events: [{ type: 'PushEvent', repo: { name: 'stale-repo' }, created_at: new Date(now).toISOString(), payload: {} }]
+  }));
+
+  global.sessionStorage = { getItem() { return null; }, setItem() {} };
+
+  let fetchCalls = 0;
+  const mockEvents = [{ type: 'WatchEvent', repo: { name: 'fresh-repo' }, created_at: new Date(now).toISOString(), payload: {} }];
+  global.fetch = async () => {
+    fetchCalls += 1;
+    return new Response(JSON.stringify(mockEvents), { status: 200 });
+  };
+  Date.now = () => now;
+
+  t.after(() => {
+    Date.now = originalDateNow;
+    global.document = originalDocument;
+    global.localStorage = originalLocalStorage;
+    global.sessionStorage = originalSessionStorage;
+    global.fetch = originalFetch;
+  });
+
+  await loadGitHubActivity();
+
+  assert.strictEqual(fetchCalls, 1, 'string timestamp cache should be ignored and fetch triggered');
+  const updatedCacheRaw = storage.get(ACTIVITY_CACHE_KEY);
+  assert.ok(updatedCacheRaw, 'cache should be rewritten after fresh fetch');
+  const updatedCached = JSON.parse(updatedCacheRaw);
+  assert.strictEqual(updatedCached.timestamp, now, 'new cache should have a valid numeric timestamp');
+  assert.deepStrictEqual(updatedCached.events[0].repo.name, 'fresh-repo', 'events should reflect fresh data');
+});
+
 test('loadGitHubActivity writes updated activity to cache on successful fetch', async (t) => {
   const now = Date.now();
   const originalDateNow = Date.now;
