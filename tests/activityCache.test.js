@@ -3,6 +3,8 @@ const assert = require('node:assert');
 const { loadGitHubActivity } = require('../app.js');
 
 const ACTIVITY_CACHE_KEY = 'github-activity-cache-v1';
+// ACTIVITY_CACHE_TTL_MS is defined as 600_000 (10 minutes) in app.js but not exported.
+const ACTIVITY_CACHE_TTL_MS = 600_000;
 
 function createElement(tagName) {
   return {
@@ -646,4 +648,130 @@ test('loadGitHubActivity treats a future-dated timestamp as stale and refetches'
   const updatedCached = JSON.parse(updatedCacheRaw);
   assert.strictEqual(updatedCached.timestamp, now, 'updated cache timestamp should equal current time');
   assert.deepStrictEqual(updatedCached.events[0].repo.name, 'fresh-repo', 'events should reflect fresh data');
+});
+
+test('loadGitHubActivity expires a cache exactly at TTL boundary and refetches', async (t) => {
+  const now = Date.now();
+  const originalDateNow = Date.now;
+  const originalDocument = global.document;
+  const originalLocalStorage = global.localStorage;
+  const originalSessionStorage = global.sessionStorage;
+  const originalFetch = global.fetch;
+
+  const feed = createElement('div');
+  feed.replaceChildren(createElement('div'));
+
+  global.document = {
+    getElementById(id) {
+      return id === 'activity-feed' ? feed : null;
+    },
+    createElement,
+    createDocumentFragment() {
+      return createElement('fragment');
+    },
+    createTextNode(text) {
+      return { nodeType: 'text', textContent: text };
+    }
+  };
+
+  const storage = new Map();
+  global.localStorage = {
+    getItem(key) { return storage.get(key); },
+    setItem(key, value) { storage.set(key, value); }
+  };
+
+  // Cache with timestamp exactly at TTL boundary (10 minutes old = 600_000 ms).
+  // isCacheFresh treats ageMs >= ACTIVITY_CACHE_TTL_MS as stale.
+  const ttlBoundary = now - 600_000;
+  storage.set(ACTIVITY_CACHE_KEY, JSON.stringify({
+    timestamp: ttlBoundary,
+    events: [{ type: 'PushEvent', repo: { name: 'boundary-repo' }, created_at: new Date(ttlBoundary).toISOString(), payload: {} }]
+  }));
+
+  global.sessionStorage = { getItem() { return null; }, setItem() {} };
+
+  let fetchCalls = 0;
+  const mockEvents = [{ type: 'WatchEvent', repo: { name: 'fresh-repo' }, created_at: new Date(now).toISOString(), payload: {} }];
+  global.fetch = async () => {
+    fetchCalls += 1;
+    return new Response(JSON.stringify(mockEvents), { status: 200 });
+  };
+  Date.now = () => now;
+
+  t.after(() => {
+    Date.now = originalDateNow;
+    global.document = originalDocument;
+    global.localStorage = originalLocalStorage;
+    global.sessionStorage = originalSessionStorage;
+    global.fetch = originalFetch;
+  });
+
+  await loadGitHubActivity();
+
+  assert.strictEqual(fetchCalls, 1, 'cache at TTL boundary should trigger a fresh fetch');
+  const updatedCacheRaw = storage.get(ACTIVITY_CACHE_KEY);
+  assert.ok(updatedCacheRaw, 'cache should be rewritten after fresh fetch');
+  const updatedCached = JSON.parse(updatedCacheRaw);
+  assert.strictEqual(updatedCached.timestamp, now, 'updated cache timestamp should equal current time');
+  assert.deepStrictEqual(updatedCached.events[0].repo.name, 'fresh-repo', 'events should reflect fresh data');
+});
+
+test('loadGitHubActivity keeps a cache one millisecond before TTL expiration', async (t) => {
+  const now = Date.now();
+  const originalDateNow = Date.now;
+  const originalDocument = global.document;
+  const originalLocalStorage = global.localStorage;
+  const originalSessionStorage = global.sessionStorage;
+  const originalFetch = global.fetch;
+
+  const feed = createElement('div');
+  feed.replaceChildren(createElement('div'));
+
+  global.document = {
+    getElementById(id) {
+      return id === 'activity-feed' ? feed : null;
+    },
+    createElement,
+    createDocumentFragment() {
+      return createElement('fragment');
+    },
+    createTextNode(text) {
+      return { nodeType: 'text', textContent: text };
+    }
+  };
+
+  const storage = new Map();
+  global.localStorage = {
+    getItem(key) { return storage.get(key); },
+    setItem(key, value) { storage.set(key, value); }
+  };
+
+  // Cache with timestamp one millisecond before TTL boundary (still valid).
+  const justBeforeTTL = now - 600_000 + 1;
+  storage.set(ACTIVITY_CACHE_KEY, JSON.stringify({
+    timestamp: justBeforeTTL,
+    events: [{ type: 'PushEvent', repo: { name: 'valid-repo' }, created_at: new Date(justBeforeTTL).toISOString(), payload: {} }]
+  }));
+
+  global.sessionStorage = { getItem() { return null; }, setItem() {} };
+
+  let fetchCalls = 0;
+  const mockEvents = [{ type: 'WatchEvent', repo: { name: 'fresh-repo' }, created_at: new Date(now).toISOString(), payload: {} }];
+  global.fetch = async () => {
+    fetchCalls += 1;
+    throw new Error('fetch should not run for a fresh cache');
+  };
+  Date.now = () => now;
+
+  t.after(() => {
+    Date.now = originalDateNow;
+    global.document = originalDocument;
+    global.localStorage = originalLocalStorage;
+    global.sessionStorage = originalSessionStorage;
+    global.fetch = originalFetch;
+  });
+
+  await loadGitHubActivity();
+
+  assert.strictEqual(fetchCalls, 0, 'cache just before TTL expiration should not trigger fetch');
 });
