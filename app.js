@@ -881,7 +881,18 @@ function getBadgeActionsUrl(badgeUrl) {
   }
 
   const match = badgeUrl.match(/^https:\/\/github\.com\/[^/]+\/[^/]+/);
-  return match ? match[0] + '/actions' : badgeUrl;
+  if (!match) {
+    return badgeUrl;
+  }
+
+  // Guard against double-appending /actions (idempotence):
+  // if the URL is already a bare repo base or already contains /actions, return it unchanged.
+  const repoBase = match[0];
+  if (repoBase === badgeUrl || badgeUrl.startsWith(repoBase + '/actions')) {
+    return repoBase;
+  }
+
+  return repoBase + '/actions';
 }
 
 function createCopyButton(href, title) {

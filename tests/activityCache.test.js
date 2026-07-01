@@ -279,6 +279,65 @@ test('loadGitHubActivity handles malformed JSON in cache gracefully', async (t) 
   assert.notStrictEqual(feed.toString(), 'error'); // Just a dummy check
 });
 
+test('loadGitHubActivity falls back to fetching when the cached timestamp is missing', async (t) => {
+  const now = Date.now();
+  const originalDateNow = Date.now;
+  const originalDocument = global.document;
+  const originalLocalStorage = global.localStorage;
+  const originalSessionStorage = global.sessionStorage;
+  const originalFetch = global.fetch;
+
+  const feed = createElement('div');
+  feed.replaceChildren(createElement('div'));
+
+  global.document = {
+    getElementById(id) {
+      return id === 'activity-feed' ? feed : null;
+    },
+    createElement,
+    createTextNode(text) {
+      return { nodeType: 'text', textContent: text };
+    }
+  };
+
+  const storage = new Map();
+  global.localStorage = {
+    getItem(key) { return storage.get(key); },
+    setItem(key, value) { storage.set(key, value); }
+  };
+
+  // Write a cache with timestamp missing (JSON.stringify drops undefined keys)
+  storage.set(ACTIVITY_CACHE_KEY, JSON.stringify({
+    events: [{ type: 'PushEvent', repo: { name: 'x' }, created_at: new Date().toISOString(), payload: {} }]
+  }));
+
+  global.sessionStorage = { getItem() { return null; }, setItem() {} };
+
+  let fetchCalls = 0;
+  const mockEvents = [{ type: 'PushEvent', repo: { name: 'test-repo' }, created_at: new Date(now).toISOString(), payload: {} }];
+  global.fetch = async () => {
+    fetchCalls += 1;
+    return new Response(JSON.stringify(mockEvents), { status: 200 });
+  };
+  Date.now = () => now;
+
+  t.after(() => {
+    Date.now = originalDateNow;
+    global.document = originalDocument;
+    global.localStorage = originalLocalStorage;
+    global.sessionStorage = originalSessionStorage;
+    global.fetch = originalFetch;
+  });
+
+  await loadGitHubActivity();
+
+  assert.strictEqual(fetchCalls, 1, 'missing timestamp should fall back to fetching');
+  const cacheRaw = storage.get(ACTIVITY_CACHE_KEY);
+  assert.ok(cacheRaw, 'cache should be written after successful fetch');
+  const cached = JSON.parse(cacheRaw);
+  assert.strictEqual(cached.timestamp, now, 'new cache should have a valid timestamp');
+});
+
 test('loadGitHubActivity writes updated activity to cache on successful fetch', async (t) => {
   const now = Date.now();
   const originalDateNow = Date.now;
