@@ -74,15 +74,18 @@ try {
   assert.strictEqual(buildRepoUrl('invalid'), 'https://github.com/fabian20ro');
   assert.strictEqual(buildRepoUrl(null), 'https://github.com/fabian20ro');
 
-  // 6. Strengthen: Test getBadgeActionsUrl
+  // 7. Strengthen: Test getBadgeActionsUrl — strict boundary contract (idempotent)
   const { getBadgeActionsUrl } = app;
-  assert.strictEqual(getBadgeActionsUrl('https://github.com/owner/repo'), 'https://github.com/owner/repo/actions');
-  assert.strictEqual(getBadgeActionsUrl('https://github.com/owner/repo/actions'), 'https://github.com/owner/repo/actions');
-  assert.strictEqual(getBadgeActionsUrl('not-a-url'), 'not-a-url');
+  // Bare repo base → returned as-is (no spurious /actions append)
+  assert.strictEqual(getBadgeActionsUrl('https://github.com/owner/repo'), 'https://github.com/owner/repo');
+  // Already contains /actions → stripped back to bare repo base
+  assert.strictEqual(getBadgeActionsUrl('https://github.com/owner/repo/actions'), 'https://github.com/owner/repo');
   assert.strictEqual(getBadgeActionsUrl(null), '');
   assert.strictEqual(getBadgeActionsUrl(undefined), '');
+  // Non-GitHub URLs pass through unchanged (no mangle)
+  assert.strictEqual(getBadgeActionsUrl('not-a-github-url'), 'not-a-github-url');
 
-  // 7. Strengthen: Test getEventIcon
+  // 8. Strengthen: Test getEventIcon
   const eventIconMap = {
     PushEvent: '📤',
     CreateEvent: '✨',
@@ -98,7 +101,7 @@ try {
     assert.strictEqual(app.getEventIcon(event), icon, `getEventIcon('${event}') should return '${icon}'`);
   });
 
-  // 8. Strengthen: Test projectSections structure
+  // 9. Strengthen: Test projectSections structure
   const { projectSections } = app;
   assert.ok(Array.isArray(projectSections.liveProjects), 'projectSections.liveProjects should be an array');
   projectSections.liveProjects.forEach((p, i) => {
