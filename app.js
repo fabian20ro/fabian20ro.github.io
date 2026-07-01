@@ -1456,6 +1456,12 @@ function init() {
   startThankYouRotation();
   renderProjectCards();
 
+  window.addEventListener('keydown', (e) => {
+    if (e.key === 'Home') {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  });
+
   const langToggle = document.getElementById('lang-toggle');
   const themeToggle = document.getElementById('theme-toggle');
 
