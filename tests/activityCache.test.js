@@ -581,3 +581,69 @@ test('loadGitHubActivity ignores a cache whose events field is not an array', as
   assert.strictEqual(updatedCached.events.length, 1, 'new cache should contain fetched events as an array');
   assert.strictEqual(updatedCached.events[0].repo.name, 'new-repo', 'events should reflect fresh data');
 });
+
+test('loadGitHubActivity treats a future-dated timestamp as stale and refetches', async (t) => {
+  const now = Date.now();
+  const originalDateNow = Date.now;
+  const originalDocument = global.document;
+  const originalLocalStorage = global.localStorage;
+  const originalSessionStorage = global.sessionStorage;
+  const originalFetch = global.fetch;
+
+  const feed = createElement('div');
+  feed.replaceChildren(createElement('div'));
+
+  global.document = {
+    getElementById(id) {
+      return id === 'activity-feed' ? feed : null;
+    },
+    createElement,
+    createDocumentFragment() {
+      return createElement('fragment');
+    },
+    createTextNode(text) {
+      return { nodeType: 'text', textContent: text };
+    }
+  };
+
+  const storage = new Map();
+  global.localStorage = {
+    getItem(key) { return storage.get(key); },
+    setItem(key, value) { storage.set(key, value); }
+  };
+
+  // Cache with a future timestamp (clock skew or manipulated clock).
+  // isCacheFresh should treat this as stale and trigger a fetch.
+  const futureTimestamp = now + 60 * 60 * 1000; // 1 hour in the future
+  storage.set(ACTIVITY_CACHE_KEY, JSON.stringify({
+    timestamp: futureTimestamp,
+    events: [{ type: 'PushEvent', repo: { name: 'old-repo' }, created_at: new Date(futureTimestamp).toISOString(), payload: {} }]
+  }));
+
+  global.sessionStorage = { getItem() { return null; }, setItem() {} };
+
+  let fetchCalls = 0;
+  const mockEvents = [{ type: 'WatchEvent', repo: { name: 'fresh-repo' }, created_at: new Date(now).toISOString(), payload: {} }];
+  global.fetch = async () => {
+    fetchCalls += 1;
+    return new Response(JSON.stringify(mockEvents), { status: 200 });
+  };
+  Date.now = () => now;
+
+  t.after(() => {
+    Date.now = originalDateNow;
+    global.document = originalDocument;
+    global.localStorage = originalLocalStorage;
+    global.sessionStorage = originalSessionStorage;
+    global.fetch = originalFetch;
+  });
+
+  await loadGitHubActivity();
+
+  assert.strictEqual(fetchCalls, 1, 'future-dated timestamp should trigger a fresh fetch');
+  const updatedCacheRaw = storage.get(ACTIVITY_CACHE_KEY);
+  assert.ok(updatedCacheRaw, 'cache should be rewritten after fresh fetch');
+  const updatedCached = JSON.parse(updatedCacheRaw);
+  assert.strictEqual(updatedCached.timestamp, now, 'updated cache timestamp should equal current time');
+  assert.deepStrictEqual(updatedCached.events[0].repo.name, 'fresh-repo', 'events should reflect fresh data');
+});
