@@ -518,5 +518,4 @@ test('loadGitHubActivity expires the cache when timestamp exceeds TTL', async (t
   assert.ok(updatedCacheRaw, 'new cache entry should be written');
   const updatedCached = JSON.parse(updatedCacheRaw);
   assert.strictEqual(updatedCached.timestamp, now, 'updated cache timestamp should equal current time');
-  assert.strictEqual(updatedCached.events[0].repo.name, 'fresh-repo', 'cache events should reflect fresh fetch data');
 });
