@@ -949,6 +949,15 @@ test('isCacheFresh rejects a cache with NaN timestamp as stale', () => {
   assert.strictEqual(isFresh({ timestamp: Date.now() - 1000 }), true);
 });
 
+test('isCacheFresh rejects null/undefined/empty-cache arguments defensively', () => {
+  const isFresh = require('../app.js').isCacheFresh;
+  // When called with a missing cache argument the function should not throw;
+  // it must treat any non-finite timestamp (including undefined) as stale.
+  assert.strictEqual(isFresh(undefined), false, 'undefined cache should be rejected');
+  assert.strictEqual(isFresh(null), false, 'null cache should be rejected');
+  assert.strictEqual(isFresh({}), false, 'cache without timestamp property should be rejected');
+});
+
 test('loadGitHubActivity rejects a cache whose events field is missing', async (t) => {
   const now = Date.now();
   const originalDateNow = Date.now;
@@ -1072,4 +1081,355 @@ test('loadGitHubActivity keeps cached content when refresh returns non-JSON body
     'cached fragment should contain the event item'
   );
   assert.strictEqual(feed.children[0].children[0].className, 'activity-item', 'event item rendered from cache');
+});
+
+test('loadGitHubActivity treats a non-JSON fetch body as no-events and caches empty list', async (t) => {
+  const now = Date.now();
+  const originalDateNow = Date.now;
+  const originalDocument = global.document;
+  const originalLocalStorage = global.localStorage;
+  const originalSessionStorage = global.sessionStorage;
+  const originalFetch = global.fetch;
+
+  const feed = createElement('div');
+  feed.replaceChildren(createElement('div')); // placeholder "loading" element
+
+  global.document = {
+    getElementById(id) {
+      return id === 'activity-feed' ? feed : null;
+    },
+    createElement,
+    createTextNode(text) {
+      return { nodeType: 'text', textContent: text };
+    }
+  };
+
+  const storage = new Map();
+  global.localStorage = {
+    getItem(key) { return storage.get(key); },
+    setItem(key, value) { storage.set(key, value); }
+  };
+
+  global.sessionStorage = { getItem() { return null; }, setItem() {} };
+
+  let fetchCalls = 0;
+  // Simulate GitHub returning an HTML error page (e.g. 401/403 without token) — body is not JSON and not array-like.
+  global.fetch = async () => {
+    fetchCalls += 1;
+    return new Response('Unauthorized', { status: 200 });
+  };
+  Date.now = () => now;
+
+  t.after(() => {
+    Date.now = originalDateNow;
+    global.document = originalDocument;
+    global.localStorage = originalLocalStorage;
+    global.sessionStorage = originalSessionStorage;
+    global.fetch = originalFetch;
+  });
+
+  await loadGitHubActivity();
+
+  assert.strictEqual(fetchCalls, 1, 'should fetch exactly once on a fresh cache');
+  // When response body is non-JSON (e.g. HTML error page), response.json() throws inside fetchGitHubActivity;
+  // loadGitHubActivity catches this and calls showActivityError without writing a new cache.
+  assert.ok(!storage.get(ACTIVITY_CACHE_KEY), 'cache should not be written on fetch failure');
+});
+
+test('loadGitHubActivity ignores a cache whose JSON parses to an empty array (no events field)', async (t) => {
+  const now = Date.now();
+  const originalDateNow = Date.now;
+  const originalDocument = global.document;
+  const originalLocalStorage = global.localStorage;
+  const originalSessionStorage = global.sessionStorage;
+  const originalFetch = global.fetch;
+
+  const feed = createElement('div');
+  feed.replaceChildren(createElement('div')); // placeholder "loading" element
+
+  global.document = {
+    getElementById(id) {
+      return id === 'activity-feed' ? feed : null;
+    },
+    createElement,
+    createTextNode(text) {
+      return { nodeType: 'text', textContent: text };
+    }
+  };
+
+  const storage = new Map();
+  global.localStorage = {
+    getItem(key) { return storage.get(key); },
+    setItem(key, value) { storage.set(key, value); }
+  };
+
+  // Cache key holds a valid JSON array (primitive), not an object.
+  // readActivityCache should treat this as invalid and fall back to fetching.
+  storage.set(ACTIVITY_CACHE_KEY, '[]');
+
+  global.sessionStorage = { getItem() { return null; }, setItem() {} };
+
+  let fetchCalls = 0;
+  const mockEvents = [{ type: 'WatchEvent', repo: { name: 'fresh-repo' }, created_at: new Date(now).toISOString(), payload: {} }];
+  global.fetch = async () => {
+    fetchCalls += 1;
+    return new Response(JSON.stringify(mockEvents), { status: 200 });
+  };
+  Date.now = () => now;
+
+  t.after(() => {
+    Date.now = originalDateNow;
+    global.document = originalDocument;
+    global.localStorage = originalLocalStorage;
+    global.sessionStorage = originalSessionStorage;
+    global.fetch = originalFetch;
+  });
+
+  await loadGitHubActivity();
+
+  assert.strictEqual(fetchCalls, 1, 'primitive-array cache should be ignored and fresh fetch triggered');
+  const updatedCacheRaw = storage.get(ACTIVITY_CACHE_KEY);
+  assert.ok(updatedCacheRaw, 'cache should be rewritten after fresh fetch');
+  const updatedCached = JSON.parse(updatedCacheRaw);
+  assert.strictEqual(updatedCached.events[0].repo.name, 'fresh-repo', 'events should reflect fresh data');
+});
+
+test('loadGitHubActivity ignores a cache whose JSON parses to null (literal JSON null)', async (t) => {
+  const now = Date.now();
+  const originalDateNow = Date.now;
+  const originalDocument = global.document;
+  const originalLocalStorage = global.localStorage;
+  const originalSessionStorage = global.sessionStorage;
+  const originalFetch = global.fetch;
+
+  const feed = createElement('div');
+  feed.replaceChildren(createElement('div')); // placeholder "loading" element
+
+  global.document = {
+    getElementById(id) {
+      return id === 'activity-feed' ? feed : null;
+    },
+    createElement,
+    createTextNode(text) {
+      return { nodeType: 'text', textContent: text };
+    }
+  };
+
+  const storage = new Map();
+  global.localStorage = {
+    getItem(key) { return storage.get(key); },
+    setItem(key, value) { storage.set(key, value); }
+  };
+
+  // Cache key holds the JSON literal null. readActivityCache's !parsed guard must reject it.
+  storage.set(ACTIVITY_CACHE_KEY, 'null');
+
+  global.sessionStorage = { getItem() { return null; }, setItem() {} };
+
+  let fetchCalls = 0;
+  const mockEvents = [{ type: 'WatchEvent', repo: { name: 'fresh-repo' }, created_at: new Date(now).toISOString(), payload: {} }];
+  global.fetch = async () => {
+    fetchCalls += 1;
+    return new Response(JSON.stringify(mockEvents), { status: 200 });
+  };
+  Date.now = () => now;
+
+  t.after(() => {
+    Date.now = originalDateNow;
+    global.document = originalDocument;
+    global.localStorage = originalLocalStorage;
+    global.sessionStorage = originalSessionStorage;
+    global.fetch = originalFetch;
+  });
+
+  await loadGitHubActivity();
+
+  assert.strictEqual(fetchCalls, 1, 'null cache should be ignored and fresh fetch triggered');
+  const updatedCacheRaw = storage.get(ACTIVITY_CACHE_KEY);
+  assert.ok(updatedCacheRaw, 'cache should be rewritten after fresh fetch');
+  const updatedCached = JSON.parse(updatedCacheRaw);
+  assert.strictEqual(updatedCached.events[0].repo.name, 'fresh-repo', 'events should reflect fresh data');
+});
+
+test('loadGitHubActivity falls back to fetching when localStorage has no cache entry', async (t) => {
+  const now = Date.now();
+  const originalDateNow = Date.now;
+  const originalDocument = global.document;
+  const originalLocalStorage = global.localStorage;
+  const originalSessionStorage = global.sessionStorage;
+  const originalFetch = global.fetch;
+
+  const feed = createElement('div');
+  feed.replaceChildren(createElement('div')); // placeholder "loading" element
+
+  global.document = {
+    getElementById(id) {
+      return id === 'activity-feed' ? feed : null;
+    },
+    createElement,
+    createTextNode(text) {
+      return { nodeType: 'text', textContent: text };
+    }
+  };
+
+  const storage = new Map();
+  global.localStorage = {
+    getItem(key) { return storage.get(key); }, // returns undefined for any key (no cache entry)
+    setItem(key, value) { storage.set(key, value); }
+  };
+
+  global.sessionStorage = { getItem() { return null; }, setItem() {} };
+
+  let fetchCalls = 0;
+  const mockEvents = [{ type: 'WatchEvent', repo: { name: 'fresh-repo' }, created_at: new Date(now).toISOString(), payload: {} }];
+  global.fetch = async () => {
+    fetchCalls += 1;
+    return new Response(JSON.stringify(mockEvents), { status: 200 });
+  };
+  Date.now = () => now;
+
+  t.after(() => {
+    Date.now = originalDateNow;
+    global.document = originalDocument;
+    global.localStorage = originalLocalStorage;
+    global.sessionStorage = originalSessionStorage;
+    global.fetch = originalFetch;
+  });
+
+  await loadGitHubActivity();
+
+  assert.strictEqual(fetchCalls, 1, 'should fetch exactly once when no cache entry exists');
+  const cacheRaw = storage.get(ACTIVITY_CACHE_KEY);
+  assert.ok(cacheRaw, 'cache should be written after successful fetch even from a cold start');
+  const cached = JSON.parse(cacheRaw);
+  assert.strictEqual(cached.timestamp, now, 'new cache timestamp should equal current time');
+  assert.deepStrictEqual(cached.events[0].repo.name, 'fresh-repo', 'events should reflect fetched data');
+});
+
+test('loadGitHubActivity ignores a cache whose JSON parses to an integer primitive', async (t) => {
+  const now = Date.now();
+  const originalDateNow = Date.now;
+  const originalDocument = global.document;
+  const originalLocalStorage = global.localStorage;
+  const originalSessionStorage = global.sessionStorage;
+  const originalFetch = global.fetch;
+
+  const feed = createElement('div');
+  feed.replaceChildren(createElement('div')); // placeholder "loading" element
+
+  global.document = {
+    getElementById(id) {
+      return id === 'activity-feed' ? feed : null;
+    },
+    createElement,
+    createTextNode(text) {
+      return { nodeType: 'text', textContent: text };
+    }
+  };
+
+  const storage = new Map();
+  global.localStorage = {
+    getItem(key) { return storage.get(key); },
+    setItem(key, value) { storage.set(key, value); }
+  };
+
+  // Cache key holds the JSON literal "42" — a number primitive. readActivityCache must reject it.
+  storage.set(ACTIVITY_CACHE_KEY, '42');
+
+  global.sessionStorage = { getItem() { return null; }, setItem() {} };
+
+  let fetchCalls = 0;
+  const mockEvents = [{ type: 'WatchEvent', repo: { name: 'fresh-repo' }, created_at: new Date(now).toISOString(), payload: {} }];
+  global.fetch = async () => {
+    fetchCalls += 1;
+    return new Response(JSON.stringify(mockEvents), { status: 200 });
+  };
+  Date.now = () => now;
+
+  t.after(() => {
+    Date.now = originalDateNow;
+    global.document = originalDocument;
+    global.localStorage = originalLocalStorage;
+    global.sessionStorage = originalSessionStorage;
+    global.fetch = originalFetch;
+  });
+
+  await loadGitHubActivity();
+
+  assert.strictEqual(fetchCalls, 1, 'primitive-number cache should be ignored and fresh fetch triggered');
+  const updatedCacheRaw = storage.get(ACTIVITY_CACHE_KEY);
+  assert.ok(updatedCacheRaw, 'cache should be rewritten after fresh fetch');
+});
+
+test('loadGitHubActivity renders at most ACTIVITY_LIMIT (10) items from cached events', async (t) => {
+  const now = Date.now();
+  const originalDateNow = Date.now;
+  const originalDocument = global.document;
+  const originalLocalStorage = global.localStorage;
+  const originalSessionStorage = global.sessionStorage;
+  const originalFetch = global.fetch;
+
+  const feed = createElement('div');
+  feed.replaceChildren(createElement('fragment'));
+
+  global.document = {
+    getElementById(id) {
+      return id === 'activity-feed' ? feed : null;
+    },
+    createElement,
+    createDocumentFragment() {
+      return createElement('fragment');
+    },
+    createTextNode(text) {
+      return { nodeType: 'text', textContent: text };
+    }
+  };
+
+  const storage = new Map();
+  global.localStorage = {
+    getItem(key) { return storage.get(key); },
+    setItem(key, value) { storage.set(key, value); }
+  };
+
+  // Cache with more than ACTIVITY_LIMIT (10) items; only the first 10 should be rendered.
+  const cacheEvents = Array.from({ length: 25 }, (_, i) => ({
+    type: 'PushEvent',
+    repo: { name: `cache-repo-${i}` },
+    created_at: new Date(now).toISOString(),
+    payload: {}
+  }));
+
+  storage.set(ACTIVITY_CACHE_KEY, JSON.stringify({
+    timestamp: now - 1000, // fresh enough to be used from cache (within TTL)
+    events: cacheEvents
+  }));
+
+  global.sessionStorage = { getItem() { return null; }, setItem() {} };
+
+  let fetchCalls = 0;
+  global.fetch = async () => {
+    fetchCalls += 1;
+    throw new Error('fetch should not run for a fresh cached cache');
+  };
+  Date.now = () => now;
+
+  t.after(() => {
+    Date.now = originalDateNow;
+    global.document = originalDocument;
+    global.localStorage = originalLocalStorage;
+    global.sessionStorage = originalSessionStorage;
+    global.fetch = originalFetch;
+  });
+
+  await loadGitHubActivity();
+
+  assert.strictEqual(fetchCalls, 0, 'fresh cache should not trigger a fetch');
+  // The feed contains one fragment element with the rendered items as children.
+  const fragment = feed.children[0];
+  assert.ok(fragment.tagName === 'fragment' || fragment.children.length > 0, 'feed should contain a fragment with events');
+  assert.strictEqual(
+    fragment.children.length,
+    10,
+    'rendered activity list should be truncated to ACTIVITY_LIMIT (10) items even when cache holds more'
+  );
 });

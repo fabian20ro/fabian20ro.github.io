@@ -831,6 +831,7 @@ function setLang(lang) {
   }
 
   document.documentElement.lang = currentLang;
+  document.title = t('title');
 
   const i18nNodes = document.querySelectorAll('[data-i18n]');
   for (const node of i18nNodes) {
@@ -1058,7 +1059,13 @@ function renderProjectCards() {
 }
 
 function getRelativeTime(dateString) {
-  if (!dateString) {
+  if (dateString === null || dateString === undefined) {
+    return t('justNow');
+  }
+  if (typeof dateString !== 'string') {
+    return '';
+  }
+  if (!dateString.trim()) {
     return t('justNow');
   }
   const date = new Date(dateString);
@@ -1243,7 +1250,7 @@ function showActivityError() {
   appendText(error, `${t('activityError')} `);
 
   const link = document.createElement('a');
-  link.href = `https://github.com/${encodeURIComponent(GITHUB_USERNAME)}`;
+  link.href = `https://github.com/${GITHUB_USERNAME}?tab=activity`;
   link.textContent = t('activityViewGithub');
   error.appendChild(link);
 
