@@ -828,6 +828,66 @@ test('loadGitHubActivity truncates the cached event list to a maximum of 30 entr
   assert.strictEqual(cached.events.length, 30, 'cached events array must be truncated to at most 30 entries');
 });
 
+test('loadGitHubActivity writes empty events to cache and renders error state on successful fetch with zero results', async (t) => {
+  const now = Date.now();
+  const originalDateNow = Date.now;
+  const originalDocument = global.document;
+  const originalLocalStorage = global.localStorage;
+  const originalSessionStorage = global.sessionStorage;
+  const originalFetch = global.fetch;
+
+  const feed = createElement('div');
+  feed.replaceChildren(createElement('div')); // placeholder "loading" element
+
+  global.document = {
+    getElementById(id) {
+      return id === 'activity-feed' ? feed : null;
+    },
+    createElement,
+    createDocumentFragment() {
+      return createElement('fragment');
+    },
+    createTextNode(text) {
+      return { nodeType: 'text', textContent: text };
+    }
+  };
+
+  const storage = new Map();
+  global.localStorage = {
+    getItem(key) { return storage.get(key); },
+    setItem(key, value) { storage.set(key, value); }
+  };
+
+  global.sessionStorage = { getItem() { return null; }, setItem() {} };
+
+  let fetchCalls = 0;
+  global.fetch = async () => {
+    fetchCalls += 1;
+    return new Response(JSON.stringify([]), { status: 200 });
+  };
+  Date.now = () => now;
+
+  t.after(() => {
+    Date.now = originalDateNow;
+    global.document = originalDocument;
+    global.localStorage = originalLocalStorage;
+    global.sessionStorage = originalSessionStorage;
+    global.fetch = originalFetch;
+  });
+
+  await loadGitHubActivity();
+
+  assert.strictEqual(fetchCalls, 1, 'should fetch when no cache is present');
+  const cacheRaw = storage.get(ACTIVITY_CACHE_KEY);
+  assert.ok(cacheRaw, 'cache should be written to localStorage even for empty results');
+  const cached = JSON.parse(cacheRaw);
+  assert.strictEqual(cached.timestamp, now, 'new cache timestamp should equal current time');
+  assert.deepStrictEqual(cached.events, [], 'cached events array should match fetched data exactly (empty)');
+  // When renderActivity receives an empty list it calls showActivityError() which renders an error element with className "activity-error"
+  assert.strictEqual(feed.children.length, 1, 'feed should contain the error state element');
+  assert.strictEqual(feed.children[0].className, 'activity-error', 'error state should use activity-error class');
+});
+
 test('loadGitHubActivity does not truncate the cache when fetched list is small', async (t) => {
   const now = Date.now();
   const originalDateNow = Date.now;
