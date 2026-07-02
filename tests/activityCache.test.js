@@ -939,3 +939,67 @@ test('loadGitHubActivity does not truncate the cache when fetched list is small'
   const cached = JSON.parse(cacheRaw);
   assert.strictEqual(cached.events.length, 3, 'small fetched list should not be truncated');
 });
+
+test('isCacheFresh rejects a cache with NaN timestamp as stale', () => {
+  const isFresh = require('../app.js').isCacheFresh;
+  assert.strictEqual(isFresh({ timestamp: Number.NaN }), false);
+  assert.strictEqual(isFresh({ timestamp: Number.POSITIVE_INFINITY }), false);
+  assert.strictEqual(isFresh({ timestamp: Number.NEGATIVE_INFINITY }), false);
+  // A valid numeric timestamp should still pass.
+  assert.strictEqual(isFresh({ timestamp: Date.now() - 1000 }), true);
+});
+
+test('loadGitHubActivity rejects a cache whose events field is missing', async (t) => {
+  const now = Date.now();
+  const originalDateNow = Date.now;
+  const originalDocument = global.document;
+  const originalLocalStorage = global.localStorage;
+  const originalSessionStorage = global.sessionStorage;
+  const originalFetch = global.fetch;
+
+  const feed = createElement('div');
+  feed.replaceChildren(createElement('div'));
+
+  global.document = {
+    getElementById(id) {
+      return id === 'activity-feed' ? feed : null;
+    },
+    createElement,
+    createTextNode(text) {
+      return { nodeType: 'text', textContent: text };
+    }
+  };
+
+  const storage = new Map();
+  global.localStorage = {
+    getItem(key) { return storage.get(key); },
+    setItem(key, value) { storage.set(key, value); }
+  };
+
+  // Cache with valid JSON and number timestamp but no events field.
+  storage.set(ACTIVITY_CACHE_KEY, JSON.stringify({
+    timestamp: now - 1000
+  }));
+
+  global.sessionStorage = { getItem() { return null; }, setItem() {} };
+
+  let fetchCalls = 0;
+  const mockEvents = [{ type: 'WatchEvent', repo: { name: 'new-repo' }, created_at: new Date(now).toISOString(), payload: {} }];
+  global.fetch = async () => {
+    fetchCalls += 1;
+    return new Response(JSON.stringify(mockEvents), { status: 200 });
+  };
+  Date.now = () => now;
+
+  t.after(() => {
+    Date.now = originalDateNow;
+    global.document = originalDocument;
+    global.localStorage = originalLocalStorage;
+    global.sessionStorage = originalSessionStorage;
+    global.fetch = originalFetch;
+  });
+
+  await loadGitHubActivity();
+
+  assert.strictEqual(fetchCalls, 1, 'cache without events field should trigger a fresh fetch');
+});
