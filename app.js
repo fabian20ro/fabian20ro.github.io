@@ -831,6 +831,7 @@ function setLang(lang) {
   }
 
   document.documentElement.lang = currentLang;
+  document.title = t('title');
 
   const i18nNodes = document.querySelectorAll('[data-i18n]');
   for (const node of i18nNodes) {
