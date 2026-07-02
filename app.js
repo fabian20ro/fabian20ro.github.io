@@ -1243,7 +1243,7 @@ function showActivityError() {
   appendText(error, `${t('activityError')} `);
 
   const link = document.createElement('a');
-  link.href = `https://github.com/${encodeURIComponent(GITHUB_USERNAME)}`;
+  link.href = `https://github.com/${GITHUB_USERNAME}?tab=activity`;
   link.textContent = t('activityViewGithub');
   error.appendChild(link);
 
