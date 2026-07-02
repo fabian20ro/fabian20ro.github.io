@@ -775,3 +775,107 @@ test('loadGitHubActivity keeps a cache one millisecond before TTL expiration', a
 
   assert.strictEqual(fetchCalls, 0, 'cache just before TTL expiration should not trigger fetch');
 });
+
+test('loadGitHubActivity truncates the cached event list to a maximum of 30 entries', async (t) => {
+  const now = Date.now();
+  const originalDateNow = Date.now;
+  const originalLocalStorage = global.localStorage;
+  const originalDocument = global.document;
+  const originalFetch = global.fetch;
+
+  const feed = createElement('div');
+
+  global.document = {
+    getElementById(id) {
+      return id === 'activity-feed' ? feed : null;
+    },
+    createElement,
+    createTextNode(text) {
+      return { nodeType: 'text', textContent: text };
+    }
+  };
+
+  const storage = new Map();
+  global.localStorage = {
+    getItem(key) { return storage.get(key); },
+    setItem(key, value) { storage.set(key, value); }
+  };
+
+  const mockEvents = Array.from({ length: 50 }, (_, i) => ({
+    type: 'PushEvent',
+    repo: { name: `repo-${i}` },
+    created_at: new Date(now).toISOString(),
+    payload: {}
+  }));
+
+  global.fetch = async () => {
+    return new Response(JSON.stringify(mockEvents), { status: 200 });
+  };
+  Date.now = () => now;
+
+  t.after(() => {
+    Date.now = originalDateNow;
+    global.document = originalDocument;
+    global.localStorage = originalLocalStorage;
+    global.fetch = originalFetch;
+  });
+
+  await loadGitHubActivity();
+
+  const cacheRaw = storage.get(ACTIVITY_CACHE_KEY);
+  assert.ok(cacheRaw, 'cache should be written to localStorage');
+  const cached = JSON.parse(cacheRaw);
+  assert.strictEqual(cached.events.length, 30, 'cached events array must be truncated to at most 30 entries');
+});
+
+test('loadGitHubActivity does not truncate the cache when fetched list is small', async (t) => {
+  const now = Date.now();
+  const originalDateNow = Date.now;
+  const originalLocalStorage = global.localStorage;
+  const originalDocument = global.document;
+  const originalFetch = global.fetch;
+
+  const feed = createElement('div');
+
+  global.document = {
+    getElementById(id) {
+      return id === 'activity-feed' ? feed : null;
+    },
+    createElement,
+    createTextNode(text) {
+      return { nodeType: 'text', textContent: text };
+    }
+  };
+
+  const storage = new Map();
+  global.localStorage = {
+    getItem(key) { return storage.get(key); },
+    setItem(key, value) { storage.set(key, value); }
+  };
+
+  const mockEvents = Array.from({ length: 3 }, (_, i) => ({
+    type: 'WatchEvent',
+    repo: { name: `watch-${i}` },
+    created_at: new Date(now).toISOString(),
+    payload: {}
+  }));
+
+  global.fetch = async () => {
+    return new Response(JSON.stringify(mockEvents), { status: 200 });
+  };
+  Date.now = () => now;
+
+  t.after(() => {
+    Date.now = originalDateNow;
+    global.document = originalDocument;
+    global.localStorage = originalLocalStorage;
+    global.fetch = originalFetch;
+  });
+
+  await loadGitHubActivity();
+
+  const cacheRaw = storage.get(ACTIVITY_CACHE_KEY);
+  assert.ok(cacheRaw, 'cache should be written to localStorage');
+  const cached = JSON.parse(cacheRaw);
+  assert.strictEqual(cached.events.length, 3, 'small fetched list should not be truncated');
+});
