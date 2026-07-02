@@ -1003,3 +1003,73 @@ test('loadGitHubActivity rejects a cache whose events field is missing', async (
 
   assert.strictEqual(fetchCalls, 1, 'cache without events field should trigger a fresh fetch');
 });
+
+test('loadGitHubActivity keeps cached content when refresh returns non-JSON body', async (t) => {
+  const now = Date.now();
+  const originalDateNow = Date.now;
+  const originalDocument = global.document;
+  const originalLocalStorage = global.localStorage;
+  const originalSessionStorage = global.sessionStorage;
+  const originalFetch = global.fetch;
+
+  const feed = createElement('div');
+  feed.replaceChildren(createElement('au')); // placeholder
+
+  global.document = {
+    getElementById(id) {
+      return id === 'activity-feed' ? feed : null;
+    },
+    createElement,
+    createDocumentFragment() {
+      return createElement('fragment');
+    },
+    createTextNode(text) {
+      return { nodeType: 'text', textContent: text };
+    }
+  };
+
+  global.localStorage = {
+    getItem(key) {
+      if (key === ACTIVITY_CACHE_KEY) {
+        // Stale cache with valid events to preserve on fetch failure.
+        return JSON.stringify({
+          timestamp: now - 11 * 60 * 1000,
+          events: [
+            { type: 'PushEvent', repo: { name: 'fabian20ro/demo' }, created_at: new Date(now - 5 * 60 * 1000).toISOString(), payload: {} }
+          ]
+        });
+      }
+      return null;
+    },
+    setItem() {}
+  };
+
+  global.sessionStorage = { getItem() { return null; }, setItem() {} };
+
+  let fetchCalls = 0;
+  global.fetch = async () => {
+    fetchCalls += 1;
+    // HTTP 200 but body is HTML/text, not JSON — r.json() will throw.
+    return new Response('<html>500 Internal Server Error</html>', { status: 200 });
+  };
+  Date.now = () => now;
+
+  t.after(() => {
+    global.document = originalDocument;
+    global.localStorage = originalLocalStorage;
+    global.sessionStorage = originalSessionStorage;
+    global.fetch = originalFetch;
+  });
+
+  await loadGitHubActivity();
+
+  assert.strictEqual(fetchCalls, 1, 'stale cache should trigger one refresh attempt');
+  assert.strictEqual(feed.children.length, 1, 'feed should still contain rendered cached content');
+  assert.strictEqual(feed.children[0].className, '', 'cached content should remain visible');
+  assert.strictEqual(
+    feed.children[0].children.length,
+    1,
+    'cached fragment should contain the event item'
+  );
+  assert.strictEqual(feed.children[0].children[0].className, 'activity-item', 'event item rendered from cache');
+});
