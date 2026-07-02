@@ -949,6 +949,15 @@ test('isCacheFresh rejects a cache with NaN timestamp as stale', () => {
   assert.strictEqual(isFresh({ timestamp: Date.now() - 1000 }), true);
 });
 
+test('isCacheFresh rejects null/undefined/empty-cache arguments defensively', () => {
+  const isFresh = require('../app.js').isCacheFresh;
+  // When called with a missing cache argument the function should not throw;
+  // it must treat any non-finite timestamp (including undefined) as stale.
+  assert.strictEqual(isFresh(undefined), false, 'undefined cache should be rejected');
+  assert.strictEqual(isFresh(null), false, 'null cache should be rejected');
+  assert.strictEqual(isFresh({}), false, 'cache without timestamp property should be rejected');
+});
+
 test('loadGitHubActivity rejects a cache whose events field is missing', async (t) => {
   const now = Date.now();
   const originalDateNow = Date.now;
