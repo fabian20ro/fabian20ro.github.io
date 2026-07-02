@@ -1360,3 +1360,76 @@ test('loadGitHubActivity ignores a cache whose JSON parses to an integer primiti
   const updatedCacheRaw = storage.get(ACTIVITY_CACHE_KEY);
   assert.ok(updatedCacheRaw, 'cache should be rewritten after fresh fetch');
 });
+
+test('loadGitHubActivity renders at most ACTIVITY_LIMIT (10) items from cached events', async (t) => {
+  const now = Date.now();
+  const originalDateNow = Date.now;
+  const originalDocument = global.document;
+  const originalLocalStorage = global.localStorage;
+  const originalSessionStorage = global.sessionStorage;
+  const originalFetch = global.fetch;
+
+  const feed = createElement('div');
+  feed.replaceChildren(createElement('fragment'));
+
+  global.document = {
+    getElementById(id) {
+      return id === 'activity-feed' ? feed : null;
+    },
+    createElement,
+    createDocumentFragment() {
+      return createElement('fragment');
+    },
+    createTextNode(text) {
+      return { nodeType: 'text', textContent: text };
+    }
+  };
+
+  const storage = new Map();
+  global.localStorage = {
+    getItem(key) { return storage.get(key); },
+    setItem(key, value) { storage.set(key, value); }
+  };
+
+  // Cache with more than ACTIVITY_LIMIT (10) items; only the first 10 should be rendered.
+  const cacheEvents = Array.from({ length: 25 }, (_, i) => ({
+    type: 'PushEvent',
+    repo: { name: `cache-repo-${i}` },
+    created_at: new Date(now).toISOString(),
+    payload: {}
+  }));
+
+  storage.set(ACTIVITY_CACHE_KEY, JSON.stringify({
+    timestamp: now - 1000, // fresh enough to be used from cache (within TTL)
+    events: cacheEvents
+  }));
+
+  global.sessionStorage = { getItem() { return null; }, setItem() {} };
+
+  let fetchCalls = 0;
+  global.fetch = async () => {
+    fetchCalls += 1;
+    throw new Error('fetch should not run for a fresh cached cache');
+  };
+  Date.now = () => now;
+
+  t.after(() => {
+    Date.now = originalDateNow;
+    global.document = originalDocument;
+    global.localStorage = originalLocalStorage;
+    global.sessionStorage = originalSessionStorage;
+    global.fetch = originalFetch;
+  });
+
+  await loadGitHubActivity();
+
+  assert.strictEqual(fetchCalls, 0, 'fresh cache should not trigger a fetch');
+  // The feed contains one fragment element with the rendered items as children.
+  const fragment = feed.children[0];
+  assert.ok(fragment.tagName === 'fragment' || fragment.children.length > 0, 'feed should contain a fragment with events');
+  assert.strictEqual(
+    fragment.children.length,
+    10,
+    'rendered activity list should be truncated to ACTIVITY_LIMIT (10) items even when cache holds more'
+  );
+});
