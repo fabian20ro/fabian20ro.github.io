@@ -1082,3 +1082,56 @@ test('loadGitHubActivity keeps cached content when refresh returns non-JSON body
   );
   assert.strictEqual(feed.children[0].children[0].className, 'activity-item', 'event item rendered from cache');
 });
+
+test('loadGitHubActivity treats a non-JSON fetch body as no-events and caches empty list', async (t) => {
+  const now = Date.now();
+  const originalDateNow = Date.now;
+  const originalDocument = global.document;
+  const originalLocalStorage = global.localStorage;
+  const originalSessionStorage = global.sessionStorage;
+  const originalFetch = global.fetch;
+
+  const feed = createElement('div');
+  feed.replaceChildren(createElement('div')); // placeholder "loading" element
+
+  global.document = {
+    getElementById(id) {
+      return id === 'activity-feed' ? feed : null;
+    },
+    createElement,
+    createTextNode(text) {
+      return { nodeType: 'text', textContent: text };
+    }
+  };
+
+  const storage = new Map();
+  global.localStorage = {
+    getItem(key) { return storage.get(key); },
+    setItem(key, value) { storage.set(key, value); }
+  };
+
+  global.sessionStorage = { getItem() { return null; }, setItem() {} };
+
+  let fetchCalls = 0;
+  // Simulate GitHub returning an HTML error page (e.g. 401/403 without token) — body is not JSON and not array-like.
+  global.fetch = async () => {
+    fetchCalls += 1;
+    return new Response('Unauthorized', { status: 200 });
+  };
+  Date.now = () => now;
+
+  t.after(() => {
+    Date.now = originalDateNow;
+    global.document = originalDocument;
+    global.localStorage = originalLocalStorage;
+    global.sessionStorage = originalSessionStorage;
+    global.fetch = originalFetch;
+  });
+
+  await loadGitHubActivity();
+
+  assert.strictEqual(fetchCalls, 1, 'should fetch exactly once on a fresh cache');
+  // When response body is non-JSON (e.g. HTML error page), response.json() throws inside fetchGitHubActivity;
+  // loadGitHubActivity catches this and calls showActivityError without writing a new cache.
+  assert.ok(!storage.get(ACTIVITY_CACHE_KEY), 'cache should not be written on fetch failure');
+});
