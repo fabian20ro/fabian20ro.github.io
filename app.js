@@ -1058,7 +1058,13 @@ function renderProjectCards() {
 }
 
 function getRelativeTime(dateString) {
-  if (!dateString) {
+  if (dateString === null || dateString === undefined) {
+    return t('justNow');
+  }
+  if (typeof dateString !== 'string') {
+    return '';
+  }
+  if (!dateString.trim()) {
     return t('justNow');
   }
   const date = new Date(dateString);

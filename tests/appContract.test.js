@@ -94,7 +94,25 @@ try {
   // Non-GitHub URLs pass through unchanged (no mangle)
   assert.strictEqual(getBadgeActionsUrl('not-a-github-url'), 'not-a-github-url');
 
-  // 8. Strengthen: Test getEventIcon
+  // 8a. Strengthen: Test getRelativeTime — strict type boundary for non-nullish primitives
+  const { getRelativeTime } = app;
+  assert.strictEqual(getRelativeTime(1234567890), '', 'getRelativeTime(number) returns empty string');
+  assert.strictEqual(getRelativeTime({}), '', 'getRelativeTime(object) returns empty string');
+  assert.strictEqual(getRelativeTime([]), '', 'getRelativeTime(array) returns empty string');
+  assert.strictEqual(getRelativeTime(true), '', 'getRelativeTime(boolean) returns empty string');
+
+  // null/undefined still return justNow (preserving existing contract)
+  setLang('en');
+  assert.strictEqual(getRelativeTime(null), 'just now', 'getRelativeTime(null) returns just now');
+  assert.strictEqual(getRelativeTime(undefined), 'just now', 'getRelativeTime(undefined) returns just now');
+
+  // 8b. getRelativeTime still works for valid strings and whitespace-only
+  setLang('ro');
+  const futureDate = new Date(Date.now() + 60000).toISOString();
+  assert.strictEqual(getRelativeTime(futureDate), t('justNow'), 'future date returns justNow');
+  assert.strictEqual(getRelativeTime('   '), t('justNow'), 'whitespace-only string returns justNow');
+
+  // 9. Strengthen: Test getEventIcon
   const eventIconMap = {
     PushEvent: '📤',
     CreateEvent: '✨',
