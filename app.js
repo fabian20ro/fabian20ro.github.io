@@ -1535,5 +1535,7 @@ module.exports = {
   setLang,
   projectSections,
   currentLang,
-  getEventIcon
+  getEventIcon,
+  renderThankYouMessage,
+  startThankYouRotation
 };
