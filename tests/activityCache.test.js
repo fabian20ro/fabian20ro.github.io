@@ -958,6 +958,20 @@ test('isCacheFresh rejects null/undefined/empty-cache arguments defensively', ()
   assert.strictEqual(isFresh({}), false, 'cache without timestamp property should be rejected');
 });
 
+test('isCacheFresh enforces strict TTL boundary and rejects future-dated timestamps', () => {
+  const isFresh = require('../app.js').isCacheFresh;
+  const now = Date.now();
+
+  // Exactly at the TTL boundary ageMs === ACTIVITY_CACHE_TTL_MS → stale (strict <).
+  assert.strictEqual(isFresh({ timestamp: now - 10 * 60 * 1000 }), false, 'cache exactly at TTL boundary must be rejected');
+
+  // One millisecond before the TTL boundary is still fresh.
+  assert.strictEqual(isFresh({ timestamp: now - (10 * 60 * 1000) + 1 }), true, 'cache one ms under TTL must be accepted');
+
+  // A future-dated cache produces a negative ageMs; even with valid numeric timestamp it must be rejected.
+  assert.strictEqual(isFresh({ timestamp: now + 3600 * 1000 }), false, 'future-dated cache must be rejected (negative age)');
+});
+
 test('loadGitHubActivity rejects a cache whose events field is missing', async (t) => {
   const now = Date.now();
   const originalDateNow = Date.now;
@@ -1490,6 +1504,13 @@ test('loadGitHubActivity handles a non-array response body defensively via empty
   assert.strictEqual(cached.events.length, 0, 'non-array response should result in empty events array');
   // When renderActivity receives an empty list it calls showActivityError() which renders an error element.
   assert.strictEqual(feed.children[0].className, 'activity-error', 'error state should be rendered for no-events response');
+});
+
+test('isCacheFresh rejects a cache object missing the timestamp property entirely', () => {
+  const isFresh = require('../app.js').isCacheFresh;
+  // A fully valid-looking cache shape but without a timestamp field must be rejected.
+  assert.strictEqual(isFresh({ events: ['a'] }), false, 'cache with only events should be stale');
+  assert.strictEqual(isFresh({ timestamp: undefined, events: [] }), false, 'explicit-undefined timestamp is not fresh');
 });
 
 test('loadGitHubActivity does not refetch when the previous fetch has just completed', async (t) => {

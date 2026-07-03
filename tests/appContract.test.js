@@ -62,6 +62,15 @@ try {
   // Test fallback from 'ro' to 'en'
   setLang('ro');
   assert.strictEqual(t('title'), "Proiectele lui Fabian");
+  // Regression: setLang must survive non-string input without corrupting state (forms/URLs)
+  const { currentLang } = app;
+  setLang(42);
+  assert.ok(typeof currentLang === 'string', 'setLang(number) keeps currentLang as string');
+  assert.strictEqual(t('title'), "Fabian's Projects", 'setLang(number) falls back to en, not ro');
+  setLang('   ');
+  assert.ok(typeof currentLang === 'string', 'setLang(whitespace) keeps currentLang as string');
+  assert.strictEqual(t('title'), "Fabian's Projects", 'setLang(whitespace) falls back to en');
+
   // Test fallback to key itself if not in 'en'
   assert.strictEqual(t('something_completely_random_that_does_not_exist'), 'something_completely_random_that_does_not_exist');
 
@@ -166,7 +175,49 @@ try {
     }
   });
 
-  console.log('App contract tests passed!');
+  // 10. Strengthen: Test loadGitHubActivity contract — stale cache must be replaced by fresh fetch
+  const { loadGitHubActivity } = app;
+
+  function createElement(tagName) {
+    return {
+      tagName, className: '', textContent: '', href: '', children: [],
+      appendChild(child) { this.children.push(child); return child; },
+      append(...nodes) { for (const n of nodes) this.appendChild(n); },
+      replaceChildren(...nodes) { this.children = [...nodes]; },
+      setAttribute(name, value) { this[name] = value; }
+    };
+  }
+
+  (async () => {
+    const feed = createElement('div');
+    feed.replaceChildren(createElement('div'));
+    let fetchCalls = 0;
+    global.document = {
+      getElementById(id) { return id === 'activity-feed' ? feed : null; },
+      createElement, createDocumentFragment: () => createElement('fragment'),
+      createTextNode(text) { return { nodeType: 'text', textContent: text }; }
+    };
+
+    const staleTS = Date.now() - 11 * 60 * 1000;
+    global.localStorage = {
+      getItem(key) {
+        if (key === 'github-activity-cache-v1') return JSON.stringify({ timestamp: staleTS, events: [{ type: 'StaleEvent', repo: { name: 'old' }, created_at: '', payload: {} }] });
+        return null;
+      },
+      setItem() {}
+    };
+
+    global.fetch = async () => {
+      fetchCalls += 1;
+      return new Response(JSON.stringify([{ type: 'FreshEvent', repo: { name: 'new-repo' }, created_at: new Date(Date.now()).toISOString(), payload: {} }]));
+    };
+
+    await loadGitHubActivity();
+
+    // Contract: stale cache (older than 10-min TTL) must trigger at least one network call.
+    assert.strictEqual(fetchCalls, 1, 'stale cache should trigger refresh');
+    console.log('Stale-cache regression test passed!');
+  })().catch(err => { console.error(err); process.exit(1); });
 
 } catch (err) {
   console.error('App contract tests failed:');
