@@ -1492,6 +1492,13 @@ test('loadGitHubActivity handles a non-array response body defensively via empty
   assert.strictEqual(feed.children[0].className, 'activity-error', 'error state should be rendered for no-events response');
 });
 
+test('isCacheFresh rejects a cache object missing the timestamp property entirely', () => {
+  const isFresh = require('../app.js').isCacheFresh;
+  // A fully valid-looking cache shape but without a timestamp field must be rejected.
+  assert.strictEqual(isFresh({ events: ['a'] }), false, 'cache with only events should be stale');
+  assert.strictEqual(isFresh({ timestamp: undefined, events: [] }), false, 'explicit-undefined timestamp is not fresh');
+});
+
 test('loadGitHubActivity does not refetch when the previous fetch has just completed', async (t) => {
   const now = Date.now();
   const originalDateNow = Date.now;
