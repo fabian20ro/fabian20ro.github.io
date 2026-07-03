@@ -112,6 +112,17 @@ try {
   assert.strictEqual(getRelativeTime(futureDate), t('justNow'), 'future date returns justNow');
   assert.strictEqual(getRelativeTime('   '), t('justNow'), 'whitespace-only string returns justNow');
 
+  // 8c. Strengthen: getDefaultLang fallback in Node (no navigator) is deterministic
+  const { getDefaultLang } = app;
+  setLang('en');
+  assert.strictEqual(typeof getDefaultLang(), 'string', 'getDefaultLang returns a string');
+  assert.strictEqual(getDefaultLang(), 'en', 'getDefaultLang falls back to en when no navigator exists');
+
+  // 8d. Strengthen: t() with empty-string key falls back to the key itself
+  setLang('ro');
+  assert.strictEqual(t(''), '', 't(\'\' + any lang) returns empty string');
+  assert.strictEqual(t('', 'en'), '', 't(\'\', \'en\') returns empty string');
+
   // 9. Strengthen: Test getEventIcon
   const eventIconMap = {
     PushEvent: '📤',
