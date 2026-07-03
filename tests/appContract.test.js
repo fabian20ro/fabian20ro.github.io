@@ -62,6 +62,15 @@ try {
   // Test fallback from 'ro' to 'en'
   setLang('ro');
   assert.strictEqual(t('title'), "Proiectele lui Fabian");
+  // Regression: setLang must survive non-string input without corrupting state (forms/URLs)
+  const { currentLang } = app;
+  setLang(42);
+  assert.ok(typeof currentLang === 'string', 'setLang(number) keeps currentLang as string');
+  assert.strictEqual(t('title'), "Fabian's Projects", 'setLang(number) falls back to en, not ro');
+  setLang('   ');
+  assert.ok(typeof currentLang === 'string', 'setLang(whitespace) keeps currentLang as string');
+  assert.strictEqual(t('title'), "Fabian's Projects", 'setLang(whitespace) falls back to en');
+
   // Test fallback to key itself if not in 'en'
   assert.strictEqual(t('something_completely_random_that_does_not_exist'), 'something_completely_random_that_does_not_exist');
 

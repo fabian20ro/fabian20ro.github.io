@@ -1534,5 +1534,6 @@ module.exports = {
   translations,
   setLang,
   projectSections,
+  currentLang,
   getEventIcon
 };
