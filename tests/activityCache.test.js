@@ -1433,3 +1433,120 @@ test('loadGitHubActivity renders at most ACTIVITY_LIMIT (10) items from cached e
     'rendered activity list should be truncated to ACTIVITY_LIMIT (10) items even when cache holds more'
   );
 });
+
+test('loadGitHubActivity handles a non-array response body defensively via empty-list fallback', async (t) => {
+  const now = Date.now();
+  const originalDateNow = Date.now;
+  const originalDocument = global.document;
+  const originalLocalStorage = global.localStorage;
+  const originalSessionStorage = global.sessionStorage;
+  const originalFetch = global.fetch;
+
+  const feed = createElement('div');
+  feed.replaceChildren(createElement('div')); // placeholder "loading" element
+
+  global.document = {
+    getElementById(id) {
+      return id === 'activity-feed' ? feed : null;
+    },
+    createElement,
+    createTextNode(text) {
+      return { nodeType: 'text', textContent: text };
+    }
+  };
+
+  const storage = new Map();
+  global.localStorage = {
+    getItem(key) { return storage.get(key); },
+    setItem(key, value) { storage.set(key, value); }
+  };
+
+  global.sessionStorage = { getItem() { return null; }, setItem() {} };
+
+  let fetchCalls = 0;
+  // Simulate GitHub returning an unexpected JSON object instead of an array.
+  // fetchGitHubActivity should convert this to [] via Array.isArray guard,
+  // causing loadGitHubActivity to treat it as no-events and cache empty list.
+  global.fetch = async () => {
+    fetchCalls += 1;
+    return new Response(JSON.stringify({ status: 'ok', items: [] }), { status: 200 });
+  };
+  Date.now = () => now;
+
+  t.after(() => {
+    Date.now = originalDateNow;
+    global.document = originalDocument;
+    global.localStorage = originalLocalStorage;
+    global.sessionStorage = originalSessionStorage;
+    global.fetch = originalFetch;
+  });
+
+  await loadGitHubActivity();
+
+  assert.strictEqual(fetchCalls, 1, 'should fetch exactly once on a fresh cache');
+  const cacheRaw = storage.get(ACTIVITY_CACHE_KEY);
+  assert.ok(cacheRaw, 'cache should be written after fetch completes (even with empty list)');
+  const cached = JSON.parse(cacheRaw);
+  assert.strictEqual(cached.events.length, 0, 'non-array response should result in empty events array');
+  // When renderActivity receives an empty list it calls showActivityError() which renders an error element.
+  assert.strictEqual(feed.children[0].className, 'activity-error', 'error state should be rendered for no-events response');
+});
+
+test('loadGitHubActivity does not refetch when the previous fetch has just completed', async (t) => {
+  const now = Date.now();
+  const originalDateNow = Date.now;
+  const originalDocument = global.document;
+  const originalLocalStorage = global.localStorage;
+  const originalSessionStorage = global.sessionStorage;
+  const originalFetch = global.fetch;
+
+  // Pre-populate a fresh cache so the first loadGitHubActivity call renders from it.
+  const feed = createElement('div');
+  feed.replaceChildren(createElement('fragment'));
+
+  global.document = {
+    getElementById(id) {
+      return id === 'activity-feed' ? feed : null;
+    },
+    createElement,
+    createDocumentFragment() {
+      return createElement('fragment');
+    },
+    createTextNode(text) {
+      return { nodeType: 'text', textContent: text };
+    }
+  };
+
+  const storage = new Map();
+  global.localStorage = {
+    getItem(key) { return storage.get(key); },
+    setItem(key, value) { storage.set(key, value); }
+  };
+
+  // Cache timestamp exactly now (fresh) with a single event.
+  storage.set(ACTIVITY_CACHE_KEY, JSON.stringify({
+    timestamp: now,
+    events: [{ type: 'PushEvent', repo: { name: 'cached-repo' }, created_at: new Date(now).toISOString(), payload: {} }]
+  }));
+
+  global.sessionStorage = { getItem() { return null; }, setItem() {} };
+
+  let fetchCalls = 0;
+  global.fetch = async () => {
+    fetchCalls += 1;
+    throw new Error('fetch should not run for a freshly cached cache');
+  };
+  Date.now = () => now;
+
+  t.after(() => {
+    Date.now = originalDateNow;
+    global.document = originalDocument;
+    global.localStorage = originalLocalStorage;
+    global.sessionStorage = originalSessionStorage;
+    global.fetch = originalFetch;
+  });
+
+  await loadGitHubActivity();
+
+  assert.strictEqual(fetchCalls, 0, 'fresh cache should prevent any fetch');
+});
