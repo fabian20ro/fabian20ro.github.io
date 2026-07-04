@@ -36,7 +36,8 @@ try {
     'normalizeLang',
     'parseRepoName',
     'buildRepoUrl',
-    't'
+    't',
+    'getEventIcon'
   ];
   expectedFunctions.forEach(fnName => {
     assert.strictEqual(typeof app[fnName], 'function', `app.${fnName} should be a function`);
@@ -147,7 +148,7 @@ try {
   assert.strictEqual(t('title', ''), "Proiectele lui Fabian", "empty string lang falls back to currentLang");
   assert.strictEqual(t('title', 42), "Fabian's Projects", "t(key, number $lang) falls back to en");
 
-  // 9. Strengthen: Test getEventIcon
+  // 9. Strengthen: Test getEventIcon — full mapping coverage with fallback
   const eventIconMap = {
     PushEvent: '📤',
     CreateEvent: '✨',
@@ -156,12 +157,17 @@ try {
     IssueEvent: '🐛',
     PullRequestEvent: '🔀',
     IssueCommentEvent: '💬',
-    PullRequestReviewCommentEvent: '💬',
-    'UnknownEvent': '📌'
+    PullRequestReviewCommentEvent: '💬'
   };
   Object.entries(eventIconMap).forEach(([event, icon]) => {
     assert.strictEqual(app.getEventIcon(event), icon, `getEventIcon('${event}') should return '${icon}'`);
   });
+
+  // Unknown events fall back to the default pin emoji — prevents silent breakage if a new event type appears with no mapping.
+  assert.strictEqual(app.getEventIcon('UnknownEvent'), '📌');
+  assert.strictEqual(app.getEventIcon(null), '📌');
+  assert.strictEqual(app.getEventIcon(undefined), '📌');
+  assert.strictEqual(app.getEventIcon(''), '📌');
 
   // 9. Strengthen: Test projectSections structure
   const { projectSections } = app;
