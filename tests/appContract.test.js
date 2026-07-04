@@ -132,6 +132,16 @@ try {
   assert.strictEqual(t(''), '', 't(\'\' + any lang) returns empty string');
   assert.strictEqual(t('', 'en'), '', 't(\'\', \'en\') returns empty string');
 
+  // 8e. Strengthen: t() with $lang parameter must be safe against non-string inputs (forms/URLs)
+  setLang('ro');
+  assert.strictEqual(t('title', 'zz'), "Fabian's Projects", "t(key, invalid lang code) falls back to en");
+  // null and undefined short-circuit before normalizeLang — fall back to currentLang (not raw key)
+  assert.strictEqual(t('title', null), "Proiectele lui Fabian", "t(key, null $lang) falls back to currentLang");
+  assert.strictEqual(t('title', undefined), "Proiectele lui Fabian", "t(key, undefined $lang) falls back to currentLang");
+  // '' is falsy — short-circuits before normalizeLang → also falls back to currentLang (not raw key)
+  assert.strictEqual(t('title', ''), "Proiectele lui Fabian", "empty string lang falls back to currentLang");
+  assert.strictEqual(t('title', 42), "Fabian's Projects", "t(key, number $lang) falls back to en");
+
   // 9. Strengthen: Test getEventIcon
   const eventIconMap = {
     PushEvent: '📤',
