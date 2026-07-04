@@ -1716,3 +1716,72 @@ test('loadGitHubActivity truncates cached events to the first 30', async (t) => 
   assert.strictEqual(cached.events[0].repo.name, 'repo-000', 'first event should be preserved');
   assert.strictEqual(cached.events[29].repo.name, 'repo-029', 'last cached event should be the 30th entry');
 });
+
+test('loadGitHubActivity renders no more than ACTIVITY_LIMIT (10) items even when cache holds many events', async (t) => {
+  const now = Date.now();
+  const originalDateNow = Date.now;
+  const originalDocument = global.document;
+  const originalLocalStorage = global.localStorage;
+  const originalFetch = global.fetch;
+
+  const feed = createElement('div');
+  feed.replaceChildren(createElement('div')); // placeholder "loading" element
+
+  global.document = {
+    getElementById(id) {
+      return id === 'activity-feed' ? feed : null;
+    },
+    createElement,
+    createDocumentFragment() {
+      return createElement('fragment');
+    },
+    createTextNode(text) {
+      return { nodeType: 'text', textContent: text };
+    }
+  };
+
+  const storage = new Map();
+  global.localStorage = {
+    getItem(key) { return storage.get(key); },
+    setItem(key, value) { storage.set(key, value); }
+  };
+
+  // Seed a fresh cache with many events (> ACTIVITY_LIMIT=10 and > cache truncation limit of 30).
+  const seededEvents = Array.from({ length: 50 }, (_, i) => ({
+    type: 'PushEvent',
+    repo: { name: `seeded-repo-${i}` },
+    created_at: new Date(now - i * 1000).toISOString(),
+    payload: {}
+  }));
+  storage.set(ACTIVITY_CACHE_KEY, JSON.stringify({ timestamp: now, events: seededEvents }));
+
+  global.sessionStorage = { getItem() { return null; }, setItem() {} };
+
+  let fetchCalls = 0;
+  global.fetch = async () => {
+    fetchCalls += 1;
+    throw new Error('fetch should not run for a fresh cache');
+  };
+  Date.now = () => now;
+
+  t.after(() => {
+    Date.now = originalDateNow;
+    global.document = originalDocument;
+    global.localStorage = originalLocalStorage;
+    global.fetch = originalFetch;
+  });
+
+  await loadGitHubActivity();
+
+  assert.strictEqual(fetchCalls, 0, 'fresh cache should not trigger a fetch');
+  // The feed's first child is the rendered activity fragment; its children are the visible items.
+  const renderedFragment = feed.children[0];
+  assert.strictEqual(
+    renderedFragment.children.length,
+    10,
+    `renderActivity must render at most ACTIVITY_LIMIT (${10}) items regardless of cache size`
+  );
+  for (const item of renderedFragment.children) {
+    assert.strictEqual(item.className, 'activity-item', 'each visible child should be an activity item');
+  }
+});
