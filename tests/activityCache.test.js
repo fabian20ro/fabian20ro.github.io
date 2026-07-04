@@ -1785,3 +1785,61 @@ test('loadGitHubActivity renders no more than ACTIVITY_LIMIT (10) items even whe
     assert.strictEqual(item.className, 'activity-item', 'each visible child should be an activity item');
   }
 });
+
+test('loadGitHubActivity shows error state when a fresh cache holds zero events and does not fetch', async (t) => {
+  const now = Date.now();
+  const originalDateNow = Date.now;
+  const originalDocument = global.document;
+  const originalLocalStorage = global.localStorage;
+  const originalSessionStorage = global.sessionStorage;
+  const originalFetch = global.fetch;
+
+  const feed = createElement('div');
+  feed.replaceChildren(createElement('div')); // loading placeholder
+
+  global.document = {
+    getElementById(id) {
+      return id === 'activity-feed' ? feed : null;
+    },
+    createElement,
+    createTextNode(text) {
+      return { nodeType: 'text', textContent: text };
+    }
+  };
+
+  const storage = new Map();
+  global.localStorage = {
+    getItem(key) { return storage.get(key); },
+    setItem(key, value) { storage.set(key, value); }
+  };
+
+  // Pre-populate a valid fresh cache with zero events.
+  storage.set(ACTIVITY_CACHE_KEY, JSON.stringify({ timestamp: now, events: [] }));
+
+  global.sessionStorage = { getItem() { return null; }, setItem() {} };
+
+  let fetchCalls = 0;
+  global.fetch = async () => {
+    fetchCalls += 1;
+    throw new Error('fetch should not run for a fresh cache');
+  };
+  Date.now = () => now;
+
+  t.after(() => {
+    Date.now = originalDateNow;
+    global.document = originalDocument;
+    global.localStorage = originalLocalStorage;
+    global.sessionStorage = originalSessionStorage;
+    global.fetch = originalFetch;
+  });
+
+  await loadGitHubActivity();
+
+  assert.strictEqual(fetchCalls, 0, 'fresh cache with zero events should not trigger fetch');
+  assert.strictEqual(
+    feed.children.length,
+    1,
+    'feed should contain the rendered error state element'
+  );
+  assert.strictEqual(feed.children[0].className, 'activity-error', 'empty fresh cache must render activity-error class');
+});
