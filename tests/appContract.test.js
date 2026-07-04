@@ -121,6 +121,11 @@ try {
   assert.strictEqual(getRelativeTime(futureDate), t('justNow'), 'future date returns justNow');
   assert.strictEqual(getRelativeTime('   '), t('justNow'), 'whitespace-only string returns justNow');
 
+  // 8f. Strengthen: getRelativeTime with invalid date strings falls back to justNow
+  setLang('en');
+  assert.strictEqual(getRelativeTime('not-a-date'), 'just now', 'getRelativeTime(invalid date) returns just now');
+  assert.strictEqual(getRelativeTime('yesterday'), 'just now', 'getRelativeTime(garbage string) returns just now');
+
   // 8c. Strengthen: getDefaultLang fallback in Node (no navigator) is deterministic
   const { getDefaultLang } = app;
   setLang('en');
