@@ -972,6 +972,25 @@ test('isCacheFresh enforces strict TTL boundary and rejects future-dated timesta
   assert.strictEqual(isFresh({ timestamp: now + 3600 * 1000 }), false, 'future-dated cache must be rejected (negative age)');
 });
 
+test('isCacheFresh rejects timestamps that exceed safe-integer precision', () => {
+  const isFresh = require('../app.js').isCacheFresh;
+
+  // A timestamp beyond Number.MAX_SAFE_INTEGER loses integer precision in Date.now() subtraction.
+  // writeActivityCache guards against this — a non-finite ageMs must not be treated as fresh.
+  assert.strictEqual(
+    isFresh({ timestamp: Number.MAX_SAFE_INTEGER + 1 }),
+    false,
+    'timestamp beyond MAX_SAFE_INTEGER should be rejected'
+  );
+
+  // A very old safe-integer timestamp must also fail because the resulting ageMs overflows finite range.
+  assert.strictEqual(
+    isFresh({ timestamp: -Number.MAX_SAFE_INTEGER }),
+    false,
+    'deeply negative safe-integer timestamp should be rejected (ageMs overflow)'
+  );
+});
+
 test('loadGitHubActivity rejects a cache whose events field is missing', async (t) => {
   const now = Date.now();
   const originalDateNow = Date.now;
