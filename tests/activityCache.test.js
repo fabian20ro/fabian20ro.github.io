@@ -1591,6 +1591,67 @@ test('loadGitHubActivity does not refetch when the previous fetch has just compl
   assert.strictEqual(fetchCalls, 0, 'fresh cache should prevent any fetch');
 });
 
+test('loadGitHubActivity does not refetch when called twice in rapid succession with a fresh cache', async (t) => {
+  const now = Date.now();
+  const originalDateNow = Date.now;
+  const originalDocument = global.document;
+  const originalLocalStorage = global.localStorage;
+  const originalSessionStorage = global.sessionStorage;
+  const originalFetch = global.fetch;
+
+  // Pre-populate a fresh cache so both loadGitHubActivity calls render from it.
+  const feed = createElement('div');
+  feed.replaceChildren(createElement('fragment'));
+
+  global.document = {
+    getElementById(id) {
+      return id === 'activity-feed' ? feed : null;
+    },
+    createElement,
+    createDocumentFragment() {
+      return createElement('fragment');
+    },
+    createTextNode(text) {
+      return { nodeType: 'text', textContent: text };
+    }
+  };
+
+  const storage = new Map();
+  global.localStorage = {
+    getItem(key) { return storage.get(key); },
+    setItem(key, value) { storage.set(key, value); }
+  };
+
+  // Cache timestamp exactly now (fresh).
+  storage.set(ACTIVITY_CACHE_KEY, JSON.stringify({
+    timestamp: now,
+    events: [{ type: 'PushEvent', repo: { name: 'cached-repo' }, created_at: new Date(now).toISOString(), payload: {} }]
+  }));
+
+  global.sessionStorage = { getItem() { return null; }, setItem() {} };
+
+  let fetchCalls = 0;
+  global.fetch = async () => {
+    fetchCalls += 1;
+    throw new Error('fetch should not run for a freshly cached cache');
+  };
+  Date.now = () => now;
+
+  t.after(() => {
+    Date.now = originalDateNow;
+    global.document = originalDocument;
+    global.localStorage = originalLocalStorage;
+    global.sessionStorage = originalSessionStorage;
+    global.fetch = originalFetch;
+  });
+
+  await loadGitHubActivity();
+  // Immediately call again — should not trigger a second fetch.
+  await loadGitHubActivity();
+
+  assert.strictEqual(fetchCalls, 0, 'fresh cache should prevent any double-fetch');
+});
+
 test('loadGitHubActivity truncates cached events to the first 30', async (t) => {
   const now = Date.now();
   const originalDateNow = Date.now;
