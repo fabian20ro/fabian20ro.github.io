@@ -204,6 +204,25 @@ try {
     }
   });
 
+  // 10a. Strengthen: Test isCacheFresh — non-finite timestamp guard must reject corrupted cache data
+  const { isCacheFresh } = app;
+  assert.strictEqual(isCacheFresh({ timestamp: NaN }), false, 'isCacheFresh rejects NaN timestamp');
+  assert.strictEqual(isCacheFresh({ timestamp: Infinity }), false, 'isCacheFresh rejects Infinity timestamp');
+  assert.strictEqual(isCacheFresh({ timestamp: -Infinity }), false, 'isCacheFresh rejects -Infinity timestamp');
+  assert.strictEqual(isCacheFresh(null), false, 'isCacheFresh rejects null cache object');
+  assert.strictEqual(isCacheFresh(undefined), false, 'isCacheFresh rejects undefined cache object');
+  assert.strictEqual(isCacheFresh({}), false, "isCacheFresh rejects empty object (no timestamp)");
+  // Valid fresh cache — within TTL window — must return true
+  assert.strictEqual(isCacheFresh({ timestamp: Date.now() }), true, 'isCacheFresh accepts valid recent timestamp');
+
+  // Regression: stale-but-valid cache must be rejected by isCacheFresh (not silently accepted).
+  const staleValid = { timestamp: Date.now() - app.ACTIVITY_CACHE_TTL_MS - 1 };
+  assert.strictEqual(isCacheFresh(staleValid), false, 'isCacheFresh rejects cache older than TTL');
+
+  // Regression: future-dated cache must be rejected — clock skew or malformed data should not count as fresh.
+  const futureValid = { timestamp: Date.now() + 60000 };
+  assert.strictEqual(isCacheFresh(futureValid), false, 'isCacheFresh rejects future-dated timestamp');
+
   // 10. Strengthen: Test loadGitHubActivity contract — stale cache must be replaced by fresh fetch
   const { loadGitHubActivity } = app;
 
