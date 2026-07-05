@@ -888,6 +888,33 @@ test('loadGitHubActivity writes empty events to cache and renders error state on
   assert.strictEqual(feed.children[0].className, 'activity-error', 'error state should use activity-error class');
 });
 
+test('isCacheFresh rejects a cache with NaN or Infinity timestamp as stale', (t) => {
+  const { isCacheFresh } = require('../app.js');
+
+  // Cache entry with valid structure but an invalid (non-finite) timestamp.
+  // isCacheFresh should treat any non-finite timestamp as stale so that the
+  // activity feed will fetch fresh data instead of keeping rendered garbage.
+  const cacheNaN = { timestamp: Number.NaN, events: [] };
+  const cacheInfinity = { timestamp: Number.POSITIVE_INFINITY, events: [] };
+  const cacheNegInfinity = { timestamp: Number.NEGATIVE_INFINITY, events: [] };
+
+  assert.strictEqual(isCacheFresh(cacheNaN), false, 'NaN timestamp should be treated as stale');
+  assert.strictEqual(
+    isCacheFresh(cacheInfinity),
+    false,
+    '+Infinity timestamp should be treated as stale'
+  );
+  assert.strictEqual(
+    isCacheFresh(cacheNegInfinity),
+    false,
+    '-Infinity timestamp should be treated as stale'
+  );
+
+  // Sanity check that a fresh cache is still accepted.
+  const validCache = { timestamp: Date.now() - 1000, events: [] };
+  assert.strictEqual(isCacheFresh(validCache), true, 'valid recent timestamp should be fresh');
+});
+
 test('loadGitHubActivity does not truncate the cache when fetched list is small', async (t) => {
   const now = Date.now();
   const originalDateNow = Date.now;
