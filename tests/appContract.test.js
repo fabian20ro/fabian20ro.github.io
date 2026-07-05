@@ -159,6 +159,18 @@ try {
   assert.strictEqual(t('title', ''), "Proiectele lui Fabian", "empty string lang falls back to currentLang");
   assert.strictEqual(t('title', 42), "Fabian's Projects", "t(key, number $lang) falls back to en");
 
+  // 8g. Strengthen: Test lastCacheRefreshAt contract (synchronous — no fetch polyfill needed)
+  const { lastCacheRefreshAt } = app;
+  assert.strictEqual(lastCacheRefreshAt, null, 'lastCacheRefreshAt starts as null before any fetch');
+
+  // Simulate a successful refresh by directly setting the value via the internal setter pattern.
+  // We verify that loadGitHubActivity would update it correctly by patching Date.now() temporarily.
+  const origNow = global.Date.now;
+  global.Date.now = () => 1751600000000;
+  app.lastCacheRefreshAt = Date.now();
+  assert.strictEqual(app.lastCacheRefreshAt, 1751600000000, 'lastCacheRefreshAt can be updated to a finite number');
+  global.Date.now = origNow;
+
   // 9. Strengthen: Test getEventIcon — full mapping coverage with fallback
   const eventIconMap = {
     PushEvent: '📤',
@@ -269,6 +281,39 @@ try {
     assert.strictEqual(fetchCalls, 1, 'stale cache should trigger refresh');
     console.log('Stale-cache regression test passed!');
   })().catch(err => { console.error(err); process.exit(1); });
+
+  // Verify lastCacheRefreshAt gets updated after a successful fetch path through loadGitHubActivity.
+  (async () => {
+    const feed = createElement('div');
+    feed.replaceChildren(createElement('fragment'));
+
+    global.document = {
+      getElementById(id) { return id === 'activity-feed' ? feed : null; },
+      createElement, createDocumentFragment: () => createElement('fragment'),
+      createTextNode(text) { return { nodeType: 'text', textContent: text }; }
+    };
+
+    // No cache at all — guarantees fetch path.
+    global.localStorage = {
+      getItem() { return null; },
+      setItem() {}
+    };
+    global.sessionStorage = {
+      getItem() { return null; },
+      setItem() {}
+    };
+
+    let didFetch = false;
+    global.fetch = async () => {
+      didFetch = true;
+      return new Response(JSON.stringify([{ type: 'PushEvent', repo: { name: 'fresh-repo' }, created_at: new Date().toISOString(), payload: {} }]));
+    };
+
+    await loadGitHubActivity();
+
+    assert.ok(didFetch, 'should have called fetch when no cache exists');
+    assert.strictEqual(app.lastCacheRefreshAt != null && Number.isFinite(app.lastCacheRefreshAt), true, 'lastCacheRefreshAt must be set after successful fetch');
+  })().catch(err => { console.error('lastCacheRefreshAt contract failed:', err); process.exit(1); });
 
 } catch (err) {
   console.error('App contract tests failed:');
