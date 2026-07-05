@@ -92,6 +92,14 @@ try {
   assert.strictEqual(buildRepoUrl('owner/repo'), 'https://github.com/owner/repo');
   assert.strictEqual(buildRepoUrl('invalid'), 'https://github.com/fabian20ro');
   assert.strictEqual(buildRepoUrl(null), 'https://github.com/fabian20ro');
+  // Additional boundary safety assertions for buildRepoUrl/parseRepoName — malformed inputs must never produce broken URLs.
+  assert.strictEqual(buildRepoUrl(''), 'https://github.com/fabian20ro', "buildRepoUrl('') falls back to profile URL");
+  assert.strictEqual(buildRepoUrl(undefined), 'https://github.com/fabian20ro', 'buildRepoUrl(undefined) falls back to profile URL');
+  assert.strictEqual(buildRepoUrl(42), 'https://github.com/fabian20ro', 'buildRepoUrl(number) falls back to profile URL');
+  assert.strictEqual(parseRepoName(''), null, "parseRepoName('') returns null");
+  assert.strictEqual(parseRepoName(undefined), null, 'parseRepoName(undefined) returns null');
+  assert.strictEqual(parseRepoName(null), null, 'parseRepoName(null) returns null');
+  assert.strictEqual(parseRepoName('/no/owner/repo'), null, "parseRepoName('slash-prefix') returns null");
 
   // 7. Strengthen: Test getBadgeActionsUrl — strict boundary contract (idempotent)
   const { getBadgeActionsUrl } = app;
