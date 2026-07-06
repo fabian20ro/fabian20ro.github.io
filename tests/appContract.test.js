@@ -71,6 +71,19 @@ try {
   assert.ok(typeof app.currentLang === 'string', 'app.currentLang stays string after setLang(number)');
   assert.strictEqual(app.currentLang, 'en', 'setLang(number) normalizes to en, does not store raw number in state');
   assert.strictEqual(t('title'), "Fabian's Projects", 'setLang(number) falls back to en, not ro');
+
+  // setLang must always normalize currentLang — never store raw invalid input.
+  // In Node.js mode (no DOM), the state object itself is the observable contract surface.
+  setLang('zz');
+  assert.strictEqual(app.currentLang, 'en', "setLang('zz') normalizes unknown lang to en");
+
+  setLang(7);
+  assert.ok(typeof app.currentLang === 'string' && !['null','undefined'].includes(String(app.currentLang)), 'setLang(number) never leaves raw number in state');
+  assert.strictEqual(app.currentLang, 'en', 'setLang(non-string primitive) normalizes to en');
+
+  setLang('ro-XY-ZZ');
+  assert.ok((app.currentLang === 'ro' || app.currentLang === 'en'), "setLang('ro-XY-ZZ') must normalize to supported lang (ro or en fallback)");
+
   setLang('   ');
   assert.ok(typeof app.currentLang === 'string', 'setLang(whitespace) keeps currentLang as string');
   assert.strictEqual(t('title'), "Fabian's Projects", 'setLang(whitespace) falls back to en');
