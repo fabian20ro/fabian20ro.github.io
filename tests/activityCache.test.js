@@ -458,6 +458,126 @@ test('loadGitHubActivity writes updated activity to cache on successful fetch', 
   assert.strictEqual(cached.events[0].repo.name, 'test-repo');
 });
 
+test('loadGitHubActivity caps cached events at the writeActivityCache limit (30 items)', async (t) => {
+  const now = Date.now();
+  const originalDateNow = Date.now;
+  const originalLocalStorage = global.localStorage;
+  const originalDocument = global.document;
+  const originalFetch = global.fetch;
+
+  const feed = createElement('div');
+  feed.replaceChildren(createElement('div'));
+
+  global.document = {
+    getElementById(id) {
+      return id === 'activity-feed' ? feed : null;
+    },
+    createElement,
+    createTextNode(text) {
+      return { nodeType: 'text', textContent: text };
+    }
+  };
+
+  const storage = new Map();
+  global.localStorage = {
+    getItem(key) { return storage.get(key); },
+    setItem(key, value) { storage.set(key, value); }
+  };
+
+  global.sessionStorage = { getItem() { return null; }, setItem() {} };
+
+  // Generate more events than the writeActivityCache slice cap (30).
+  const mockEvents = Array.from({ length: 45 }, (_, i) => ({
+    type: 'PushEvent',
+    repo: { name: `test-repo-${i}` },
+    created_at: new Date(now - i * 60_000).toISOString(),
+    payload: { ref: 'refs/heads/main' }
+  }));
+
+  global.fetch = async () => {
+    return new Response(JSON.stringify(mockEvents), { status: 200 });
+  };
+  Date.now = () => now;
+
+  t.after(() => {
+    Date.now = originalDateNow;
+    global.document = originalDocument;
+    global.localStorage = originalLocalStorage;
+    global.fetch = originalFetch;
+  });
+
+  await loadGitHubActivity();
+
+  const cacheRaw = storage.get(ACTIVITY_CACHE_KEY);
+  assert.ok(cacheRaw, 'cache should be written to localStorage');
+  const cached = JSON.parse(cacheRaw);
+  assert.strictEqual(
+    cached.events.length,
+    30,
+    'writeActivityCache must cap the cached events at 30'
+  );
+  // First item preserved (slice is head-bounded).
+  assert.strictEqual(cached.events[0].repo.name, 'test-repo-0');
+  // Last cached item is index 29.
+  assert.strictEqual(cached.events[cached.events.length - 1].repo.name, 'test-repo-29');
+});
+
+test('loadGitHubActivity rejects a cache whose events array is not an actual Array', async (t) => {
+  const now = Date.now();
+  const originalDateNow = Date.now;
+  const originalDocument = global.document;
+  const originalLocalStorage = global.localStorage;
+  const originalSessionStorage = global.sessionStorage;
+  const originalFetch = global.fetch;
+
+  const feed = createElement('div');
+  feed.replaceChildren(createElement('div'));
+
+  global.document = {
+    getElementById(id) {
+      return id === 'activity-feed' ? feed : null;
+    },
+    createElement,
+    createTextNode(text) {
+      return { nodeType: 'text', textContent: text };
+    }
+  };
+
+  const storage = new Map();
+  global.localStorage = {
+    getItem(key) { return storage.get(key); },
+    setItem(key, value) { storage.set(key, value); }
+  };
+
+  // Cache with valid number timestamp but events as a plain object (not Array).
+  storage.set(ACTIVITY_CACHE_KEY, JSON.stringify({
+    timestamp: now,
+    events: { '0': { type: 'PushEvent', repo: { name: 'x' }, created_at: new Date(now).toISOString(), payload: {} } }
+  }));
+
+  global.sessionStorage = { getItem() { return null; }, setItem() {} };
+
+  let fetchCalls = 0;
+  const mockEvents = [{ type: 'WatchEvent', repo: { name: 'fresh-repo' }, created_at: new Date(now).toISOString(), payload: {} }];
+  global.fetch = async () => {
+    fetchCalls += 1;
+    return new Response(JSON.stringify(mockEvents), { status: 200 });
+  };
+  Date.now = () => now;
+
+  t.after(() => {
+    Date.now = originalDateNow;
+    global.document = originalDocument;
+    global.localStorage = originalLocalStorage;
+    global.sessionStorage = originalSessionStorage;
+    global.fetch = originalFetch;
+  });
+
+  await loadGitHubActivity();
+
+  assert.strictEqual(fetchCalls, 1, 'non-Array events cache should fall back to fetching');
+});
+
 test('loadGitHubActivity expires the cache when timestamp exceeds TTL', async (t) => {
   const now = Date.now();
   const originalDateNow = Date.now;
