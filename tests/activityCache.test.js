@@ -915,6 +915,76 @@ test('isCacheFresh rejects a cache with NaN or Infinity timestamp as stale', (t)
   assert.strictEqual(isCacheFresh(validCache), true, 'valid recent timestamp should be fresh');
 });
 
+test('loadGitHubActivity truncates cached display to ACTIVITY_LIMIT when fresh cache has many events', async (t) => {
+  const now = Date.now();
+  const originalDateNow = Date.now;
+  const originalDocument = global.document;
+  const originalLocalStorage = global.localStorage;
+  const originalSessionStorage = global.sessionStorage;
+  const originalFetch = global.fetch;
+
+  const feed = createElement('div');
+  feed.replaceChildren(createElement('div')); // placeholder "loading" element
+
+  global.document = {
+    getElementById(id) {
+      return id === 'activity-feed' ? feed : null;
+    },
+    createElement,
+    createDocumentFragment() {
+      return createElement('fragment');
+    },
+    createTextNode(text) {
+      return { nodeType: 'text', textContent: text };
+    }
+  };
+
+  const storage = new Map();
+  global.localStorage = {
+    getItem(key) { return storage.get(key); },
+    setItem(key, value) { storage.set(key, value); }
+  };
+
+  // Build a fresh cache with more events than ACTIVITY_LIMIT (10).
+  const manyEvents = Array.from({ length: 25 }, (_, i) => ({
+    type: 'PushEvent',
+    repo: { name: `cache-repo-${i}` },
+    created_at: new Date(now - i * 60_000).toISOString(),
+    payload: {}
+  }));
+
+  storage.set(ACTIVITY_CACHE_KEY, JSON.stringify({
+    timestamp: now - 1000, // fresh (well within TTL)
+    events: manyEvents
+  }));
+
+  global.sessionStorage = { getItem() { return null; }, setItem() {} };
+
+  let fetchCalls = 0;
+  global.fetch = async () => {
+    fetchCalls += 1;
+    throw new Error('fetch should not run for a fresh cache');
+  };
+  Date.now = () => now;
+
+  t.after(() => {
+    Date.now = originalDateNow;
+    global.document = originalDocument;
+    global.localStorage = originalLocalStorage;
+    global.sessionStorage = originalSessionStorage;
+    global.fetch = originalFetch;
+  });
+
+  await loadGitHubActivity();
+
+  assert.strictEqual(fetchCalls, 0, 'fresh cache should not trigger a fetch');
+  // renderActivity truncates to ACTIVITY_LIMIT (10) via events.slice(0, LIMIT).
+  assert.ok(feed.children.length >= 1, 'feed should contain rendered content');
+  const fragment = feed.children[0];
+  const renderedItems = fragment.children.filter(c => c.className === 'activity-item');
+  assert.strictEqual(renderedItems.length, 10, 'only ACTIVITY_LIMIT items should be rendered from cache');
+});
+
 test('loadGitHubActivity does not truncate the cache when fetched list is small', async (t) => {
   const now = Date.now();
   const originalDateNow = Date.now;
