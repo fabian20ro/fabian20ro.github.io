@@ -724,6 +724,7 @@ const translations = {
 
 let currentLang = 'en';
 let activityEvents = [];
+let lastCacheRefreshAt = null;
 
 function storageGet(key) {
   try {
@@ -1341,6 +1342,7 @@ async function loadGitHubActivity() {
   try {
     const events = await fetchGitHubActivity();
     activityEvents = events.slice(0, ACTIVITY_LIMIT);
+    lastCacheRefreshAt = Date.now();
     writeActivityCache(events);
     renderActivity(activityEvents);
   } catch {
@@ -1535,5 +1537,8 @@ module.exports = {
   setLang,
   projectSections,
   currentLang,
-  getEventIcon
+  getEventIcon,
+  renderThankYouMessage,
+  startThankYouRotation,
+  lastCacheRefreshAt
 };
