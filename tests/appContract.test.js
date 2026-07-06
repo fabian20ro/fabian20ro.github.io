@@ -88,6 +88,20 @@ try {
   assert.ok(typeof app.currentLang === 'string', 'setLang(whitespace) keeps currentLang as string');
   assert.strictEqual(t('title'), "Fabian's Projects", 'setLang(whitespace) falls back to en');
 
+  // Regression: setLang with falsy-string, null, and undefined inputs must normalize to 'en'.
+  // These are the most common accidental inputs from forms/URLs that bypass type checks.
+  setLang('');
+  assert.strictEqual(app.currentLang, 'en', "setLang('') normalizes empty string to en");
+  assert.strictEqual(t('title'), "Fabian's Projects", "setLang('') falls back t() to en");
+
+  setLang(null);
+  assert.strictEqual(app.currentLang, 'en', 'setLang(null) normalizes null to en');
+  assert.strictEqual(t('title'), "Fabian's Projects", 'setLang(null) falls back t() to en');
+
+  setLang(undefined);
+  assert.strictEqual(app.currentLang, 'en', 'setLang(undefined) normalizes undefined to en');
+  assert.strictEqual(t('title'), "Fabian's Projects", 'setLang(undefined) falls back t() to en');
+
   // Test fallback to key itself if not in 'en'
   assert.strictEqual(t('something_completely_random_that_does_not_exist'), 'something_completely_random_that_does_not_exist');
 
