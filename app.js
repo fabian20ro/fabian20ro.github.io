@@ -34,7 +34,8 @@ const EVENT_ICONS = {
   IssueEvent: '🐛',
   PullRequestEvent: '🔀',
   IssueCommentEvent: '💬',
-  PullRequestReviewCommentEvent: '💬'
+  PullRequestReviewCommentEvent: '💬',
+  PullRequestReviewEvent: '👀'
 };
 
 const projectSections = {
