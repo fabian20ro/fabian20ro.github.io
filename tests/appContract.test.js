@@ -1,6 +1,7 @@
 const assert = require('node:assert');
 const app = require('../app.js');
 
+(async () => {
 try {
   console.log('Running app contract tests...');
 
@@ -248,6 +249,57 @@ try {
     }
   });
 
+  // 10b. Strengthen: loadGitHubActivity must replace any corrupted or malformed cache with a fresh fetch.
+  // readActivityCache returns null for invalid input, so loadGitHubActivity should never silently render garbage.
+  async function runLoadTest(scenarioName, getItemResult) {
+    const feed = createElement('div');
+    feed.replaceChildren(createElement('fragment'));
+
+    global.document = {
+      getElementById(id) { return id === 'activity-feed' ? feed : null; },
+      createElement, createDocumentFragment: () => createElement('fragment'),
+      createTextNode(text) { return { nodeType: 'text', textContent: text }; }
+    };
+    global.localStorage = {
+      getItem(key) { if (key === 'github-activity-cache-v1') return getItemResult; return null; },
+      setItem() {}
+    };
+    global.sessionStorage = {
+      getItem() { return null; },
+      setItem() {}
+    };
+
+    let fetchCalls = 0;
+    global.fetch = async () => {
+      fetchCalls += 1;
+      return new Response(JSON.stringify([{ type: 'FreshEvent', repo: { name: 'new-repo' }, created_at: new Date(Date.now()).toISOString(), payload: {} }]));
+    };
+
+    await app.loadGitHubActivity();
+    assert.ok(fetchCalls >= 1, `fetch was called for scenario "${scenarioName}" — corrupted cache must be replaced`);
+    console.log(`Corrupted-cache rejection test passed (${scenarioName})!`);
+  }
+
+  // Empty string in localStorage (truncated write)
+  await runLoadTest('empty-string', '');
+
+  // Object without required fields
+  await runLoadTest('no-timestamp-no-events', JSON.stringify({}));
+
+  // events missing entirely
+  await runLoadTest('events-missing', JSON.stringify({ timestamp: Date.now() }));
+
+  // events is not an array (e.g. a string)
+  await runLoadTest('events-is-string', JSON.stringify({ timestamp: Date.now(), events: 'not-an-array' }));
+
+  // timestamp missing entirely
+  await runLoadTest('timestamp-missing', JSON.stringify({ events: [{ type: 'PushEvent' }] }));
+
+  // timestamp is non-numeric (e.g. a string from malformed restore)
+  await runLoadTest('non-numeric-timestamp', JSON.stringify({ timestamp: 'yesterday', events: [] }));
+
+  console.log('Corrupted-cache rejection tests passed!');
+
   // 10a. Strengthen: Test isCacheFresh — non-finite timestamp guard must reject corrupted cache data
   const { isCacheFresh } = app;
   assert.strictEqual(isCacheFresh({ timestamp: NaN }), false, 'isCacheFresh rejects NaN timestamp');
@@ -349,3 +401,4 @@ try {
   console.error(err);
   process.exit(1);
 }
+})();
