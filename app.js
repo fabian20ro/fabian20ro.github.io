@@ -1101,6 +1101,7 @@ function getRelativeTime(dateString) {
 }
 
 function getEventIcon(type) {
+  if (typeof type !== 'string') return '📌';
   return EVENT_ICONS[type] || '📌';
 }
 function parseRepoName(repoName) {
