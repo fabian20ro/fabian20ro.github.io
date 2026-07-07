@@ -578,6 +578,65 @@ test('loadGitHubActivity rejects a cache whose events array is not an actual Arr
   assert.strictEqual(fetchCalls, 1, 'non-Array events cache should fall back to fetching');
 });
 
+test('loadGitHubActivity coerces a non-array API response into an empty cached list', async (t) => {
+  const now = Date.now();
+  const originalDateNow = Date.now;
+  const originalDocument = global.document;
+  const originalLocalStorage = global.localStorage;
+  const originalSessionStorage = global.sessionStorage;
+  const originalFetch = global.fetch;
+
+  const feed = createElement('div');
+  feed.replaceChildren(createElement('div'));
+
+  global.document = {
+    getElementById(id) {
+      return id === 'activity-feed' ? feed : null;
+    },
+    createElement,
+    createDocumentFragment() {
+      return createElement('fragment');
+    },
+    createTextNode(text) {
+      return { nodeType: 'text', textContent: text };
+    }
+  };
+
+  const storage = new Map();
+  global.localStorage = {
+    getItem(key) { return storage.get(key); },
+    setItem(key, value) { storage.set(key, value); }
+  };
+
+  global.sessionStorage = { getItem() { return null; }, setItem() {} };
+
+  let fetchCalls = 0;
+  // Simulate API returning a string (non-array JSON).
+  const mockResponse = '{"status":"ok"}';
+  global.fetch = async () => {
+    fetchCalls += 1;
+    return new Response(mockResponse, { status: 200 });
+  };
+  Date.now = () => now;
+
+  t.after(() => {
+    Date.now = originalDateNow;
+    global.document = originalDocument;
+    global.localStorage = originalLocalStorage;
+    global.sessionStorage = originalSessionStorage;
+    global.fetch = originalFetch;
+  });
+
+  await loadGitHubActivity();
+
+  assert.strictEqual(fetchCalls, 1, 'should fetch exactly once');
+  const cacheRaw = storage.get(ACTIVITY_CACHE_KEY);
+  assert.ok(cacheRaw, 'cache should be written even when API returns non-array data');
+  const cached = JSON.parse(cacheRaw);
+  assert.deepStrictEqual(cached.events, [], 'events array must be empty for non-array response');
+  assert.strictEqual(cached.timestamp, now, 'cache timestamp should reflect fetch moment');
+});
+
 test('loadGitHubActivity expires the cache when timestamp exceeds TTL', async (t) => {
   const now = Date.now();
   const originalDateNow = Date.now;
