@@ -3,6 +3,7 @@
 const app = require('../app.js');
 const assert = require('node:assert');
 const { test } = require('node:test');
+const { setLang, translations, t } = app;
 
 test('translation key contract', (t) => {
   console.log('Running translation key contract tests...');
@@ -62,4 +63,17 @@ test('project sections integrity', () => {
       });
     });
   });
+});
+
+test('t() edge cases', () => {
+  setLang('en');
+  assert.strictEqual(t('nonexistent'), 'nonexistent');
+  assert.strictEqual(t('title'), "Fabian's Projects");
+
+  setLang('ro');
+  assert.strictEqual(t('title'), 'Proiectele lui Fabian');
+  assert.strictEqual(t('app_status'), 'Statusul aplicației');
+
+  setLang('fr');
+  assert.strictEqual(t('title'), 'Les projets de Fabian');
 });
