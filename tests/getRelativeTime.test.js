@@ -91,6 +91,27 @@ async function runTests() {
     assert.strictEqual(app.t('daysAgo'), 'days ago');
     assert.strictEqual(app.t('yearsAgo'), 'years ago');
     console.log('t() and setLang tests passed!');
+
+    // Defensive input handling: non-string arguments should return ''
+    console.log('Testing defensive input handling (non-string args)...');
+    const defensiveCases = [
+      { input: null, expected: translations.en.justNow },
+      { input: undefined, expected: translations.en.justNow },
+      { input: '', expected: translations.en.justNow },
+      { input: '   ', expected: translations.en.justNow },
+      { input: 12345, expected: '' }, // non-string primitive → empty string per contract
+      { input: true, expected: '' }, // boolean coerced → empty string
+      { input: {}, expected: '' }, // object literal → empty string
+      { input: [], expected: '' }, // array (object) → empty string
+    ];
+
+    for (const dc of defensiveCases) {
+      const result = getRelativeTime(dc.input);
+      assert.strictEqual(result, dc.expected, `getRelativeTime(${JSON.stringify(dc.input)}) should return ${JSON.stringify(dc.expected)}, got ${JSON.stringify(result)}`);
+    }
+
+    console.log('Defensive input handling tests passed!');
+
   } catch (err) {
     console.error('getRelativeTime tests failed:');
     console.error(err.message);
