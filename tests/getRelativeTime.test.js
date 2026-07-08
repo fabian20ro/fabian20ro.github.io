@@ -92,8 +92,39 @@ async function runTests() {
     assert.strictEqual(app.t('yearsAgo'), 'years ago');
     console.log('t() and setLang tests passed!');
 
+    // Cross-language sub-minute granularity tests (1s–59s → justNow)
+    console.log('Testing cross-language sub-minute granularity...');
+    const subMinuteCases = [
+      { lang: 'en', offsetMs: 10000, expected: translations.en.justNow },
+      { lang: 'en', offsetMs: 30000, expected: translations.en.justNow },
+      { lang: 'en', offsetMs: 59999, expected: translations.en.justNow },
+      { lang: 'ro', offsetMs: 10000, expected: translations.ro.justNow },
+      { lang: 'ro', offsetMs: 30000, expected: translations.ro.justNow },
+      { lang: 'ro', offsetMs: 59999, expected: translations.ro.justNow },
+      { lang: 'es', offsetMs: 10000, expected: translations.es.justNow },
+      { lang: 'es', offsetMs: 30000, expected: translations.es.justNow },
+      { lang: 'es', offsetMs: 59999, expected: translations.es.justNow },
+    ];
+
+    for (const sm of subMinuteCases) {
+      setLang(sm.lang);
+      const res = getRelativeTime(new Date(mockDate.getTime() - sm.offsetMs).toISOString());
+      assert.strictEqual(res, sm.expected, `[${sm.lang}] ${sm.offsetMs}ms ago should return "${sm.expected}", got "${res}"`);
+    }
+
+    // Sub-minute boundary: 60s exact minute in Romanian and Spanish
+    setLang('ro');
+    const roBoundary = getRelativeTime(new Date(mockDate.getTime() - 60000).toISOString());
+    assert.strictEqual(roBoundary, translations.ro.minuteAgo);
+    setLang('es');
+    const esBoundary = getRelativeTime(new Date(mockDate.getTime() - 60000).toISOString());
+    assert.strictEqual(esBoundary, translations.es.minuteAgo);
+
+    console.log('Cross-language sub-minute granularity tests passed!');
+
     // Defensive input handling: non-string arguments should return ''
     console.log('Testing defensive input handling (non-string args)...');
+    setLang('en');
     const defensiveCases = [
       { input: null, expected: translations.en.justNow },
       { input: undefined, expected: translations.en.justNow },
