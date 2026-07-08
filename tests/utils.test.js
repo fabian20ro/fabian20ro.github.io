@@ -37,6 +37,48 @@ try {
   assert.strictEqual(getRelativeTime(new Date(now - 3600000).toISOString()), '1 hour ago');
   assert.strictEqual(getRelativeTime(new Date(now - 86400000).toISOString()), '1 day ago');
 
+  // Test case 6: all projectSections badgeUrl patterns — lock in coverage for every live project and repo.
+  const patternA = 'https://github.com/fabian20ro/emot-id/workflows/Deploy%20to%20GitHub%20Pages/badge.svg';
+  assert.strictEqual(getBadgeActionsUrl(patternA), 'https://github.com/fabian20ro/emot-id/actions');
+
+  const patternB = 'https://github.com/fabian20ro/alt-stb/workflows/Deploy/badge.svg';
+  assert.strictEqual(getBadgeActionsUrl(patternB), 'https://github.com/fabian20ro/alt-stb/actions');
+
+  const patternC =
+    'https://github.com/fabian20ro/propozitii-nostime/workflows/Deploy%20Frontend%20to%20GitHub%20Pages/badge.svg';
+  assert.strictEqual(getBadgeActionsUrl(patternC), 'https://github.com/fabian20ro/propozitii-nostime/actions');
+
+  const patternD = 'https://github.com/fabian20ro/password-generator/workflows/Deploy%20to%20GitHub%20Pages/badge.svg';
+  assert.strictEqual(getBadgeActionsUrl(patternD), 'https://github.com/fabian20ro/password-generator/actions');
+
+  const patternE = 'https://github.com/fabian20ro/pixel-article-reader/workflows/Deploy%20to%20GitHub%20Pages/badge.svg';
+  assert.strictEqual(getBadgeActionsUrl(patternE), 'https://github.com/fabian20ro/pixel-article-reader/actions');
+
+  const patternF = 'https://github.com/fabian20ro/find-the-book/workflows/Deploy%20to%20GitHub%20Pages/badge.svg';
+  assert.strictEqual(getBadgeActionsUrl(patternF), 'https://github.com/fabian20ro/find-the-book/actions');
+
+  const patternG = 'https://github.com/fabian20ro/horror-scope/workflows/Deploy%20to%20GitHub%20Pages/badge.svg';
+  assert.strictEqual(getBadgeActionsUrl(patternG), 'https://github.com/fabian20ro/horror-scope/actions');
+
+  const patternH = 'https://github.com/fabian20ro/generator-rebus/workflows/Deploy%20Frontend%20to%20GitHub%20Pages/badge.svg';
+  assert.strictEqual(getBadgeActionsUrl(patternH), 'https://github.com/fabian20ro/generator-rebus/actions');
+
+  const patternI =
+    'https://github.com/fabian20ro/image-prompt-expander/actions/workflows/pages/pages-build-deployment/badge.svg';
+  // /actions prefix already present → return bare repo base (idempotence).
+  assert.strictEqual(
+    getBadgeActionsUrl(patternI),
+    'https://github.com/fabian20ro/image-prompt-expander'
+  );
+
+  // Test case 7: idempotence — bare repo base stays unchanged; URLs already under /actions resolve to the bare repo base (no double-nesting).
+  const repoBase = 'https://github.com/fabian20ro/emot-id';
+  assert.strictEqual(getBadgeActionsUrl(repoBase), repoBase);
+  assert.strictEqual(
+    getBadgeActionsUrl('https://github.com/fabian20ro/emot-id/actions'),
+    repoBase
+  );
+
   console.log('getBadgeActionsUrl tests passed!');
   console.log('getEventIcon tests passed!');
   console.log('getRelativeTime tests passed!');
