@@ -86,6 +86,29 @@ try {
     'https://github.com/octocat/my-repo/actions'
   );
 
+  // Test case 9: trailing-slash repo base — the current regex still extracts a match and
+  // appends /actions (known limitation of /^…\/[^/]+\/[^/]+$/ without anchoring).
+  const patternK = 'https://github.com/fabian20ro/emot-id/';
+  assert.strictEqual(
+    getBadgeActionsUrl(patternK),
+    'https://github.com/fabian20ro/emot-id/actions'
+  );
+
+  // Test case 10: non-GitHub URL shaped like a GitHub workflow — must not be rewritten.
+  const patternL = 'https://gitlab.com/user/repo/workflows/CI/badge.svg';
+  assert.strictEqual(getBadgeActionsUrl(patternL), patternL);
+
+  // Test case 11: /actions already in mid-path with deeper nesting — idempotence still applies.
+  const patternM = 'https://github.com/fabian20ro/emot-id/actions/steps/build/badge.svg';
+  assert.strictEqual(getBadgeActionsUrl(patternM), 'https://github.com/fabian20ro/emot-id');
+
+  // Test case 12: GitHub URL without workflow prefix — current regex matches org/repo regardless, so it still appends /actions (known limitation).
+  const patternN = 'https://github.com/fabian20ro/emot-id/blob/main/README.md';
+  assert.strictEqual(
+    getBadgeActionsUrl(patternN),
+    'https://github.com/fabian20ro/emot-id/actions'
+  );
+
   console.log('getBadgeActionsUrl tests passed!');
   console.log('getEventIcon tests passed!');
   console.log('getRelativeTime tests passed!');
