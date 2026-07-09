@@ -120,6 +120,11 @@ async function runTests() {
     const esBoundary = getRelativeTime(new Date(mockDate.getTime() - 60000).toISOString());
     assert.strictEqual(esBoundary, translations.es.minuteAgo);
 
+    // Exact 59-min boundary: exercises diffMins < 60 with a high value near the minutes→hours transition
+    setLang('ro');
+    const roFiftyNine = getRelativeTime(new Date(mockDate.getTime() - 59 * 60 * 1000).toISOString());
+    assert.strictEqual(roFiftyNine, `59 ${translations.ro.minutesAgo}`);
+
     console.log('Cross-language sub-minute granularity tests passed!');
 
     // Defensive input handling: non-string arguments should return ''
