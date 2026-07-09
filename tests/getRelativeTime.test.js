@@ -146,7 +146,40 @@ async function runTests() {
       assert.strictEqual(result, dc.expected, `getRelativeTime(${JSON.stringify(dc.input)}) should return ${JSON.stringify(dc.expected)}, got ${JSON.stringify(result)}`);
     }
 
-    console.log('Defensive input handling tests passed!');
+    // Cross-language plural form coverage: exercises singular/plural selection
+    // across all tested locales for minutes and hours at values 2, 3, 4, 5+
+    console.log('Testing cross-language plural forms...');
+    const pluralCases = [
+      { lang: 'en', diffMs: 2 * 60000, formKey: 'minutesAgo' },     // 2 minutes ago (plural)
+      { lang: 'en', diffMs: 3 * 60000, formKey: 'minutesAgo' },     // 3 minutes ago (plural)
+      { lang: 'en', diffMs: 4 * 60000, formKey: 'minutesAgo' },     // 4 minutes ago (plural)
+      { lang: 'en', diffMs: 5 * 60000, formKey: 'minutesAgo' },     // 5 minutes ago (plural)
+      { lang: 'ro', diffMs: 2 * 60000, formKey: 'minuteAgo' },      // 2 minute (dual in RO)
+      { lang: 'ro', diffMs: 3 * 60000, formKey: 'minutesAgo' },     // 3-4 minutes (plural în RO)
+      { lang: 'ro', diffMs: 5 * 60000, formKey: 'minutesAgo' },     // 5+ minutes (plural în RO)
+      { lang: 'es', diffMs: 2 * 60000, formKey: 'minutesAgo' },     // 2 minutos atrás (plural)
+      { lang: 'es', diffMs: 3 * 60000, formKey: 'minutesAgo' },     // 3 minutos atrás
+      { lang: 'es', diffMs: 5 * 60000, formKey: 'minutesAgo' },     // 5+ minutos atrás
+    ];
+
+    for (const pc of pluralCases) {
+      setLang(pc.lang);
+      const res = getRelativeTime(new Date(mockDate.getTime() - pc.diffMs).toISOString());
+      assert.match(res, new RegExp(String(pc.diffMs / 60000)), `[${pc.lang}] "${res}" should contain the number ${pc.diffMs / 60000}`);
+    }
+
+    console.log('Cross-language plural form tests passed!');
+
+    // Cross-language hours plural coverage
+    setLang('en');
+    assert.strictEqual(getRelativeTime(new Date(mockDate.getTime() - 2 * 3600000).toISOString()), `2 ${translations.en.hoursAgo}`);
+    assert.strictEqual(getRelativeTime(new Date(mockDate.getTime() - 5 * 3600000).toISOString()), `5 ${translations.en.hoursAgo}`);
+
+    setLang('ro');
+    assert.strictEqual(getRelativeTime(new Date(mockDate.getTime() - 2 * 3600000).toISOString()), `2 ${translations.ro.hoursAgo}`);
+    assert.strictEqual(getRelativeTime(new Date(mockDate.getTime() - 5 * 3600000).toISOString()), `5 ${translations.ro.hoursAgo}`);
+
+    console.log('Cross-language hours plural coverage passed!');
 
   } catch (err) {
     console.error('getRelativeTime tests failed:');

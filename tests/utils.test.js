@@ -109,6 +109,27 @@ try {
     'https://github.com/fabian20ro/emot-id/actions'
   );
 
+  // Test case 13: idempotence — trailing-slash workflow badge (realistic).
+  const patternO =
+    'https://github.com/fabian20ro/emot-id/workflows/Deploy/badge.svg/';
+  assert.strictEqual(
+    getBadgeActionsUrl(patternO),
+    'https://github.com/fabian20ro/emot-id/actions'
+  );
+
+  // Test case 14: idempotence — URL already nested under /actions/* with deeper segments.
+  const patternP =
+    'https://github.com/fabian20ro/emot-id/actions/workflows/ci.yml/badge.svg';
+  assert.strictEqual(
+    getBadgeActionsUrl(patternP),
+    'https://github.com/fabian20ro/emot-id'
+  );
+
+  // Test case 15: a GitHub-shaped URL that isn't https — must be rejected by regex and returned unchanged.
+  const patternQ =
+    'ftp://github.com/user/repo/workflows/CI/badge.svg';
+  assert.strictEqual(getBadgeActionsUrl(patternQ), patternQ);
+
   console.log('getBadgeActionsUrl tests passed!');
   console.log('getEventIcon tests passed!');
   console.log('getRelativeTime tests passed!');
