@@ -79,6 +79,13 @@ try {
     repoBase
   );
 
+  // Test case 8: non-fabian20ro user/org — ensures the regex is not org-hardcoded.
+  const patternJ = 'https://github.com/octocat/my-repo/workflows/CI/badge.svg';
+  assert.strictEqual(
+    getBadgeActionsUrl(patternJ),
+    'https://github.com/octocat/my-repo/actions'
+  );
+
   console.log('getBadgeActionsUrl tests passed!');
   console.log('getEventIcon tests passed!');
   console.log('getRelativeTime tests passed!');
