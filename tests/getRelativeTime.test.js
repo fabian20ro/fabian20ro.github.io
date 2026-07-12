@@ -104,6 +104,15 @@ async function runTests() {
       { lang: 'es', offsetMs: 10000, expected: translations.es.justNow },
       { lang: 'es', offsetMs: 30000, expected: translations.es.justNow },
       { lang: 'es', offsetMs: 59999, expected: translations.es.justNow },
+      { lang: 'de', offsetMs: 10000, expected: translations.de.justNow },
+      { lang: 'de', offsetMs: 30000, expected: translations.de.justNow },
+      { lang: 'de', offsetMs: 59999, expected: translations.de.justNow },
+      { lang: 'it', offsetMs: 10000, expected: translations.it.justNow },
+      { lang: 'it', offsetMs: 30000, expected: translations.it.justNow },
+      { lang: 'it', offsetMs: 59999, expected: translations.it.justNow },
+      { lang: 'pt', offsetMs: 10000, expected: translations.pt.justNow },
+      { lang: 'pt', offsetMs: 30000, expected: translations.pt.justNow },
+      { lang: 'pt', offsetMs: 59999, expected: translations.pt.justNow },
     ];
 
     for (const sm of subMinuteCases) {
@@ -160,6 +169,15 @@ async function runTests() {
       { lang: 'es', diffMs: 2 * 60000, formKey: 'minutesAgo' },     // 2 minutos atrás (plural)
       { lang: 'es', diffMs: 3 * 60000, formKey: 'minutesAgo' },     // 3 minutos atrás
       { lang: 'es', diffMs: 5 * 60000, formKey: 'minutesAgo' },     // 5+ minutos atrás
+      { lang: 'de', diffMs: 2 * 60000, formKey: 'minutesAgo' },     // 2 Minuten (plural)
+      { lang: 'de', diffMs: 3 * 60000, formKey: 'minutesAgo' },     // 3 Minuten
+      { lang: 'de', diffMs: 5 * 60000, formKey: 'minutesAgo' },     // 5+ Minuten
+      { lang: 'it', diffMs: 2 * 60000, formKey: 'minutesAgo' },     // 2 minuti (plural)
+      { lang: 'it', diffMs: 3 * 60000, formKey: 'minutesAgo' },     // 3 minuti
+      { lang: 'it', diffMs: 5 * 60000, formKey: 'minutesAgo' },     // 5+ minuti
+      { lang: 'pt', diffMs: 2 * 60000, formKey: 'minutesAgo' },     // 2 minutos (plural)
+      { lang: 'pt', diffMs: 3 * 60000, formKey: 'minutesAgo' },     // 3 minutos
+      { lang: 'pt', diffMs: 5 * 60000, formKey: 'minutesAgo' },     // 5+ minutos
     ];
 
     for (const pc of pluralCases) {
