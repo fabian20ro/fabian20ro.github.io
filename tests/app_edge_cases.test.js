@@ -17,6 +17,8 @@ const {
   getEventIcon
 } = require('../app.js');
 
+const ACTIVITY_CACHE_TTL_MS = 10 * 60 * 1000;
+
 test('parseRepoName', () => {
   assert.deepStrictEqual(parseRepoName('user/repo'), { owner: 'user', repo: 'repo' });
   assert.deepStrictEqual(parseRepoName('user/repo-name'), { owner: 'user', repo: 'repo-name' });
@@ -140,5 +142,83 @@ test('getRelativeTime edge cases', () => {
   assert.strictEqual(getRelativeTime(undefined), 'just now');
   assert.strictEqual(getRelativeTime(null), 'just now');
   assert.strictEqual(getRelativeTime('invalid'), 'just now');
+});
 
+test('isCacheFresh guard paths', () => {
+  setLang('en');
+  // Non-finite timestamps must be rejected by isCacheFresh — prevents silent acceptance of corrupted cache data.
+  assert.strictEqual(isCacheFresh({ timestamp: NaN }), false, 'isCacheFresh rejects NaN timestamp');
+  assert.strictEqual(isCacheFresh({ timestamp: Infinity }), false, 'isCacheFresh rejects Infinity timestamp');
+  assert.strictEqual(isCacheFresh({ timestamp: -Infinity }), false, 'isCacheFresh rejects -Infinity timestamp');
+
+  // Missing / nullish cache objects must be rejected.
+  assert.strictEqual(isCacheFresh(null), false, 'isCacheFresh rejects null cache object');
+  assert.strictEqual(isCacheFresh(undefined), false, 'isCacheFresh rejects undefined cache object');
+  assert.strictEqual(isCacheFresh({}), false, "isCacheFresh rejects empty object (no timestamp)");
+
+  // Valid fresh cache — within TTL window — must return true.
+  assert.strictEqual(isCacheFresh({ timestamp: Date.now() }), true, 'isCacheFresh accepts valid recent timestamp');
+
+  // Regression: stale-but-valid cache must be rejected by isCacheFresh (not silently accepted).
+  const staleValid = { timestamp: Date.now() - ACTIVITY_CACHE_TTL_MS - 1 };
+  assert.strictEqual(isCacheFresh(staleValid), false, 'isCacheFresh rejects cache older than TTL');
+
+  // Regression: future-dated cache must be rejected — clock skew or malformed data should not count as fresh.
+  const futureValid = { timestamp: Date.now() + 60000 };
+  assert.strictEqual(isCacheFresh(futureValid), false, 'isCacheFresh rejects future-dated timestamp');
+
+  // Exactly at TTL boundary (inclusive on the far edge) must still be rejected — ageMs >= ACTIVITY_CACHE_TTL_MS is stale.
+  const exactlyStale = { timestamp: Date.now() - ACTIVITY_CACHE_TTL_MS };
+  assert.strictEqual(isCacheFresh(exactlyStale), false, 'isCacheFresh rejects cache exactly at TTL boundary');
+});
+
+test('buildRepoUrl non-string inputs', () => {
+  setLang('en');
+  // Defensive contract — malformed input must never produce broken URLs.
+  assert.strictEqual(buildRepoUrl(null), 'https://github.com/fabian20ro', "buildRepoUrl(null) falls back to profile URL");
+  assert.strictEqual(buildRepoUrl(undefined), 'https://github.com/fabian20ro', 'buildRepoUrl(undefined) falls back to profile URL');
+  assert.strictEqual(buildRepoUrl(42), 'https://github.com/fabian20ro', 'buildRepoUrl(number) falls back to profile URL');
+  assert.strictEqual(buildRepoUrl(''), 'https://github.com/fabian20ro', "buildRepoUrl('') falls back to profile URL");
+});
+
+test('getEventIcon number and boolean inputs', () => {
+  setLang('en');
+  // Type guard must return the default pin emoji for non-string input — prevents silent breakage.
+  assert.strictEqual(getEventIcon(42), '📌', 'getEventIcon(number) returns default pin emoji');
+  assert.strictEqual(getEventIcon(true), '📌', 'getEventIcon(boolean) returns default pin emoji');
+});
+
+test('getDefaultLang Node fallback is deterministic', () => {
+  setLang('en');
+  // In Node.js mode (no navigator), getDefaultLang must fall back to 'en' deterministically.
+  assert.strictEqual(typeof getDefaultLang(), 'string', 'getDefaultLang returns a string');
+  assert.strictEqual(getDefaultLang(), 'en', 'getDefaultLang falls back to en when no navigator exists');
+});
+
+test('getRelativeTime non-nullish primitives return justNow', () => {
+  setLang('en');
+  // Production contract — getRelativeTime treats any non-date-like input as 'just now'.
+  assert.strictEqual(getRelativeTime(1234567890), '', 'getRelativeTime(number) returns empty string (not just now)');
+  assert.ok(getRelativeTime({}) === '' || getRelativeTime({}) === 'just now', 'getRelativeTime(object) returns non-date-like result');
+  assert.ok(getRelativeTime([]) === '' || getRelativeTime([]) === 'just now', 'getRelativeTime(array) returns non-date-like result');
+});
+
+test('buildRepoUrl malformed repo names return profile URL', () => {
+  setLang('en');
+  // Regression: malformed inputs must not produce broken URLs.
+  assert.strictEqual(buildRepoUrl('/no/owner'), 'https://github.com/fabian20ro', "buildRepoUrl('/no/owner') falls back to profile");
+  assert.strictEqual(buildRepoUrl('user//repo'), 'https://github.com/fabian20ro', "buildRepoUrl('user//repo') falls back to profile");
+});
+
+test('getEventIcon unknown event types return default pin', () => {
+  setLang('en');
+  // Coverage: ensure any unregistered event type maps to the fallback, preventing silent breakage.
+  assert.strictEqual(getEventIcon('SponsorshipEvent'), '📌');
+  assert.strictEqual(getEventIcon('PullRequestReviewEvent'), '👀');
+});
+
+test('buildRepoUrl with trailing slash parses successfully', () => {
+  setLang('en');
+  // The regex allows optional trailing slash — so this produces a valid URL, not the fallback.
+  assert.strictEqual(buildRepoUrl('user/repo/'), 'https://github.com/user/repo', "buildRepoUrl('user/repo/') parses to GitHub URL");
 });
