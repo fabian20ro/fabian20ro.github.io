@@ -431,3 +431,19 @@
 **Outcome:** Success
 **Insight:** Large static browser data can live in a separate UMD-style script while preserving the existing non-module app and CommonJS test import pattern.
 **Promoted to Lessons Learned:** Yes
+
+### 2026-07-21 — Repair project card actions
+
+**Context:** Make the project-card arrow functional, place it beside copy at the right edge, and replace the platform clipboard emoji with a theme-consistent two-rectangle glyph.
+**What happened:**
+
+- Converted the arrow from a decorative span into a native link and grouped it with the copy button.
+- Isolated link/button click and keyboard events from whole-card navigation.
+- Added 44px themed action targets, a CSS two-rectangle copy glyph, and non-shifting accessible copy feedback.
+- Added focused regression tests for structure, URLs, icon markup, clipboard behavior, and propagation.
+- Verified arrow navigation, copy feedback, 393px/570px mobile layouts, and light/dark themes in Playwright.
+- Confirmed lint and formatting pass. The focused tests pass; the full suite retains an unrelated existing `app_edge_cases.test.js` failure where an ineffective cache mock reaches DOM-only error rendering.
+
+**Outcome:** Success
+**Insight:** Nested controls inside a keyboard-activated card must stop keydown propagation as well as click propagation.
+**Promoted to Lessons Learned:** Yes

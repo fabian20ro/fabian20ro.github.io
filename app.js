@@ -904,20 +904,41 @@ function getBadgeActionsUrl(badgeUrl) {
 function createCopyButton(href, title) {
   const btn = document.createElement('button');
   btn.className = 'card-copy-btn';
+  btn.type = 'button';
   btn.setAttribute('title', title);
   btn.setAttribute('aria-label', title);
-  btn.innerHTML = '📋';
+
+  const iconNode = document.createElement('span');
+  iconNode.className = 'copy-icon';
+  iconNode.setAttribute('aria-hidden', 'true');
+
+  const backRectangle = document.createElement('span');
+  backRectangle.className = 'copy-icon-rectangle copy-icon-rectangle-back';
+
+  const frontRectangle = document.createElement('span');
+  frontRectangle.className = 'copy-icon-rectangle copy-icon-rectangle-front';
+
+  const statusNode = document.createElement('span');
+  statusNode.className = 'card-copy-status';
+  statusNode.setAttribute('role', 'status');
+  statusNode.setAttribute('aria-live', 'polite');
+
+  iconNode.append(backRectangle, frontRectangle);
+  btn.append(iconNode, statusNode);
+  btn.addEventListener('keydown', (e) => e.stopPropagation());
   btn.addEventListener('click', async (e) => {
     e.stopPropagation();
     try {
       await navigator.clipboard.writeText(href);
-      const originalIcon = btn.innerHTML;
-      const originalTitle = btn.getAttribute('title');
-      btn.innerHTML = `<span class="copy-success-icon">✅</span> <small>${t('copySuccess')}</small>`;
+      btn.classList.add('card-copy-btn-success');
+      statusNode.textContent = t('copySuccess');
       btn.setAttribute('title', t('copySuccess'));
+      btn.setAttribute('aria-label', t('copySuccess'));
       setTimeout(() => {
-        btn.innerHTML = originalIcon;
-        btn.setAttribute('title', originalTitle);
+        btn.classList.remove('card-copy-btn-success');
+        statusNode.textContent = '';
+        btn.setAttribute('title', title);
+        btn.setAttribute('aria-label', title);
       }, 2000);
     } catch (err) {
       console.error('Failed to copy:', err);
@@ -937,12 +958,15 @@ function createCardHeader(card) {
   titleNode.setAttribute('data-i18n', card.titleKey);
   titleNode.textContent = t(card.titleKey);
 
-  const linkNode = document.createElement('span');
+  const linkNode = document.createElement('a');
   linkNode.className = 'card-link';
+  linkNode.href = card.href;
   linkNode.setAttribute('data-link-key', card.linkKey);
   linkNode.setAttribute('aria-label', t(card.linkKey));
   linkNode.setAttribute('title', t(card.linkKey));
   linkNode.textContent = '→';
+  linkNode.addEventListener('click', (e) => e.stopPropagation());
+  linkNode.addEventListener('keydown', (e) => e.stopPropagation());
 
   const headerNode = document.createElement('div');
   headerNode.className = 'card-header';
@@ -951,10 +975,13 @@ function createCardHeader(card) {
   titleRowNode.className = 'card-title-row';
   titleRowNode.append(iconNode, titleNode);
 
-  headerNode.append(titleRowNode, linkNode);
+  const actionsNode = document.createElement('div');
+  actionsNode.className = 'card-actions';
+  actionsNode.appendChild(linkNode);
   if (card.href) {
-    headerNode.append(createCopyButton(card.href, t(card.copyTitle || 'copy')));
+    actionsNode.appendChild(createCopyButton(card.href, t(card.copyTitle || 'copy')));
   }
+  headerNode.append(titleRowNode, actionsNode);
   return headerNode;
 }
 
@@ -1540,6 +1567,8 @@ module.exports = {
   projectSections,
   currentLang,
   getEventIcon,
+  createCopyButton,
+  createCardHeader,
   renderThankYouMessage,
   startThankYouRotation,
   lastCacheRefreshAt

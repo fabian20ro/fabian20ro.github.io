@@ -162,6 +162,14 @@ div.card:focus-visible {
   min-width: 0;
 }
 
+.card-actions {
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+  gap: 0.25rem;
+  margin: -0.625rem -0.625rem -0.625rem auto;
+}
+
 .card-icon {
   font-size: 1.5rem;
   line-height: 1;
@@ -223,15 +231,85 @@ div.card:focus-visible {
   border-radius: 4px;
 }
 
-.card-link {
+.card-link,
+.card-copy-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  padding: 0;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
   color: var(--accent);
+  cursor: pointer;
+  text-decoration: none;
+  appearance: none;
+  -webkit-appearance: none;
+}
+
+.card-link {
   font-size: 1.25rem;
   font-weight: 700;
   line-height: 1;
-  flex-shrink: 0;
   transition:
     color 0.2s ease,
     transform 0.2s ease;
+}
+
+.card-copy-btn {
+  font: inherit;
+  transition: color 0.2s ease;
+}
+
+.card-link:hover,
+.card-copy-btn:hover,
+.card-copy-btn-success {
+  color: var(--accent-hover);
+}
+
+.card-link:active,
+.card-copy-btn:active {
+  color: var(--text);
+}
+
+.copy-icon {
+  position: relative;
+  display: block;
+  width: 1.125rem;
+  height: 1.125rem;
+}
+
+.copy-icon-rectangle {
+  position: absolute;
+  width: 0.6875rem;
+  height: 0.8125rem;
+  border: 2px solid currentColor;
+  border-radius: 1px;
+  background: var(--card-bg);
+}
+
+.copy-icon-rectangle-back {
+  top: 0;
+  right: 0;
+}
+
+.copy-icon-rectangle-front {
+  bottom: 0;
+  left: 0;
+}
+
+.card-copy-status {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 }
 
 .card:hover .card-link,

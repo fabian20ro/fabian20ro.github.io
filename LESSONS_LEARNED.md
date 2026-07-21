@@ -35,6 +35,8 @@ Obsolete lessons move to the Archive section at bottom (with date and reason). N
 
 ## Accessibility
 
+**[2026-07-21]** Isolate nested controls from clickable-card keyboard handlers — When a focusable card handles Enter/Space, nested links and buttons must stop keydown propagation so activating them does not also trigger card navigation. Use native link/button semantics and keep each control's click behavior isolated too.
+
 <!-- Format: **[YYYY-MM-DD]** Brief title — Explanation -->
 
 ## Localization
