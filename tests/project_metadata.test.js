@@ -46,3 +46,15 @@ test('projectSections entries have required fields', () => {
     assert.ok(item.descKey.length > 0, `repositories[${item.href}]: descKey must not be empty`);
   }
 });
+test('projectSections titleKeys are unique within each list', () => {
+  const checkList = (list) => {
+    const seen = new Set();
+    for (const item of list) {
+      assert.ok(!seen.has(item.titleKey), `Duplicate titleKey: ${item.titleKey}`);
+      seen.add(item.titleKey);
+    }
+  };
+
+  checkList(projectSections.liveProjects);
+  checkList(projectSections.repositories);
+});

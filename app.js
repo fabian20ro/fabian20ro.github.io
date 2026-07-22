@@ -401,6 +401,7 @@ const translations = {
     monthsAgo: 'mois',
     yearAgo: 'il y a 1 an',
     yearsAgo: 'ans',
+    copy: 'Copier le lien',
     switchToRomanian: 'Passer en roumain',
     switchToEnglish: 'Passer en anglais'
   },
