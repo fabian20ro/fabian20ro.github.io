@@ -240,9 +240,42 @@ test('loadGitHubActivity rejects malformed cache gracefully', async () => {
   }
 });
 
-test('t() returns key as-is for keys in translations but outside projectSections', () => {
+test('t(key, $lang) overrides currentLang with explicit language', () => {
+  setLang('en');
+  // Production contract — t() accepts a second parameter to override the active language.
+  // This is used for i18n rendering and must return translations from the requested language,
+  // not fall back to currentLang or the key itself.
+  assert.strictEqual(
+    t('title', 'ro'),
+    'Proiectele lui Fabian',
+    't() with $lang=ro returns Romanian translation regardless of currentLang (en)'
+  );
+  assert.strictEqual(
+    t('title', 'fr'),
+    'Les projets de Fabian',
+    't() with $lang=fr returns French translation regardless of currentLang (en)'
+  );
+  assert.strictEqual(
+    t('title', 'de'),
+    "Fabians Projekte",
+    't() with $lang=de returns German translation regardless of currentLang'
+  );
+
+  // When $lang is invalid or empty, must fall back to currentLang — not the key.
+  setLang('ro');
+  assert.strictEqual(
+    t('title', ''),
+    'Proiectele lui Fabian',
+    "t() with empty $lang falls back to currentLang (ro), returns Romanian title"
+  );
+});
+
+test('t(key) returns raw key for truly missing translation keys across languages', () => {
   setLang('en');
   // Guard: every translation file key should be resolvable by t(). Prevents silent empty UI strings.
   const unknownKey = 'thisKeyDoesNotExist_anywhere_xyz';
   assert.strictEqual(t(unknownKey), unknownKey, 't() returns fallback for truly missing keys');
+
+  setLang('ro');
+  assert.strictEqual(t(unknownKey), unknownKey, 't() with ro lang also returns raw key for missing keys');
 });
