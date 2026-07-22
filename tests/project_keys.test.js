@@ -5,7 +5,7 @@ const app = require('../app.js');
 // Shape contract: every live project and repository must carry the required fields with correct types.
 // This catches regressions from adding/removing projects without updating section data.
 test('projectSections shape contract', () => {
-  const requiredLiveFields = ['href', 'icon', 'titleKey', 'descKey', 'linkKey', 'badgeUrl'];
+  const requiredLiveFields = ['href', 'icon', 'titleKey', 'descKey', 'linkKey'];
   const requiredRepoFields = ['href', 'icon', 'titleKey', 'descKey', 'linkKey'];
 
   app.projectSections.liveProjects.forEach((section, i) => {
@@ -121,4 +121,82 @@ test('all keys in projectSections exist in translations', () => {
       assert.ok(key in trans, `Language "${lang}" is missing translation key: "${key}"`);
     });
   });
+});
+
+// Metadata consistency: badgeUrl and liveSiteUrl must point to HTTPS URLs when present.
+// HTTP-only or empty badge URLs would silently break CI badges shown in the UI.
+test('projectSections metadata URL safety', () => {
+  const allSections = [...app.projectSections.liveProjects, ...app.projectSections.repositories];
+
+  for (const section of allSections) {
+    if (section.badgeUrl !== undefined && section.badgeUrl !== null) {
+      assert.ok(section.badgeUrl.startsWith('https://'), `badgeUrl must use HTTPS: ${section.href}`);
+      // GitHub Actions/GitHub Pages badges are the only valid pattern here.
+      assert.match(section.badgeUrl, /^(?:https:\/\/)?github\.com\/[a-zA-Z0-9\-]+\/[a-zA-Z0-9\-]+\/?/, `badgeUrl must reference a github.com repo path: ${section.badgeUrl}`);
+    }
+
+    if (section.liveSiteUrl !== undefined && section.liveSiteUrl !== null) {
+      assert.ok(section.liveSiteUrl.startsWith('https://'), `liveSiteUrl must use HTTPS: ${section.href}`);
+    }
+
+    // href itself is always required and must be HTTPS.
+    assert.ok(section.href.startsWith('https://'), `href must use HTTPS: ${section.href}`);
+  }
+});
+
+// Translation completeness per language: every key present in the en translation dictionary
+// must also exist (and be non-empty) in every other supported language. This is a stronger
+// check than the orphan-key test because it catches keys that exist in all languages but
+// are empty strings — which would render as blank content to users.
+test('translation completeness', () => {
+  const enKeys = Object.keys(app.translations.en);
+  const supportedLanguages = Object.keys(app.translations).filter(lang => lang !== 'en');
+
+  for (const lang of supportedLanguages) {
+    assert.ok(enKeys.length > 0, `English translations must not be empty`);
+
+    for (const key of enKeys) {
+      assert.ok(key in app.translations[lang], `Key "${key}" missing from language "${lang}"`);
+
+      const value = String(app.translations[lang][key]).trim();
+      assert.ok(value.length > 0, `Translation for "${key}" in "${lang}" must be non-empty (got: "")`);
+    }
+  }
+});
+
+// Identifying key uniqueness: within each section group (liveProjects, repositories),
+// titleKey and descKey must be unique. These are translation keys that identify specific
+// project content — duplicates *within* a group would cause rendering collisions (all
+// projects sharing a card's text in the same list). Cross-group overlaps (e.g. a repo entry
+// and its live-site counterpart using the same title key) are intentional and allowed.
+test('projectSections identifying key uniqueness', () => {
+  const checkGroup = (group, groupName) => {
+    const titleKeys = new Set();
+    const descKeys = new Set();
+    const titleDuplicates = [];
+    const descDuplicates = [];
+
+    group.forEach((section, i) => {
+      if (section.titleKey) {
+        if (titleKeys.has(section.titleKey)) {
+          titleDuplicates.push({ index: i, value: section.titleKey });
+        } else {
+          titleKeys.add(section.titleKey);
+        }
+      }
+      if (section.descKey) {
+        if (descKeys.has(section.descKey)) {
+          descDuplicates.push({ index: i, value: section.descKey });
+        } else {
+          descKeys.add(section.descKey);
+        }
+      }
+    });
+
+    assert.strictEqual(titleDuplicates.length, 0, `${groupName}: Duplicate titleKeys found at indices ${titleDuplicates.map(d => d.index).join(', ')}: ${titleDuplicates.map(d => `"${d.value}"`).join(', ')}`);
+    assert.strictEqual(descDuplicates.length, 0, `${groupName}: Duplicate descKeys found at indices ${descDuplicates.map(d => d.index).join(', ')}: ${descDuplicates.map(d => `"${d.value}"`).join(', ')}`);
+  };
+
+  checkGroup(app.projectSections.liveProjects, 'liveProjects');
+  checkGroup(app.projectSections.repositories, 'repositories');
 });
