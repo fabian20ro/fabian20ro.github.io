@@ -62,6 +62,8 @@ Obsolete lessons move to the Archive section at bottom (with date and reason). N
 
 **[2026-04-06]** Node.js Test Runner — Use the built-in Node.js test runner (`node --test`) for unit testing pure functions in a browser-targeted project. This avoids adding extra dependencies. For CommonJS, use guards for `module.exports` and `window` in the main script to enable test imports without breaking browser functionality.
 
+**[2026-07-23]** Test CommonJS lexical bindings through public behavior — Replacing `module.exports.someFunction` does not replace a same-module lexical reference already captured by another function. Prefer environment fixtures or explicit dependency injection; do not rely on export monkey-patching.
+
 ## Common Mistakes
 
 **[2026-05-15]** One-time refresh after a long gap — If the page stores a last-seen timestamp, trigger a single refresh when the gap exceeds the reopen threshold so cached UI can catch up without looping.

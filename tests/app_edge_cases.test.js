@@ -223,23 +223,6 @@ test('buildRepoUrl with trailing slash parses successfully', () => {
   assert.strictEqual(buildRepoUrl('user/repo/'), 'https://github.com/user/repo', "buildRepoUrl('user/repo/') parses to GitHub URL");
 });
 
-test('loadGitHubActivity rejects malformed cache gracefully', async () => {
-  setLang('en');
-  // Production contract — loadGitHubActivity must not throw when the cache contains corrupted data.
-  // Corrupted events (non-array) would crash .slice() at line 1336; this test guards against regression.
-
-  // Patch readActivityCache to return a cache with malformed events (no 'events' field).
-  const originalRead = require('../app.js').readActivityCache;
-  require.cache[require.resolve('../app.js')].exports.readActivityCache = () => ({ events: null });
-
-  try {
-    await assert.doesNotReject(loadGitHubActivity, 'loadGitHubActivity must not throw with malformed cache');
-  } finally {
-    // Restore original.
-    require.cache[require.resolve('../app.js')].exports.readActivityCache = originalRead;
-  }
-});
-
 test('t(key, $lang) overrides currentLang with explicit language', () => {
   setLang('en');
   // Production contract — t() accepts a second parameter to override the active language.
