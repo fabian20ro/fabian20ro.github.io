@@ -58,3 +58,24 @@ test('projectSections titleKeys are unique within each list', () => {
   checkList(projectSections.liveProjects);
   checkList(projectSections.repositories);
 });
+
+test('projectSections entries have only expected keys', () => {
+  const allowedLive = new Set(['href', 'icon', 'titleKey', 'descKey', 'badgeUrl', 'linkKey']);
+  const allowedRepo = new Set(['href', 'icon', 'titleKey', 'descKey', 'badgeUrl', 'linkKey', 'liveSiteUrl']);
+
+  for (const item of projectSections.liveProjects) {
+    assert.deepStrictEqual(
+      Object.keys(item).sort(),
+      Object.keys(item).filter(k => allowedLive.has(k)).sort(),
+      `liveProjects[${item.titleKey}] should only contain keys from ${[...allowedLive].join(', ')}`
+    );
+  }
+
+  for (const item of projectSections.repositories) {
+    assert.deepStrictEqual(
+      Object.keys(item).sort(),
+      Object.keys(item).filter(k => allowedRepo.has(k)).sort(),
+      `repositories[${item.titleKey}] should only contain keys from ${[...allowedRepo].join(', ')}`
+    );
+  }
+});
