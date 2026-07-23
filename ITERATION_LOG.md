@@ -447,3 +447,11 @@
 **Outcome:** Success
 **Insight:** Nested controls inside a keyboard-activated card must stop keydown propagation as well as click propagation.
 **Promoted to Lessons Learned:** Yes
+
+### 2026-07-23 — Remove invalid duplicate activity-cache test
+
+**Context:** CI failed after an edge-case test tried to replace an exported CommonJS function.
+**What happened:** Removed the duplicate test. The focused activity-cache suite already covers malformed JSON, missing events, non-array events, and invalid timestamps through the public `loadGitHubActivity` behavior.
+**Outcome:** Success
+**Insight:** Replacing an exported CommonJS property does not replace a same-module lexical binding; test public behavior with environment fixtures instead.
+**Promoted to Lessons Learned:** Yes
