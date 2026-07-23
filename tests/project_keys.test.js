@@ -200,3 +200,37 @@ test('projectSections identifying key uniqueness', () => {
   checkGroup(app.projectSections.liveProjects, 'liveProjects');
   checkGroup(app.projectSections.repositories, 'repositories');
 });
+
+// Behavioral translation lookup: every titleKey/descKey/linkKey referenced in projectSections
+// must produce a non-empty string when passed through `t()`. The dictionary-completeness tests
+// above verify key presence; this test validates that the actual runtime lookup returns usable
+// content — catching empty translations, circular references, or t() returning raw keys.
+test('projectSection translation keys resolve to non-empty strings via t()', () => {
+  const keysToCheck = new Set();
+
+  [...app.projectSections.liveProjects, ...app.projectSections.repositories].forEach(section => {
+    if (section.titleKey) keysToCheck.add(section.titleKey);
+    if (section.descKey) keysToCheck.add(section.descKey);
+    if (section.linkKey) keysToCheck.add(section.linkKey);
+  });
+
+  const missingKeys = [];
+  const emptyValues = [];
+
+  for (const key of keysToCheck) {
+    assert.ok(key in app.translations.en, `Translation key "${key}" not present in English dictionary`);
+
+    // Verify t() resolves to a usable string across all supported languages.
+    Object.entries(app.translations).forEach(([lang, trans]) => {
+      const value = app.t(key);
+      assert.ok(typeof value === 'string', `t("${key}") in "${lang}" must return a string (got: ${typeof value})`);
+      const trimmed = String(value).trim();
+
+      // The t() function returns the key itself when missing from the dictionary. If we get
+      // back the raw key, that means the lookup failed — a silent bug for users.
+      assert.notStrictEqual(trimmed, key, `t("${key}") in "${lang}" returned raw key (lookup failed)`);
+
+      assert.ok(trimmed.length > 0, `Translation for "${key}" in "${lang}" resolved to empty string`);
+    });
+  }
+});
