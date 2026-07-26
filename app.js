@@ -353,7 +353,7 @@ const translations = {
     findBookDesc: 'Pointez la caméra vers une étagère pour identifier les livres instantanément.',
     horrorScopeTitle: 'Horror-Scope',
     horrorScopeDesc:
-      'Votre navigateur détermine votre signe astrologique. Les astérisme ne vous ont pas demandé votre avis.',
+      'Votre navigateur détermine votre signe astrologique. Les étoiles ne vous ont pas demandé votre avis.',
     generatorRebusTitle: 'Générateur de rébus',
     generatorRebusDesc: 'Complétez des énigmes avec les mots du dictionnaire Scrabble.',
     deployStatus: 'Dernier statut : ',
