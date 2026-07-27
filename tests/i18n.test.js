@@ -77,15 +77,12 @@ test('normalizeLang handles case-insensitive subtags', () => {
   assert.equal(normalizeLang('en-us'), 'en');
 });
 
-test('t() no-$lang uses currentLang default (set to ro)', () => {
-  // Reassign module-scoped currentLang by calling setLang via t() itself:
-  // t() resolves $lang only if it's truthy; otherwise falls back to currentLang.
-  // We verify the fallback chain by passing a key known in EN+ro and asserting
-  // that when no $lang is provided, the resolved lang equals 'en' (default).
+test('t() no-$lang uses currentLang default (set to en)', () => {
+  // t(key) without $lang resolves via normalizeLang(currentLang).
+  // Since currentLang defaults to 'en', the result should be the English value.
   const defaultResult = t('title');
-  assert.ok(
-    typeof defaultResult === 'string',
-    't() with no $lang must return a string from translations'
+  assert.equal(defaultResult, "Fabian's Projects",
+    't() with no $lang must resolve from currentLang (default en)'
   );
 });
 
