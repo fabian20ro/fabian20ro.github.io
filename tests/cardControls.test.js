@@ -141,3 +141,42 @@ test('arrow and copy controls isolate their events from whole-card navigation', 
     }
   }
 });
+
+test('clipboard rejection leaves copy button in its default state', async () => {
+  const originalDocument = global.document;
+  const originalNavigatorDescriptor = Object.getOwnPropertyDescriptor(global, 'navigator');
+  let rejectedWith = null;
+
+  global.document = { createElement };
+  Object.defineProperty(global, 'navigator', {
+    configurable: true,
+    value: {
+      clipboard: {
+        async writeText() {
+          rejectedWith = new DOMException('Permission denied', 'NotAllowedError');
+          throw rejectedWith;
+        }
+      }
+    }
+  });
+
+  try {
+    const card = app.projectSections.liveProjects[0];
+    const originalTitle = app.t(card.copyTitle || 'copy');
+    const header = app.createCardHeader(card);
+    const copyButton = header.children[1].children[1];
+
+    await copyButton.dispatch('click', { stopPropagation() {} });
+
+    assert.equal(copyButton.classList.contains('card-copy-btn-success'), false, 'success class should not be added on rejection');
+    assert.equal(copyButton.getAttribute('aria-label'), originalTitle, 'aria-label should stay at the default title after rejection');
+    assert.notEqual(rejectedWith, null, 'writeText must have thrown during dispatch');
+  } finally {
+    global.document = originalDocument;
+    if (originalNavigatorDescriptor) {
+      Object.defineProperty(global, 'navigator', originalNavigatorDescriptor);
+    } else {
+      delete global.navigator;
+    }
+  }
+});
