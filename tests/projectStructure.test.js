@@ -107,6 +107,22 @@ try {
     );
   });
 
+  // All linkKeys must resolve to non-empty translation strings — prevents raw-key display.
+  const { t } = require('../app.js');
+  for (const section of ['liveProjects', 'repositories']) {
+    projectSections[section].forEach((item, i) => {
+      assert(
+        typeof item.linkKey === 'string' && item.linkKey.length > 0,
+        `${section}[${i}] linkKey must be a non-empty string`
+      );
+      const roVal = t(item.linkKey);
+      assert(
+        typeof roVal === 'string' && roVal.length > 0 && roVal !== item.linkKey,
+        `${section}[${i}] linkKey "${item.linkKey}" must resolve to a non-empty translation in ro`
+      );
+    });
+  }
+
   // liveSiteUrl validity: when present, must be a valid http(s) URL; null/missing is allowed
   for (const repo of projectSections.repositories) {
     if (repo.liveSiteUrl != null) {
