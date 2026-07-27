@@ -73,6 +73,50 @@ try {
     assert(card.badgeUrl, `LiveProject[${i}] missing badgeUrl`);
   });
 
+  // hrefs must be valid URLs (http/https scheme)
+  const allItems = [
+    ...projectSections.liveProjects.map(c => ({ section: 'live', item: c })),
+    ...projectSections.repositories.map(r => ({ section: 'repo', item: r }))
+  ];
+  for (const { section, item } of allItems) {
+    assert(
+      /^https?:\/\/.+/.test(item.href),
+      `${section}[${item.titleKey}] href must be a valid http(s) URL: ${item.href}`
+    );
+  }
+
+  // icons must be non-empty strings (emoji or text)
+  for (const { section, item } of allItems) {
+    assert(
+      typeof item.icon === 'string' && item.icon.length > 0,
+      `${section}[${item.titleKey}] icon must be a non-empty string`
+    );
+  }
+
+  // linkKey consistency per section type: live uses visitSite, repos use viewGithub
+  projectSections.liveProjects.forEach((card, i) => {
+    assert(
+      card.linkKey === 'visitSite',
+      `LiveProject[${i}] must use linkKey='visitSite' (got '${card.linkKey}')`
+    );
+  });
+  projectSections.repositories.forEach((repo, i) => {
+    assert(
+      repo.linkKey === 'viewGithub',
+      `Repo[${i}] must use linkKey='viewGithub' (got '${repo.linkKey}')`
+    );
+  });
+
+  // liveSiteUrl validity: when present, must be a valid http(s) URL; null/missing is allowed
+  for (const repo of projectSections.repositories) {
+    if (repo.liveSiteUrl != null) {
+      assert(
+        /^https?:\/\/.+/.test(repo.liveSiteUrl),
+        `Repo[${repo.titleKey}] liveSiteUrl must be a valid http(s) URL: ${repo.liveSiteUrl}`
+      );
+    }
+  }
+
   console.log('Project structure tests passed!');
 } catch (err) {
   console.error('Project structure tests failed:');
