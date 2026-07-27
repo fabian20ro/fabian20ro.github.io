@@ -8,6 +8,9 @@ const PAGE_REFRESH_MARKER_KEY = 'page-refresh-marker-v1';
 const PAGE_LAST_SEEN_AT_KEY = 'page-last-seen-at-v1';
 const PAGE_STALE_REOPEN_THRESHOLD_MS = 12 * 60 * 60 * 1000;
 
+const SUPPORTED_LANGUAGES = ['en', 'ro', 'fr', 'es', 'de', 'it', 'pt'];
+const LANG_FLAGS = { en: '🇬🇧', ro: '🇷🇴', fr: '🇫🇷', es: '🇪🇸', de: '🇩🇪', it: '🇮🇹', pt: '🇵🇹' };
+
 let thankYouOrder = [];
 let thankYouIndex = 0;
 let thankYouInterval = null;
@@ -773,10 +776,9 @@ function normalizeLang(lang) {
   }
 
   const normalized = lang.trim().toLowerCase();
-  const supported = ['en', 'ro', 'es', 'fr', 'de', 'it', 'pt'];
 
   // Check for exact match or prefix match (e.g., 'ro-RO', 'ro_RO')
-  for (const s of supported) {
+  for (const s of SUPPORTED_LANGUAGES) {
     if (normalized === s || normalized.startsWith(s + '-') || normalized.startsWith(s + '_')) {
       return s;
     }
@@ -857,13 +859,13 @@ function setLang(lang) {
   const themeToggle = document.getElementById('theme-toggle');
 
   if (langToggle) {
-    const targetLang = currentLang === 'en' ? 'ro' : 'en';
-    const targetFlag = targetLang === 'ro' ? '🇷🇴' : '🇬🇧';
-    const targetLabelKey = targetLang === 'ro' ? 'switchToRomanian' : 'switchToEnglish';
+    const nextLangIdx = (SUPPORTED_LANGUAGES.indexOf(currentLang) + 1) % SUPPORTED_LANGUAGES.length;
+    const targetLang = SUPPORTED_LANGUAGES[nextLangIdx];
+    const langFlag = LANG_FLAGS[targetLang] || '🌐';
 
-    langToggle.textContent = `➡️ ${targetFlag}`;
-    langToggle.setAttribute('aria-label', t(targetLabelKey));
-    langToggle.setAttribute('title', t(targetLabelKey));
+    langToggle.textContent = `➡️ ${langFlag}`;
+    langToggle.setAttribute('aria-label', t('toggleLanguage'));
+    langToggle.setAttribute('title', t('toggleLanguage'));
   }
 
   if (themeToggle) {
