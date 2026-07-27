@@ -42,6 +42,27 @@ test('t() falls back to English for unknown keys', () => {
   assert.equal(fallback, 'nonexistentKey12345');
 });
 
+test('t() partial-fallback: key missing from $lang returns English value, not raw key', () => {
+  // Guard: if a key is removed from a non-English translation, t() should silently
+  // return the English equivalent rather than leaking the raw key into the UI.
+  const partial = t('title', 'es');
+  assert.notEqual(partial, 'title', 't() must not leak raw key for missing translations');
+});
+
+test('translation completeness: all supported languages cover every en key', () => {
+  const enKeys = Object.keys(translations.en);
+  for (const lang of ['ro', 'fr', 'es', 'de', 'it', 'pt']) {
+    const dict = translations[lang];
+    assert.ok(dict, `translations.${lang} must exist`);
+    for (const key of enKeys) {
+      assert.ok(
+        dict[key],
+        `Missing en key "${key}" in ${lang} translations`
+      );
+    }
+  }
+});
+
 test('normalizeLang accepts locale subtags and returns base code', () => {
   assert.equal(normalizeLang('ro-RO'), 'ro');
   assert.equal(normalizeLang('ro_RO'), 'ro');
