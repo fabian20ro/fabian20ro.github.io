@@ -79,3 +79,56 @@ test('projectSections entries have only expected keys', () => {
     );
   }
 });
+
+// Behavioral resolution: every titleKey/descKey/linkKey referenced by projectSections
+// must produce a non-empty translated string when passed through the runtime t() function.
+// Shape tests verify key presence; this test verifies that translations are actually usable —
+// catching empty values, missing entries, or t() returning raw keys back to users.
+test('projectSections metadata resolves via t() to non-empty strings', () => {
+  const allSections = [...projectSections.liveProjects, ...projectSections.repositories];
+
+  for (const section of allSections) {
+    if (section.titleKey) {
+      assert.ok(section.titleKey in translations.en, `titleKey "${section.titleKey}" missing from en`);
+    }
+    if (section.descKey) {
+      assert.ok(section.descKey in translations.en, `descKey "${section.descKey}" missing from en`);
+    }
+  }
+
+  for (const section of allSections) {
+    const keys = [];
+    if (section.titleKey) keys.push(section.titleKey);
+    if (section.descKey) keys.push(section.descKey);
+    if (section.linkKey) keys.push(section.linkKey);
+
+    for (const key of keys) {
+      assert.ok(key in translations.en, `Key "${key}" not present in English translations`);
+
+      Object.entries(translations).forEach(([lang, trans]) => {
+        const value = trans[key];
+        assert.ok(typeof value === 'string', `t("${key}") in "${lang}" must return a string (got ${typeof value})`);
+        const trimmed = String(value).trim();
+        assert.notStrictEqual(trimmed, key, `t("${key}") in "${lang}" returned raw key (lookup failed)`);
+        assert.ok(trimmed.length > 0, `Translation for "${key}" in "${lang}" resolved to empty string`);
+      });
+    }
+  }
+});
+
+// Badge URL structural validity: badgeUrl values must point to GitHub Actions workflow badges.
+// Invalid or HTTP-only badges would show broken images in the project card UI silently.
+test('projectSections badgeUrls reference valid GitHub workflow badges', () => {
+  const allSections = [...projectSections.liveProjects, ...projectSections.repositories];
+
+  for (const section of allSections) {
+    if (section.badgeUrl !== undefined && section.badgeUrl !== null) {
+      assert.ok(section.badgeUrl.startsWith('https://'), `badgeUrl must use HTTPS: ${section.href}`);
+      const repoMatch = /^https:\/\/github\.com\/[a-zA-Z0-9\-]+\/[a-zA-Z0-9\-]+\//.test(section.badgeUrl);
+      assert.ok(repoMatch, `badgeUrl "${section.badgeUrl}" must follow github.com/{owner}/{repo} pattern`);
+      const workflowMatch = /workflows\/|actions\//.test(section.badgeUrl);
+      assert.ok(workflowMatch, `badgeUrl "${section.badgeUrl}" must contain workflows/ or actions/ endpoint`);
+      assert.ok(section.badgeUrl.endsWith('/badge.svg'), `badgeUrl must end with /badge.svg: ${section.badgeUrl}`);
+    }
+  }
+});
