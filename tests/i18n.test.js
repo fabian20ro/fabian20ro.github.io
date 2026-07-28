@@ -42,6 +42,13 @@ test('t() falls back to English for unknown keys', () => {
   assert.equal(fallback, 'nonexistentKey12345');
 });
 
+test('t() accepts locale-subtagged $lang (e.g. "ro-RO") and resolves via normalizeLang', () => {
+  // Browser navigator.language often arrives as subtagged codes; verify the full chain works end-to-end.
+  assert.equal(t('title', 'ro-RO'), 'Proiectele lui Fabian');
+  assert.equal(t('liveProjects', 'fr-ca'), 'Projections en direct');
+  assert.equal(t('title', 'DE-de'), "Fabians Projekte");
+});
+
 test('t() partial-fallback: key missing from $lang returns English value, not raw key', () => {
   // Guard: if a key is removed from a non-English translation, t() should silently
   // return the English equivalent rather than leaking the raw key into the UI.
