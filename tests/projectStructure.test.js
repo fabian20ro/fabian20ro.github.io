@@ -123,6 +123,22 @@ try {
     });
   }
 
+  // titleKey content quality: translated titles must be substantive.
+  const MIN_TITLE_LENGTH = 5;
+  for (const section of ['liveProjects', 'repositories']) {
+    projectSections[section].forEach((item, i) => {
+      assert(
+        typeof item.titleKey === 'string' && item.titleKey.length > 0,
+        `${section}[${i}] titleKey must be a non-empty translation key`
+      );
+      const roVal = t(item.titleKey);
+      assert(
+        typeof roVal === 'string' && roVal.length >= MIN_TITLE_LENGTH,
+        `${section}[${i}] titleKey "${item.titleKey}" resolves to substantive text in ro (>= ${MIN_TITLE_LENGTH} chars)`
+      );
+    });
+  }
+
   // descKey content quality: translated descriptions must be substantive.
   const MIN_DESC_LENGTH = 15;
   for (const section of ['liveProjects', 'repositories']) {
