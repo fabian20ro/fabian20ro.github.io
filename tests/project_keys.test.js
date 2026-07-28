@@ -305,3 +305,34 @@ test('projectSections badgeUrls reference valid GitHub workflow badges', () => {
     }
   });
 });
+
+// Content quality: translated titles and descriptions must be substantive, not placeholder text.
+// Short translations (e.g. single words) indicate incomplete work that would look broken in the UI.
+test('projectSections content quality — titles and descriptions', () => {
+  const MIN_TITLE_LENGTH = 5;
+  const MIN_DESC_LENGTH = 15;
+
+  app.projectSections.liveProjects.forEach((section, i) => {
+    assert.ok(typeof section.titleKey === 'string' && section.titleKey.length > 0, `liveProject ${i}: titleKey must be non-empty`);
+    assert.ok(typeof section.descKey === 'string' && section.descKey.length > 0, `liveProject ${i}: descKey must be non-empty`);
+
+    const roTitle = String(app.t(section.titleKey)).trim();
+    assert.ok(roTitle.length >= MIN_TITLE_LENGTH, `liveProject ${i}: titleKey "${section.titleKey}" resolves to substantive text in ro (>= ${MIN_TITLE_LENGTH} chars; got "${roTitle}")`);
+
+    const roDesc = String(app.t(section.descKey)).trim();
+    assert.ok(roDesc.length >= MIN_DESC_LENGTH, `liveProject ${i}: descKey "${section.descKey}" resolves to substantive text in ro (>= ${MIN_DESC_LENGTH} chars; got "${roDesc}")`);
+  });
+
+  app.projectSections.repositories.forEach((section, i) => {
+    if (section.titleKey !== undefined && section.titleKey !== null) {
+      assert.ok(typeof section.titleKey === 'string' && section.titleKey.length > 0, `repo ${i}: titleKey must be non-empty`);
+      const roTitle = String(app.t(section.titleKey)).trim();
+      assert.ok(roTitle.length >= MIN_TITLE_LENGTH, `repo ${i}: titleKey "${section.titleKey}" resolves to substantive text in ro (>= ${MIN_TITLE_LENGTH} chars; got "${roTitle}")`);
+    }
+    if (section.descKey !== undefined && section.descKey !== null) {
+      assert.ok(typeof section.descKey === 'string' && section.descKey.length > 0, `repo ${i}: descKey must be non-empty`);
+      const roDesc = String(app.t(section.descKey)).trim();
+      assert.ok(roDesc.length >= MIN_DESC_LENGTH, `repo ${i}: descKey "${section.descKey}" resolves to substantive text in ro (>= ${MIN_DESC_LENGTH} chars; got "${roDesc}")`);
+    }
+  });
+});
