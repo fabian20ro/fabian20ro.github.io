@@ -132,3 +132,21 @@ test('projectSections badgeUrls reference valid GitHub workflow badges', () => {
     }
   }
 });
+
+// Icon format: every icon must be simple display text — no URLs, HTML tags, or whitespace.
+// Non-emoji icons would render inconsistently across OS/browsers and break the project card UI.
+test('projectSections icons are valid emoji', () => {
+  for (const section of projectSections.liveProjects) {
+    assert.ok(typeof section.icon === 'string' && section.icon.length > 0, `liveProjects[${section.titleKey}]: icon must be a non-empty string`);
+    const isValidIcon = /^[^\s\/<>]+$/u.test(section.icon) && !section.icon.startsWith('http');
+    assert.ok(isValidIcon, `liveProjects[${section.titleKey}]: icon "${section.icon}" must be simple display text (no URLs, whitespace, or slashes)`);
+  }
+
+  for (const section of projectSections.repositories) {
+    if (section.icon !== undefined && section.icon !== null) {
+      assert.ok(typeof section.icon === 'string' && section.icon.length > 0, `repositories[${section.titleKey}]: icon must be a non-empty string`);
+      const isValidIcon = /^[^\s\/<>]+$/u.test(section.icon) && !section.icon.startsWith('http');
+      assert.ok(isValidIcon, `repositories[${section.titleKey}]: icon "${section.icon}" must be simple display text (no URLs, whitespace, or slashes)`);
+    }
+  }
+});
