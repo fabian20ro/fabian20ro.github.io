@@ -172,6 +172,15 @@ test('isCacheFresh guard paths', () => {
   assert.strictEqual(isCacheFresh(exactlyStale), false, 'isCacheFresh rejects cache exactly at TTL boundary');
 });
 
+test('getBadgeActionsUrl non-string inputs return empty string', () => {
+  setLang('en');
+  // Defensive contract — getBadgeActionsUrl must not throw on malformed input.
+  assert.strictEqual(getBadgeActionsUrl(null), '', 'getBadgeActionsUrl(null) returns empty string');
+  assert.strictEqual(getBadgeActionsUrl(undefined), '', 'getBadgeActionsUrl(undefined) returns empty string');
+  assert.strictEqual(getBadgeActionsUrl(42), '', 'getBadgeActionsUrl(number) returns empty string');
+  assert.strictEqual(getBadgeActionsUrl([]), '', 'getBadgeActionsUrl(array) returns empty string');
+});
+
 test('buildRepoUrl non-string inputs', () => {
   setLang('en');
   // Defensive contract — malformed input must never produce broken URLs.

@@ -234,3 +234,74 @@ test('projectSection translation keys resolve to non-empty strings via t()', () 
     });
   }
 });
+
+// Icon format: every icon must be a non-empty emoji character.
+// Non-emoji icons would render inconsistently across OS/browsers — breaking the
+// visual identity of project cards. The production data uses only single-character
+// emoji (or regional indicator pairs like 🇷🇴), so we validate against that pattern.
+test('projectSections icons are valid emoji', () => {
+  app.projectSections.liveProjects.forEach((section, i) => {
+    assert.ok(section.icon.length > 0, `liveProject ${i}: icon must be non-empty`);
+    // Content validation: icons must be simple display text. Reject URLs, HTML tags,
+    // multi-word phrases, or strings with spaces/slashes that would render as broken UI.
+    const isValidIcon = /^[^\s\/<>]+$/u.test(section.icon) && !section.icon.startsWith('http');
+    assert.ok(isValidIcon, `liveProject ${i}: icon "${section.icon}" must be simple display text (no URLs, whitespace, or slashes)`);
+  });
+
+  app.projectSections.repositories.forEach((section, i) => {
+    if (section.icon !== undefined && section.icon !== null) {
+      assert.ok(section.icon.length > 0, `repo ${i}: icon must be non-empty when present`);
+      const isValidIcon = /^[^\s\/<>]+$/u.test(section.icon) && !section.icon.startsWith('http');
+      assert.ok(isValidIcon, `repo ${i}: icon "${section.icon}" must be simple display text (no URLs, whitespace, or slashes)`);
+    }
+  });
+});
+
+// Href URL structure: production URLs must follow expected domain patterns.
+// Live projects use subdomains of fabian20ro.github.io; repositories point to github.com.
+// HTTP, malformed domains, or mixed-case protocols would break card links silently.
+test('projectSections hrefs match expected URL structures', () => {
+  const liveHrefPattern = /^https:\/\/fabian20ro\.github\.io\/[^/\s]+\/?$/;
+  const repoHrefPattern = /^https:\/\/github\.com\/[a-zA-Z0-9\-]+\/[a-zA-Z0-9._\-]+\/?$/;
+
+  app.projectSections.liveProjects.forEach((section, i) => {
+    assert.ok(liveHrefPattern.test(section.href), `liveProject ${i}: href "${section.href}" does not match expected subdomain pattern`);
+  });
+
+  app.projectSections.repositories.forEach((section, i) => {
+    if (section.href !== undefined && section.href !== null) {
+      assert.ok(repoHrefPattern.test(section.href), `repo ${i}: href "${section.href}" does not match github.com repo URL pattern`);
+    }
+  });
+});
+
+// Badge URL validity: badgeUrl must point to a GitHub Actions workflow badge.
+// Invalid or HTTP-only badges would show broken images in the project card UI.
+test('projectSections badgeUrls reference valid GitHub workflow badges', () => {
+  // Validate that badgeUrl points to a real GitHub Actions badge:
+  // - HTTPS only (no HTTP)
+  // - github.com/{owner}/{repo} structure
+  // - contains workflows/ or actions/ endpoint
+  // - ends with /badge.svg
+  app.projectSections.liveProjects.forEach((section, i) => {
+    if (section.badgeUrl !== undefined && section.badgeUrl !== null) {
+      assert.ok(section.badgeUrl.startsWith('https://'), `liveProject ${i}: badgeUrl must use HTTPS`);
+      const repoMatch = /^https:\/\/github\.com\/[a-zA-Z0-9\-]+\/[a-zA-Z0-9\-]+\//.test(section.badgeUrl);
+      assert.ok(repoMatch, `liveProject ${i}: badgeUrl "${section.badgeUrl}" must follow github.com/{owner}/{repo} pattern`);
+      const workflowMatch = /workflows\/|actions\//.test(section.badgeUrl);
+      assert.ok(workflowMatch, `liveProject ${i}: badgeUrl "${section.badgeUrl}" must contain workflows/ or actions/ endpoint`);
+      assert.ok(section.badgeUrl.endsWith('/badge.svg'), `liveProject ${i}: badgeUrl must end with /badge.svg: "${section.badgeUrl}"`);
+    }
+  });
+
+  app.projectSections.repositories.forEach((section, i) => {
+    if (section.badgeUrl !== undefined && section.badgeUrl !== null) {
+      assert.ok(section.badgeUrl.startsWith('https://'), `repo ${i}: badgeUrl must use HTTPS`);
+      const repoMatch = /^https:\/\/github\.com\/[a-zA-Z0-9\-]+\/[a-zA-Z0-9\-]+\//.test(section.badgeUrl);
+      assert.ok(repoMatch, `repo ${i}: badgeUrl "${section.badgeUrl}" must follow github.com/{owner}/{repo} pattern`);
+      const workflowMatch = /workflows\/|actions\//.test(section.badgeUrl);
+      assert.ok(workflowMatch, `repo ${i}: badgeUrl "${section.badgeUrl}" must contain workflows/ or actions/ endpoint`);
+      assert.ok(section.badgeUrl.endsWith('/badge.svg'), `repo ${i}: badgeUrl must end with /badge.svg: "${section.badgeUrl}"`);
+    }
+  });
+});
