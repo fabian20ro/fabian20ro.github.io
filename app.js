@@ -1285,6 +1285,8 @@ function showActivityError() {
 
   const link = document.createElement('a');
   link.href = `https://github.com/${GITHUB_USERNAME}?tab=activity`;
+  link.target = '_blank';
+  link.rel = 'noopener noreferrer';
   link.textContent = t('activityViewGithub');
   error.appendChild(link);
 
