@@ -2039,6 +2039,56 @@ test('isCacheFresh rejects a cache object missing the timestamp property entirel
   assert.strictEqual(isFresh({ timestamp: undefined, events: [] }), false, 'explicit-undefined timestamp is not fresh');
 });
 
+test('isCacheFresh rejects non-finite and string timestamps', () => {
+  const isFresh = require('../app.js').isCacheFresh;
+  // Number.isFinite rejects null, strings, NaN, Infinity — all should be stale.
+  assert.strictEqual(isFresh({ timestamp: null, events: [] }), false, 'null timestamp must be stale');
+  assert.strictEqual(isFresh({ timestamp: '12345', events: [] }), false, 'string timestamp must be stale');
+  assert.strictEqual(isFresh({ timestamp: NaN, events: [] }), false, 'NaN timestamp must be stale');
+  assert.strictEqual(isFresh({ timestamp: Infinity, events: [] }), false, 'Infinity timestamp must be stale');
+});
+
+test('isCacheFresh accepts a cache exactly one millisecond below the TTL boundary', () => {
+  const isFresh = require('../app.js').isCacheFresh;
+  const originalNow = Date.now;
+  // Fix now at 10_000 so we can compute a precise age relative to ACTIVITY_CACHE_TTL_MS.
+  Date.now = () => 10_000;
+
+  assert.strictEqual(
+    isFresh({ timestamp: 10_000 - (ACTIVITY_CACHE_TTL_MS - 1), events: [] }),
+    true,
+    'cache exactly one millisecond under TTL must be fresh'
+  );
+  Date.now = originalNow;
+});
+
+test('isCacheFresh rejects a cache whose age equals the TTL', () => {
+  const isFresh = require('../app.js').isCacheFresh;
+  const originalNow = Date.now;
+  Date.now = () => 10_000;
+
+  assert.strictEqual(
+    isFresh({ timestamp: 10_000 - ACTIVITY_CACHE_TTL_MS, events: [] }),
+    false,
+    'cache whose age equals TTL must be stale (strict less-than)'
+  );
+  Date.now = originalNow;
+});
+
+test('isCacheFresh rejects a cache with a timestamp in the future', () => {
+  const isFresh = require('../app.js').isCacheFresh;
+  const originalNow = Date.now;
+  // Force now behind the supplied timestamp so ageMs will be negative.
+  Date.now = () => 0;
+
+  assert.strictEqual(
+    isFresh({ timestamp: 1, events: [] }),
+    false,
+    'future-dated cache must be stale'
+  );
+  Date.now = originalNow;
+});
+
 test('loadGitHubActivity does not refetch when the previous fetch has just completed', async (t) => {
   const now = Date.now();
   const originalDateNow = Date.now;
