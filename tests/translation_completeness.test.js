@@ -49,4 +49,37 @@ describe('translation completeness', () => {
       SUPPORTED_LANGUAGES.sort()
     );
   });
+
+  it('each language has no duplicate translation keys', () => {
+    // Duplicate keys in JS object literals silently overwrite — JSON round-trip collapses them.
+    // Comparing original entry count with deserialized count catches silent data loss.
+    for (const lang of Object.keys(app.translations)) {
+      const trans = app.translations[lang];
+      const serialized = JSON.stringify(trans);
+      const deserialized = JSON.parse(serialized);
+      assert.strictEqual(
+        Object.keys(deserialized).length,
+        Object.keys(trans).length,
+        `Language "${lang}" has duplicate keys — JSON round-trip lost entries`
+      );
+    }
+  });
+
+  it('every translation value is a non-empty string', () => {
+    for (const lang of Object.keys(app.translations)) {
+      const trans = app.translations[lang];
+      for (const key of Object.keys(trans)) {
+        assert.strictEqual(
+          typeof trans[key],
+          'string',
+          `Key "${key}" in language "${lang}" is not a string (got ${typeof trans[key]})`
+        );
+        assert.notStrictEqual(
+          trans[key].trim(),
+          '',
+          `Key "${key}" in language "${lang}" has empty/whitespace-only value`
+        );
+      }
+    }
+  });
 });
