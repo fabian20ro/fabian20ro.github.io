@@ -2720,3 +2720,54 @@ test('loadGitHubActivity renders exactly ACTIVITY_LIMIT cached items when the ca
     assert.strictEqual(renderedFragment.children[i].className, 'activity-item');
   }
 });
+
+test('loadGitHubActivity does not throw when activity-feed DOM element is missing', async (t) => {
+  const now = Date.now();
+  const originalDateNow = Date.now;
+  const originalDocument = global.document;
+  const originalLocalStorage = global.localStorage;
+  const originalSessionStorage = global.sessionStorage;
+  const originalFetch = global.fetch;
+
+  // Mock document that returns null for activity-feed (element not in DOM).
+  global.document = {
+    getElementById(id) {
+      return id === 'activity-feed' ? null : null;
+    },
+    createElement: () => ({ children: [], appendChild(c) { this.children.push(c); return c; } }),
+    createTextNode(text) { return { nodeType: 'text', textContent: text }; },
+    createDocumentFragment() { return global.document.createElement('fragment'); }
+  };
+
+  const storage = new Map();
+  global.localStorage = {
+    getItem(key) { return storage.get(key); },
+    setItem(key, value) { storage.set(key, value); }
+  };
+
+  // Fresh cache present so loadGitHubActivity will try to render from it.
+  storage.set(ACTIVITY_CACHE_KEY, JSON.stringify({
+    timestamp: now - 1000,
+    events: [{ type: 'PushEvent', repo: { name: 'test-repo' }, created_at: new Date(now).toISOString(), payload: {} }]
+  }));
+
+  global.sessionStorage = { getItem() { return null; }, setItem() {} };
+
+  let fetchCalls = 0;
+  global.fetch = async () => {
+    fetchCalls += 1;
+    throw new Error('fetch should not run — fresh cache short-circuits');
+  };
+  Date.now = () => now;
+
+  t.after(() => {
+    Date.now = originalDateNow;
+    global.document = originalDocument;
+    global.localStorage = originalLocalStorage;
+    global.sessionStorage = originalSessionStorage;
+    global.fetch = originalFetch;
+  });
+
+  // The critical assertion: must not throw when DOM element is absent.
+  assert.doesNotThrow(async () => { await loadGitHubActivity(); }, 'must not throw when activity-feed element is missing');
+});
