@@ -271,3 +271,35 @@ test('t(key) returns raw key for truly missing translation keys across languages
   setLang('ro');
   assert.strictEqual(t(unknownKey), unknownKey, 't() with ro lang also returns raw key for missing keys');
 });
+
+test('getBadgeActionsUrl object and symbol inputs return empty string', () => {
+  setLang('en');
+  // Extends the non-string type-guard coverage — objects and symbols should not throw.
+  assert.strictEqual(getBadgeActionsUrl({}), '', 'getBadgeActionsUrl(object) returns empty string');
+  assert.strictEqual(getBadgeActionsUrl([1, 2]), '', 'getBadgeActionsUrl(non-empty array) returns empty string');
+  assert.strictEqual(getBadgeActionsUrl(true), '', 'getBadgeActionsUrl(boolean) returns empty string');
+});
+
+test('getRelativeTime zero-delta and negative-future timestamps return just now', () => {
+  setLang('en');
+  // Production contract — exact-now and future dates must resolve to 'just now'.
+  const zeroMs = new Date(Date.now()).toISOString();
+  assert.strictEqual(getRelativeTime(zeroMs), 'just now', 'getRelativeTime(now) returns just now');
+
+  // Future-dated (negative delta) should still be treated as 'just now' — the function cannot
+  // meaningfully produce a past-relative string for future timestamps.
+  const twoSecondsFuture = new Date(Date.now() + 2000).toISOString();
+  assert.strictEqual(getRelativeTime(twoSecondsFuture), 'just now', 'getRelativeTime(2s in future) returns just now');
+
+  // One hour in the future must not produce a nonsensical "in the past" string.
+  const oneHourFuture = new Date(Date.now() + 3600000).toISOString();
+  assert.strictEqual(getRelativeTime(oneHourFuture), 'just now', 'getRelativeTime(1h in future) returns just now');
+
+  // Regression: a valid date exactly 59 seconds ago resolves to 'just now' (within sub-minute threshold).
+  const fiftyNineSecs = new Date(Date.now() - 59000).toISOString();
+  assert.strictEqual(getRelativeTime(fiftyNineSecs), 'just now', 'getRelativeTime(59s ago) returns just now');
+
+  // Regression: a date at ~61 seconds ago crosses into sub-minute territory — must return '1 minute ago'.
+  const sixtyOneSecs = new Date(Date.now() - 61000).toISOString();
+  assert.strictEqual(getRelativeTime(sixtyOneSecs), '1 minute ago', 'getRelativeTime(61s ago) returns 1 minute ago');
+});
