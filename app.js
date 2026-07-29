@@ -724,7 +724,9 @@ const translations = {
     yearsAgo: 'anos',
     item: 'elemento',
     in: 'em',
-    unknownRepo: 'repositório'
+    unknownRepo: 'repositório',
+    switchToRomanian: 'Alterar para romeno',
+    switchToEnglish: 'Alterar para inglês'
   }
 };
 

@@ -2039,6 +2039,56 @@ test('isCacheFresh rejects a cache object missing the timestamp property entirel
   assert.strictEqual(isFresh({ timestamp: undefined, events: [] }), false, 'explicit-undefined timestamp is not fresh');
 });
 
+test('isCacheFresh rejects non-finite and string timestamps', () => {
+  const isFresh = require('../app.js').isCacheFresh;
+  // Number.isFinite rejects null, strings, NaN, Infinity — all should be stale.
+  assert.strictEqual(isFresh({ timestamp: null, events: [] }), false, 'null timestamp must be stale');
+  assert.strictEqual(isFresh({ timestamp: '12345', events: [] }), false, 'string timestamp must be stale');
+  assert.strictEqual(isFresh({ timestamp: NaN, events: [] }), false, 'NaN timestamp must be stale');
+  assert.strictEqual(isFresh({ timestamp: Infinity, events: [] }), false, 'Infinity timestamp must be stale');
+});
+
+test('isCacheFresh accepts a cache exactly one millisecond below the TTL boundary', () => {
+  const isFresh = require('../app.js').isCacheFresh;
+  const originalNow = Date.now;
+  // Fix now at 10_000 so we can compute a precise age relative to ACTIVITY_CACHE_TTL_MS.
+  Date.now = () => 10_000;
+
+  assert.strictEqual(
+    isFresh({ timestamp: 10_000 - (ACTIVITY_CACHE_TTL_MS - 1), events: [] }),
+    true,
+    'cache exactly one millisecond under TTL must be fresh'
+  );
+  Date.now = originalNow;
+});
+
+test('isCacheFresh rejects a cache whose age equals the TTL', () => {
+  const isFresh = require('../app.js').isCacheFresh;
+  const originalNow = Date.now;
+  Date.now = () => 10_000;
+
+  assert.strictEqual(
+    isFresh({ timestamp: 10_000 - ACTIVITY_CACHE_TTL_MS, events: [] }),
+    false,
+    'cache whose age equals TTL must be stale (strict less-than)'
+  );
+  Date.now = originalNow;
+});
+
+test('isCacheFresh rejects a cache with a timestamp in the future', () => {
+  const isFresh = require('../app.js').isCacheFresh;
+  const originalNow = Date.now;
+  // Force now behind the supplied timestamp so ageMs will be negative.
+  Date.now = () => 0;
+
+  assert.strictEqual(
+    isFresh({ timestamp: 1, events: [] }),
+    false,
+    'future-dated cache must be stale'
+  );
+  Date.now = originalNow;
+});
+
 test('loadGitHubActivity does not refetch when the previous fetch has just completed', async (t) => {
   const now = Date.now();
   const originalDateNow = Date.now;
@@ -2669,4 +2719,55 @@ test('loadGitHubActivity renders exactly ACTIVITY_LIMIT cached items when the ca
   for (let i = 0; i < 10; i++) {
     assert.strictEqual(renderedFragment.children[i].className, 'activity-item');
   }
+});
+
+test('loadGitHubActivity does not throw when activity-feed DOM element is missing', async (t) => {
+  const now = Date.now();
+  const originalDateNow = Date.now;
+  const originalDocument = global.document;
+  const originalLocalStorage = global.localStorage;
+  const originalSessionStorage = global.sessionStorage;
+  const originalFetch = global.fetch;
+
+  // Mock document that returns null for activity-feed (element not in DOM).
+  global.document = {
+    getElementById(id) {
+      return id === 'activity-feed' ? null : null;
+    },
+    createElement: () => ({ children: [], appendChild(c) { this.children.push(c); return c; } }),
+    createTextNode(text) { return { nodeType: 'text', textContent: text }; },
+    createDocumentFragment() { return global.document.createElement('fragment'); }
+  };
+
+  const storage = new Map();
+  global.localStorage = {
+    getItem(key) { return storage.get(key); },
+    setItem(key, value) { storage.set(key, value); }
+  };
+
+  // Fresh cache present so loadGitHubActivity will try to render from it.
+  storage.set(ACTIVITY_CACHE_KEY, JSON.stringify({
+    timestamp: now - 1000,
+    events: [{ type: 'PushEvent', repo: { name: 'test-repo' }, created_at: new Date(now).toISOString(), payload: {} }]
+  }));
+
+  global.sessionStorage = { getItem() { return null; }, setItem() {} };
+
+  let fetchCalls = 0;
+  global.fetch = async () => {
+    fetchCalls += 1;
+    throw new Error('fetch should not run — fresh cache short-circuits');
+  };
+  Date.now = () => now;
+
+  t.after(() => {
+    Date.now = originalDateNow;
+    global.document = originalDocument;
+    global.localStorage = originalLocalStorage;
+    global.sessionStorage = originalSessionStorage;
+    global.fetch = originalFetch;
+  });
+
+  // The critical assertion: must not throw when DOM element is absent.
+  assert.doesNotThrow(async () => { await loadGitHubActivity(); }, 'must not throw when activity-feed element is missing');
 });
