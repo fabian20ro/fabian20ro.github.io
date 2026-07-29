@@ -1,6 +1,6 @@
 const test = require('node:test');
 const assert = require('node:assert');
-const { translations, t, normalizeLang } = require('../app.js');
+const { translations, t, normalizeLang, setLang } = require('../app.js');
 
 test('i18n translation completeness', () => {
   const enKeys = Object.keys(translations.en);
@@ -32,17 +32,20 @@ test('i18n translation values are not just the key', () => {
 });
 
 test('t() returns Romanian translation when $lang ro', () => {
+  setLang('en');
   assert.equal(t('title', 'ro'), 'Proiectele lui Fabian');
   assert.equal(t('liveProjects', 'ro'), 'Proiecte Live');
   assert.equal(t('passwordGenTitle', 'ro'), 'Generator de Parole');
 });
 
 test('t() falls back to English for unknown keys', () => {
+  setLang('en');
   const fallback = t('nonexistentKey12345', 'ro');
   assert.equal(fallback, 'nonexistentKey12345');
 });
 
 test('t() accepts locale-subtagged $lang (e.g. "ro-RO") and resolves via normalizeLang', () => {
+  setLang('en');
   // Browser navigator.language often arrives as subtagged codes; verify the full chain works end-to-end.
   assert.equal(t('title', 'ro-RO'), 'Proiectele lui Fabian');
   assert.equal(t('liveProjects', 'fr-ca'), 'Projections en direct');
@@ -50,6 +53,7 @@ test('t() accepts locale-subtagged $lang (e.g. "ro-RO") and resolves via normali
 });
 
 test('t() partial-fallback: key missing from $lang returns English value, not raw key', () => {
+  setLang('en');
   // Guard: if a key is removed from a non-English translation, t() should silently
   // return the English equivalent rather than leaking the raw key into the UI.
   const partial = t('title', 'es');
@@ -57,6 +61,7 @@ test('t() partial-fallback: key missing from $lang returns English value, not ra
 });
 
 test('translation completeness: all supported languages cover every en key', () => {
+  setLang('en');
   const enKeys = Object.keys(translations.en);
   for (const lang of ['ro', 'fr', 'es', 'de', 'it', 'pt']) {
     const dict = translations[lang];
@@ -85,6 +90,7 @@ test('normalizeLang handles case-insensitive subtags', () => {
 });
 
 test('t() no-$lang uses currentLang default (set to en)', () => {
+  setLang('en');
   // t(key) without $lang resolves via normalizeLang(currentLang).
   // Since currentLang defaults to 'en', the result should be the English value.
   const defaultResult = t('title');
@@ -94,6 +100,7 @@ test('t() no-$lang uses currentLang default (set to en)', () => {
 });
 
 test('t() partial-fallback: when key missing from $lang, returns EN value not raw key', () => {
+  setLang('en');
   // Inject a scenario where a translation dict is intentionally missing one key.
   // We do this by passing an ad-hoc language code to t(). Since normalizeLang maps
   // unknown codes to 'en', we test via direct dictionary inspection instead:
@@ -115,6 +122,7 @@ test('t() partial-fallback: when key missing from $lang, returns EN value not ra
 });
 
 test('t() full partial-fallback via direct lang stub', () => {
+  setLang('en');
   // Directly test t()'s fallback chain: set a language that normalizeLang will accept,
   // but which is missing some keys. We add 'es-extra' → not supported by normalizeLang,
   // so we instead verify the actual code path by reading app.js contract:
@@ -141,4 +149,53 @@ test('normalizeLang rejects unsupported locales and defaults to en', () => {
   assert.equal(normalizeLang('xyz-ABC'), 'en');
   assert.equal(normalizeLang('ja'), 'en');
   assert.equal(normalizeLang('   '), 'en');
+});
+
+test('setLang() in Node (no DOM) sets currentLang and returns cleanly', () => {
+  // In a test environment there is no `document`. setLang must:
+  //   - resolve normalizeLang(lang) and assign to module-scoped currentLang,
+  //   - call renderThankYouMessage(),
+  //   - skip all DOM mutations (typeof document === 'undefined'),
+  //   - not throw.
+  const before = t('title'); // captures current default (en)
+
+  setLang('ro');
+  assert.equal(t('title'), 'Proiectele lui Fabian',
+    'setLang("ro") must switch active language for subsequent t() calls'
+  );
+
+  setLang('fr');
+  assert.equal(t('title'), 'Les projets de Fabian',
+    'setLang("fr") must switch active language for subsequent t() calls'
+  );
+
+  // Reset back to en so other tests in this file see the expected default.
+  setLang('en');
+  assert.equal(t('title'), before,
+    'setLang("en") must restore previous default after toggle chain'
+  );
+});
+
+test('t() handles empty-string and whitespace keys', () => {
+  setLang('en');
+  // t('') falls through all lookup branches → returns raw key (empty string).
+  assert.equal(t(''), '', 't("") with valid lang must return empty string');
+  assert.equal(t('', 'ro'), '', 't("", ro) must also return empty string');
+
+  // Whitespace-only keys should behave like unknown keys — fall through to EN or raw.
+  const wsResult = t('   ');
+  assert.strictEqual(wsResult, '   ', 'whitespace key returns itself as fallback');
+});
+
+test('t() preserves emoji and special characters in translation values', () => {
+  setLang('ro');
+  // The intro contains Romanian diacritics (ă, â, î, ș, ț); verify they round-trip.
+  const intro = t('intro');
+  assert.ok(intro.includes('\u0103') || intro.includes('\u0219'),
+    'intro translation must contain Romanian special characters'
+  );
+
+  // Title contains an apostrophe — common source of encoding issues.
+  const titleEn = t('title', 'en');
+  assert.ok(titleEn.includes("'"), "English title must preserve apostrophe");
 });
