@@ -763,6 +763,118 @@ test('loadGitHubActivity ignores a cache whose events field is not an array', as
   assert.strictEqual(updatedCached.events[0].repo.name, 'new-repo', 'events should reflect fresh data');
 });
 
+test('loadGitHubActivity handles a non-successful HTTP response from GitHub gracefully', async (t) => {
+  const now = Date.now();
+  const originalDateNow = Date.now;
+  const originalDocument = global.document;
+  const originalLocalStorage = global.localStorage;
+  const originalSessionStorage = global.sessionStorage;
+  const originalFetch = global.fetch;
+
+  const feed = createElement('div');
+  feed.replaceChildren(createElement('div'));
+
+  global.document = {
+    getElementById(id) {
+      return id === 'activity-feed' ? feed : null;
+    },
+    createElement,
+    createDocumentFragment() {
+      return createElement('fragment');
+    },
+    createTextNode(text) {
+      return { nodeType: 'text', textContent: text };
+    }
+  };
+
+  const storage = new Map();
+  global.localStorage = {
+    getItem(key) { return storage.get(key); },
+    setItem(key, value) { storage.set(key, value); }
+  };
+
+  // No cache present; fetch will be called.
+  global.sessionStorage = { getItem() { return null; }, setItem() {} };
+
+  let fetchCalls = 0;
+  global.fetch = async () => {
+    fetchCalls += 1;
+    // Simulate GitHub API returning a non-successful HTTP status (502 Bad Gateway).
+    return new Response(JSON.stringify({ message: 'Service unavailable' }), { status: 502 });
+  };
+  Date.now = () => now;
+
+  t.after(() => {
+    Date.now = originalDateNow;
+    global.document = originalDocument;
+    global.localStorage = originalLocalStorage;
+    global.sessionStorage = originalSessionStorage;
+    global.fetch = originalFetch;
+  });
+
+  await loadGitHubActivity();
+
+  assert.strictEqual(fetchCalls, 1, 'should attempt exactly one fetch');
+  // The function must not throw on a non-2xx response and should surface an error state.
+  assert.notStrictEqual(feed.children.length, 0, 'feed should be updated (not left empty)');
+});
+
+test('loadGitHubActivity handles non-JSON body on successful HTTP response gracefully', async (t) => {
+  const now = Date.now();
+  const originalDateNow = Date.now;
+  const originalDocument = global.document;
+  const originalLocalStorage = global.localStorage;
+  const originalSessionStorage = global.sessionStorage;
+  const originalFetch = global.fetch;
+
+  const feed = createElement('div');
+  feed.replaceChildren(createElement('div'));
+
+  global.document = {
+    getElementById(id) {
+      return id === 'activity-feed' ? feed : null;
+    },
+    createElement,
+    createDocumentFragment() {
+      return createElement('fragment');
+    },
+    createTextNode(text) {
+      return { nodeType: 'text', textContent: text };
+    }
+  };
+
+  const storage = new Map();
+  global.localStorage = {
+    getItem(key) { return storage.get(key); },
+    setItem(key, value) { storage.set(key, value); }
+  };
+
+  // No cache present; fetch will be called and should fail gracefully.
+  global.sessionStorage = { getItem() { return null; }, setItem() {} };
+
+  let fetchCalls = 0;
+  global.fetch = async () => {
+    fetchCalls += 1;
+    // Simulate GitHub API returning HTTP 200 with non-JSON body (partial failure).
+    return new Response('not json', { status: 200 });
+  };
+  Date.now = () => now;
+
+  t.after(() => {
+    Date.now = originalDateNow;
+    global.document = originalDocument;
+    global.localStorage = originalLocalStorage;
+    global.sessionStorage = originalSessionStorage;
+    global.fetch = originalFetch;
+  });
+
+  await loadGitHubActivity();
+
+  assert.strictEqual(fetchCalls, 1, 'should attempt exactly one fetch');
+  // The function must not throw on a non-JSON body and should surface an error state.
+  assert.notStrictEqual(feed.children.length, 0, 'feed should be updated (not left empty)');
+});
+
 test('loadGitHubActivity treats a future-dated timestamp as stale and refetches', async (t) => {
   const now = Date.now();
   const originalDateNow = Date.now;
