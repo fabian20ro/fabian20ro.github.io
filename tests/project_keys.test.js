@@ -306,6 +306,38 @@ test('projectSections badgeUrls reference valid GitHub workflow badges', () => {
   });
 });
 
+// LinkKey consistency and translation resolution: every liveProject card uses linkKey='visitSite'
+// and every repository entry uses linkKey='viewGithub'. These are fixed strings (not dynamic
+// translation keys), but they must still resolve through t() to non-empty text in all languages —
+// otherwise a user sees raw key text on the project card button. This test catches accidental
+// assignment of arbitrary or misspelled values that would silently break UI labels.
+test('projectSections linkKey consistency and resolution', () => {
+  const expectedLiveLinkKey = 'visitSite';
+  const expectedRepoLinkKey = 'viewGithub';
+
+  app.projectSections.liveProjects.forEach((section, i) => {
+    assert.strictEqual(section.linkKey, expectedLiveLinkKey, `liveProject ${i}: linkKey must be '${expectedLiveLinkKey}' (got '${section.linkKey}')`);
+  });
+
+  app.projectSections.repositories.forEach((section, i) => {
+    assert.strictEqual(section.linkKey, expectedRepoLinkKey, `repo ${i}: linkKey must be '${expectedRepoLinkKey}' (got '${section.linkKey}')`);
+  });
+
+  // Both fixed linkKey values must resolve through t() to non-empty strings in all languages.
+  Object.entries(app.translations).forEach(([lang, trans]) => {
+    const liveVal = app.t(expectedLiveLinkKey);
+    assert.ok(expectedLiveLinkKey in trans, `t("${expectedLiveLinkKey}") must work in "${lang}"`);
+    assert.strictEqual(typeof liveVal, 'string', `t("${expectedLiveLinkKey}") in "${lang}" must return string (got ${typeof liveVal})`);
+    const trimmed = String(liveVal).trim();
+    assert.ok(trimmed.length > 0 && trimmed !== expectedLiveLinkKey, `t("${expectedLiveLinkKey}") resolved to empty or raw key in "${lang}"`);
+
+    const repoVal = app.t(expectedRepoLinkKey);
+    assert.strictEqual(typeof repoVal, 'string', `t("${expectedRepoLinkKey}") in "${lang}" must return string (got ${typeof repoVal})`);
+    const trimmedRepo = String(repoVal).trim();
+    assert.ok(trimmedRepo.length > 0 && trimmedRepo !== expectedRepoLinkKey, `t("${expectedRepoLinkKey}") resolved to empty or raw key in "${lang}"`);
+  });
+});
+
 // Content quality: translated titles and descriptions must be substantive, not placeholder text.
 // Short translations (e.g. single words) indicate incomplete work that would look broken in the UI.
 test('projectSections content quality — titles and descriptions', () => {
