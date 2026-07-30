@@ -303,3 +303,44 @@ test('getRelativeTime zero-delta and negative-future timestamps return just now'
   const sixtyOneSecs = new Date(Date.now() - 61000).toISOString();
   assert.strictEqual(getRelativeTime(sixtyOneSecs), '1 minute ago', 'getRelativeTime(61s ago) returns 1 minute ago');
 });
+
+test('loadGitHubActivity network failure handles gracefully', async () => {
+  setLang('en');
+  // Production contract — fetch failures must not throw and should surface an error state.
+  function createElement(tagName) {
+    return {
+      tagName, className: '', textContent: '', href: '', children: [],
+      appendChild(child) { this.children.push(child); return child; },
+      append(...nodes) { for (const n of nodes) this.appendChild(n); },
+      replaceChildren(...nodes) { this.children = [...nodes]; },
+      setAttribute(name, value) { this[name] = value; }
+    };
+  }
+
+  const feed = createElement('div');
+  feed.replaceChildren(createElement('fragment'));
+
+  global.document = {
+    getElementById(id) { return id === 'activity-feed' ? feed : null; },
+    createElement, createDocumentFragment: () => createElement('fragment'),
+    createTextNode(text) { return { nodeType: 'text', textContent: text }; }
+  };
+  global.localStorage = {
+    getItem() { return null; },
+    setItem() {}
+  };
+  global.sessionStorage = {
+    getItem() { return null; },
+    setItem() {}
+  };
+
+  let fetchCalls = 0;
+  global.fetch = async () => {
+    fetchCalls += 1;
+    throw new Error('Network error');
+  };
+
+  // Must not throw — contract: loadGitHubActivity swallows network errors.
+  await loadGitHubActivity();
+  assert.strictEqual(fetchCalls, 1, 'fetch was attempted exactly once on cache miss + stale path');
+});
