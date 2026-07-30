@@ -179,6 +179,23 @@ try {
     });
   }
 
+  // All titleKeys/descKeys must exist as actual keys in every language's translations object — prevents stale references.
+  const { translations } = require('../app.js');
+  for (const lang of Object.keys(translations)) {
+    for (const section of ['liveProjects', 'repositories']) {
+      projectSections[section].forEach((item, i) => {
+        assert(
+          item.titleKey in translations[lang],
+          `${section}[${i}] titleKey "${item.titleKey}" must be a key in the ${lang} translations object`
+        );
+        assert(
+          item.descKey in translations[lang],
+          `${section}[${i}] descKey "${item.descKey}" must be a key in the ${lang} translations object`
+        );
+      });
+    }
+  }
+
   // liveSiteUrl validity: when present, must be a valid http(s) URL; null/missing is allowed
   for (const repo of projectSections.repositories) {
     if (repo.liveSiteUrl != null) {
