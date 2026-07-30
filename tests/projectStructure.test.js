@@ -85,6 +85,17 @@ try {
     });
   }
 
+  // badgeUrl uniqueness within each section — two projects must not share a badge.
+  for (const section of ['liveProjects', 'repositories']) {
+    const badges = projectSections[section]
+      .filter(item => item.badgeUrl && item.badgeUrl.length > 0)
+      .map(item => item.badgeUrl);
+    assert(
+      new Set(badges).size === badges.length,
+      `Duplicate badgeUrls found in ${section}`
+    );
+  }
+
   // descKey uniqueness within each section (parallel to titleKey check)
   const liveDescs = projectSections.liveProjects.map(c => c.descKey);
   const repoDescs = projectSections.repositories.map(r => r.descKey);
