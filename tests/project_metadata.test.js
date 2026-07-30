@@ -150,3 +150,19 @@ test('projectSections icons are valid emoji', () => {
     }
   }
 });
+
+// Strict emoji format: every projectSection icon must match the Unicode Emoji General Category.
+// Text icons would break rendering across OS/browsers — this test catches drift before it reaches users.
+test('projectSections icons are strict Unicode emoji', () => {
+  const emojiPattern = /\p{Emoji}/u;
+
+  for (const section of projectSections.liveProjects) {
+    assert.ok(emojiPattern.test(section.icon), `liveProjects[${section.titleKey}]: icon "${section.icon}" must be a valid Unicode emoji`);
+  }
+
+  for (const section of projectSections.repositories) {
+    if (section.icon !== undefined && section.icon !== null) {
+      assert.ok(emojiPattern.test(section.icon), `repositories[${section.titleKey}]: icon "${section.icon}" must be a valid Unicode emoji`);
+    }
+  }
+});

@@ -85,6 +85,17 @@ try {
     });
   }
 
+  // badgeUrl uniqueness within each section — two projects must not share a badge.
+  for (const section of ['liveProjects', 'repositories']) {
+    const badges = projectSections[section]
+      .filter(item => item.badgeUrl && item.badgeUrl.length > 0)
+      .map(item => item.badgeUrl);
+    assert(
+      new Set(badges).size === badges.length,
+      `Duplicate badgeUrls found in ${section}`
+    );
+  }
+
   // descKey uniqueness within each section (parallel to titleKey check)
   const liveDescs = projectSections.liveProjects.map(c => c.descKey);
   const repoDescs = projectSections.repositories.map(r => r.descKey);
@@ -177,6 +188,23 @@ try {
         `${section}[${i}] descKey "${item.descKey}" resolves to substantive text in ro (>= ${MIN_DESC_LENGTH} chars)`
       );
     });
+  }
+
+  // All titleKeys/descKeys must exist as actual keys in every language's translations object — prevents stale references.
+  const { translations } = require('../app.js');
+  for (const lang of Object.keys(translations)) {
+    for (const section of ['liveProjects', 'repositories']) {
+      projectSections[section].forEach((item, i) => {
+        assert(
+          item.titleKey in translations[lang],
+          `${section}[${i}] titleKey "${item.titleKey}" must be a key in the ${lang} translations object`
+        );
+        assert(
+          item.descKey in translations[lang],
+          `${section}[${i}] descKey "${item.descKey}" must be a key in the ${lang} translations object`
+        );
+      });
+    }
   }
 
   // liveSiteUrl validity: when present, must be a valid http(s) URL; null/missing is allowed
