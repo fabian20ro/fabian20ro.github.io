@@ -217,6 +217,7 @@ const translations = {
       'See which files your editor and configurations actually process in your Git projects.',
     visitSite: 'Visit site →',
     viewGithub: 'View on GitHub →',
+    copy: 'Copy link',
     copySuccess: 'Copied!',
     viewAllGithub: 'View all projects on GitHub &rarr;',
     next_thought: 'Next thought',
