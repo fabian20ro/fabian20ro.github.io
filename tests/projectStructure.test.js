@@ -73,6 +73,30 @@ try {
     assert(card.badgeUrl, `LiveProject[${i}] missing badgeUrl`);
   });
 
+  // badgeUrl format: must be a valid https URL on github.com (actions or raw)
+  const GITHUB_BARE = /^https:\/\/github\.com\/[^/]+\/[^/]+(\/|$)/;
+  for (const section of ['liveProjects', 'repositories']) {
+    projectSections[section].forEach((item, i) => {
+      if (!item.badgeUrl || item.badgeUrl.length === 0) return;
+      assert(
+        GITHUB_BARE.test(item.badgeUrl),
+        `${section}[${i}] badgeUrl " ${item.badgeUrl}" must be a github.com URL`
+      );
+    });
+  }
+
+  // descKey uniqueness within each section (parallel to titleKey check)
+  const liveDescs = projectSections.liveProjects.map(c => c.descKey);
+  const repoDescs = projectSections.repositories.map(r => r.descKey);
+  assert(
+    new Set(liveDescs).size === liveDescs.length,
+    'Duplicate descKeys in liveProjects'
+  );
+  assert(
+    new Set(repoDescs).size === repoDescs.length,
+    'Duplicate descKeys in repositories'
+  );
+
   // hrefs must be valid URLs (http/https scheme)
   const allItems = [
     ...projectSections.liveProjects.map(c => ({ section: 'live', item: c })),
