@@ -280,6 +280,34 @@ test('getBadgeActionsUrl object and symbol inputs return empty string', () => {
   assert.strictEqual(getBadgeActionsUrl(true), '', 'getBadgeActionsUrl(boolean) returns empty string');
 });
 
+test('getBadgeActionsUrl idempotence — already-points-to-actions or bare-repo-base return repo base', () => {
+  setLang('en');
+  // Production contract — getBadgeActionsUrl must be idempotent: when the badge URL already
+  // points to /actions or is a bare repo base, it returns the repo base unchanged. Prevents
+  // double-appending /actions on repeated calls.
+  const actionsUrl = 'https://github.com/fabian20ro/emot-id/actions';
+  assert.strictEqual(getBadgeActionsUrl(actionsUrl), 'https://github.com/fabian20ro/emot-id', "idempotent: URL already at /actions returns bare repo base");
+
+  const badgeAtActions = 'https://github.com/fabian20ro/alt-stb/actions/workflows/Deploy/badge.svg';
+  assert.strictEqual(getBadgeActionsUrl(badgeAtActions), 'https://github.com/fabian20ro/alt-stb', "idempotent: URL inside /actions subtree returns bare repo base");
+
+  // Regression: a badge URL that is itself the repo base (e.g. from manual config) must pass through unchanged.
+  const bareBase = 'https://github.com/fabian20ro/pixel-article-reader';
+  assert.strictEqual(getBadgeActionsUrl(bareBase), bareBase, "idempotent: bare repo base URL returns itself");
+});
+
+test('normalizeLang exact two-letter codes without suffix', () => {
+  setLang('en');
+  // Production contract — normalizeLang must accept plain two-letter language codes (no region suffix).
+  assert.strictEqual(normalizeLang('en'), 'en', "normalizeLang('en') returns 'en'");
+  assert.strictEqual(normalizeLang('ro'), 'ro', "normalizeLang('ro') returns 'ro'");
+  assert.strictEqual(normalizeLang('fr'), 'fr', "normalizeLang('fr') returns 'fr'");
+  assert.strictEqual(normalizeLang('de'), 'de', "normalizeLang('de') returns 'de'");
+  assert.strictEqual(normalizeLang('it'), 'it', "normalizeLang('it') returns 'it'");
+  assert.strictEqual(normalizeLang('pt'), 'pt', "normalizeLang('pt') returns 'pt'");
+  assert.strictEqual(normalizeLang('es'), 'es', "normalizeLang('es') returns 'es'");
+});
+
 test('getRelativeTime zero-delta and negative-future timestamps return just now', () => {
   setLang('en');
   // Production contract — exact-now and future dates must resolve to 'just now'.
