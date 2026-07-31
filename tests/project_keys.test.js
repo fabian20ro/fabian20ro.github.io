@@ -257,6 +257,57 @@ test('projectSections icons are valid emoji', () => {
   });
 });
 
+// Icon uniqueness: no two entries in the same group (liveProjects or repositories)
+// nor across groups should share an icon. Duplicate icons hide data-entry bugs —
+// e.g., adding a new repo that actually points to an already-tracked live project,
+// or copy-paste duplication when scaffolding new sections.
+test('projectSections icons are unique', () => {
+  const checkGroup = (group, groupName) => {
+    const seen = new Set();
+    const duplicates = [];
+
+    group.forEach((section, i) => {
+      if (!section.icon || section.icon.length === 0) return; // shape test covers empties
+      if (seen.has(section.icon)) {
+        duplicates.push({ index: i, value: section.icon });
+      } else {
+        seen.add(section.icon);
+      }
+    });
+
+    assert.strictEqual(duplicates.length, 0, `${groupName}: Duplicate icons at indices ${duplicates.map(d => d.index).join(', ')}: "${duplicates.map(d => d.value).join('", "')}"`);
+  };
+
+  checkGroup(app.projectSections.liveProjects, 'liveProjects');
+  checkGroup(app.projectSections.repositories, 'repositories');
+
+  // Cross-group: a live project and repository may legitimately share an icon when they
+  // are the same product shown in two places (e.g. generator-rebus). We allow that pair,
+  // but flag collisions where different titleKeys share an icon — that pattern almost always
+  // indicates data-entry error or accidental copy-paste duplication.
+  const liveByIcon = new Map();
+  for (const s of app.projectSections.liveProjects) {
+    if (!s.icon) continue;
+    if (liveByIcon.has(s.icon)) {
+      const prior = liveByIcon.get(s.icon);
+      // Allow same-product cross-group: icon reused but titleKey is identical.
+      if (prior.titleKey !== s.titleKey) {
+        assert.fail(`Cross-group collision "${s.icon}": "${prior.titleKey}" (${prior.href}) and "${s.titleKey}" (${s.href}) share an icon — likely data-entry error`);
+      }
+    } else {
+      liveByIcon.set(s.icon, s);
+    }
+  }
+
+  for (const r of app.projectSections.repositories.filter(s => s.icon)) {
+    const prior = liveByIcon.get(r.icon);
+    if (!prior) continue; // new icon within repo group — not cross-group collision
+    if (prior.titleKey !== r.titleKey) {
+      assert.fail(`Cross-group collision "${r.icon}": "${prior.titleKey}" (${prior.href}) and "${r.titleKey}" (${r.href}) share an icon — likely data-entry error`);
+    }
+  }
+});
+
 // Href URL structure: production URLs must follow expected domain patterns.
 // Live projects use subdomains of fabian20ro.github.io; repositories point to github.com.
 // HTTP, malformed domains, or mixed-case protocols would break card links silently.
