@@ -82,4 +82,37 @@ describe('translation completeness', () => {
       }
     }
   });
+
+  // Runtime verification: every translation key in every language's dictionary must resolve to a non-empty string.
+  // The dictionary-completeness tests above verify key presence; this test catches broken lookups where a dictionary entry
+  // is missing or empty, which would silently render as blank text or raw keys to users via t().
+  it('t() resolves every translation key to non-empty strings across all languages', () => {
+    const t = app.t;
+
+    for (const lang of Object.keys(app.translations)) {
+      const trans = app.translations[lang];
+
+      for (const key of Object.keys(trans)) {
+        const value = trans[key];
+
+        assert.ok(
+          typeof value === 'string',
+          `Translation "${key}" in "${lang}" is not a string (got ${typeof value})`
+        );
+        assert.notStrictEqual(value, null, `Translation "${key}" in "${lang}" is null`);
+        assert.notStrictEqual(value, undefined, `Translation "${key}" in "${lang}" is undefined`);
+
+        const tResult = t(key, lang);
+        assert.ok(
+          typeof tResult === 'string',
+          `t("${key}" in "${lang}") returned ${typeof value}, expected string`
+        );
+        assert.ok(
+          tResult.trim().length > 0,
+          `t("${key}") resolved to empty/whitespace-only string in "${lang}"`
+        );
+      }
+    }
+  });
+
 });

@@ -171,3 +171,50 @@ test('projectSections metadata resolves via t() to non-empty strings', () => {
     }
   }
 });
+
+test('LANG_FLAGS has a flag for every SUPPORTED_LANGUAGE entry', () => {
+  const fs = require('fs');
+  const path = require('path');
+  const srcPath = path.join(__dirname, '..', 'app.js');
+  const src = fs.readFileSync(srcPath, 'utf8');
+
+  // Parse SUPPORTED_LANGUAGES.
+  const langsMatch = src.match(/const\s+SUPPORTED_LANGUAGES\s*=\s*\[([^\]]+)\]/);
+  assert.ok(langsMatch, 'SUPPORTED_LANGUAGES declaration not found in app.js');
+  const langValues = [...langsMatch[1].matchAll(/'([^']+)'/g)].map((m) => m[1]);
+
+  // Parse LANG_FLAGS keys — anchor to single-line declaration.
+  const flagsLine = src.split('\n').find(line => /const\s+LANG_FLAGS\s*=/.test(line));
+  assert.ok(flagsLine, 'LANG_FLAGS declaration not found on a source line');
+
+  // Extract language codes from the LANG_FLAGS object (e.g., "en:", "ro:").
+  const flagKeys = [...flagsLine.matchAll(/\b([a-z]{2}):/g)].map((m) => m[1]);
+
+  // Every supported language must have a corresponding flag.
+  for (const lang of langValues) {
+    assert.ok(flagKeys.includes(lang), `Missing flag key for SUPPORTED_LANGUAGE '${lang}'`);
+  }
+});
+
+test('every non-base language translation differs from English at the value level', () => {
+  const { translations } = require('../app.js');
+  const baseLang = 'en';
+  assert.ok(baseLang in translations, 'English translation object must exist');
+  const baseValues = new Set(Object.values(translations[baseLang]));
+
+  for (const [lang, entries] of Object.entries(translations)) {
+    if (lang === baseLang) continue;
+    let differs = false;
+    for (const key of Object.keys(entries)) {
+      const baseVal = translations[baseLang][key];
+      const langVal = entries[key];
+      if (typeof baseVal === 'string' && typeof langVal === 'string') {
+        if (langVal !== baseVal) {
+          differs = true;
+          break;
+        }
+      }
+    }
+    assert.ok(differs, `Language '${lang}' translation object has no differing values from English`);
+  }
+});

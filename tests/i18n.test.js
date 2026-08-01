@@ -89,6 +89,14 @@ test('normalizeLang handles case-insensitive subtags', () => {
   assert.equal(normalizeLang('en-us'), 'en');
 });
 
+test('normalizeLang trims whitespace from valid locale codes before matching', () => {
+  // The contract applies trim() + toLowerCase() before any prefix match.
+  // Whitespace-padded inputs must still resolve correctly, not fall through to the default 'en'.
+  assert.equal(normalizeLang(' ro '), 'ro');
+  assert.equal(normalizeLang('fr-ca '), 'fr');
+  assert.equal(normalizeLang('  de-DE  '), 'de');
+});
+
 test('t() no-$lang uses currentLang default (set to en)', () => {
   setLang('en');
   // t(key) without $lang resolves via normalizeLang(currentLang).

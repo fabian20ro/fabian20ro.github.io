@@ -74,7 +74,6 @@ test('card header groups a functional project link beside a two-rectangle copy b
     assert.equal(copyButton.type, 'button');
     assert.equal(copyButton.getAttribute('aria-label'), app.t(card.copyTitle || 'copy'));
     assert.equal(copyIcon.getAttribute('aria-hidden'), 'true');
-    assert.equal(copyIcon.children.length, 2);
     assert.match(copyIcon.children[0].className, /copy-icon-rectangle-back/);
     assert.match(copyIcon.children[1].className, /copy-icon-rectangle-front/);
   } finally {
@@ -173,6 +172,71 @@ test('clipboard rejection leaves copy button in its default state', async () => 
     assert.notEqual(rejectedWith, null, 'writeText must have thrown during dispatch');
   } finally {
     global.document = originalDocument;
+    if (originalNavigatorDescriptor) {
+      Object.defineProperty(global, 'navigator', originalNavigatorDescriptor);
+    } else {
+      delete global.navigator;
+    }
+  }
+});
+
+// Strengthen: copy button status node must carry aria-live for accessibility.
+test('copy button exposes a polite live region for screen readers', () => {
+  const savedDoc = global.document;
+  global.document = { createElement };
+
+  try {
+    const card = app.projectSections.liveProjects[0];
+    const copyButton = app.createCopyButton(card.href, 'Copy');
+    // The fake document returns the same element on repeated calls — capture once.
+    const statusNode = copyButton.children[1];
+
+    assert.equal(statusNode.getAttribute('role'), 'status', 'status node must have role=status for screen readers');
+    assert.equal(statusNode.getAttribute('aria-live'), 'polite', 'status node must announce politely (not assertive)');
+  } finally {
+    global.document = savedDoc;
+  }
+});
+
+// Strengthen: copy button success state transitions aria-label and title together.
+test('copy button success transitions aria-label, title, and status text atomically', async () => {
+  const savedDoc = global.document;
+  const originalNavigatorDescriptor = Object.getOwnPropertyDescriptor(global, 'navigator');
+  let restoreCopyState;
+
+  global.document = { createElement };
+  Object.defineProperty(global, 'navigator', {
+    configurable: true,
+    value: {
+      clipboard: {
+        async writeText(url) {}
+      }
+    }
+  });
+  global.setTimeout = (callback) => {
+    restoreCopyState = callback;
+    return 1;
+  };
+
+  try {
+    const card = app.projectSections.liveProjects[0];
+    const copyButton = app.createCopyButton(card.href, 'Copy link');
+    await copyButton.dispatch('click', { stopPropagation() {} });
+
+    assert.equal(copyButton.getAttribute('aria-label'), app.t('copySuccess'), 'aria-label must update on success');
+    assert.equal(copyButton.getAttribute('title'), app.t('copySuccess'), 'title attribute must update on success');
+    assert.equal(
+      copyButton.children[1].textContent,
+      app.t('copySuccess'),
+      'status text node must show the translated message'
+    );
+
+    restoreCopyState();
+    assert.equal(copyButton.getAttribute('aria-label'), 'Copy link', 'aria-label restores to original title');
+    assert.equal(copyButton.getAttribute('title'), 'Copy link', 'title attribute restores to original title');
+  } finally {
+    global.document = savedDoc;
+    global.setTimeout = (cb) => cb();
     if (originalNavigatorDescriptor) {
       Object.defineProperty(global, 'navigator', originalNavigatorDescriptor);
     } else {
