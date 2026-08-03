@@ -455,3 +455,17 @@
 **Outcome:** Success
 **Insight:** Replacing an exported CommonJS property does not replace a same-module lexical binding; test public behavior with environment fixtures instead.
 **Promoted to Lessons Learned:** Yes
+
+### 2026-08-03 — Update Emot-ID project destination
+
+**Context:** The Emot-ID repository and GitHub Pages path moved from `emot-id` to `emotid`.
+**What happened:**
+
+- Updated the live project card to `https://fabian20ro.github.io/emotid/`.
+- Updated its deployment badge to the `fabian20ro/emotid` GitHub Actions workflow.
+- Kept generic URL-parser fixtures unchanged because they test URL shapes, not current project metadata.
+- Ran `npm run check`; lint, formatting, and all 151 tests pass.
+
+**Outcome:** Success
+**Insight:** Project migrations require updating both the visible destination and its linked deployment-status source.
+**Promoted to Lessons Learned:** No

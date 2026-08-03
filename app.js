@@ -45,13 +45,13 @@ const EVENT_ICONS = {
 const projectSections = {
   liveProjects: [
     {
-      href: 'https://fabian20ro.github.io/emot-id/',
+      href: 'https://fabian20ro.github.io/emotid/',
       icon: '😊',
       titleKey: 'emotIdTitle',
       descKey: 'emotIdDesc',
       linkKey: 'visitSite',
       badgeUrl:
-        'https://github.com/fabian20ro/emot-id/workflows/Deploy%20to%20GitHub%20Pages/badge.svg'
+        'https://github.com/fabian20ro/emotid/workflows/Deploy%20to%20GitHub%20Pages/badge.svg'
     },
     {
       href: 'https://fabian20ro.github.io/alt-stb/',
