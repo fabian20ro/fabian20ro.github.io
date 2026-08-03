@@ -469,3 +469,11 @@
 **Outcome:** Success
 **Insight:** Project migrations require updating both the visible destination and its linked deployment-status source.
 **Promoted to Lessons Learned:** No
+
+### 2026-08-03 — Update Alt InfoTB project destination
+
+**Context:** The disabled `alt-stb` repository was recovered into the fresh `alt-infotb` repository and its GitHub Pages path changed.
+**What happened:** Updated the project card destination and deployment badge to `alt-infotb`, changed the displayed project title to the new Alt InfoTB brand in every supported locale, and updated the corresponding live-project URL fixtures.
+**Outcome:** Success — the portfolio points to the verified Alt InfoTB Pages deployment.
+**Insight:** A project rename affects the external card's destination, badge source, displayed brand, and live-project test fixtures together.
+**Promoted to Lessons Learned:** No

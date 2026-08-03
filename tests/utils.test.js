@@ -41,8 +41,8 @@ try {
   const patternA = 'https://github.com/fabian20ro/emot-id/workflows/Deploy%20to%20GitHub%20Pages/badge.svg';
   assert.strictEqual(getBadgeActionsUrl(patternA), 'https://github.com/fabian20ro/emot-id/actions');
 
-  const patternB = 'https://github.com/fabian20ro/alt-stb/workflows/Deploy/badge.svg';
-  assert.strictEqual(getBadgeActionsUrl(patternB), 'https://github.com/fabian20ro/alt-stb/actions');
+  const patternB = 'https://github.com/fabian20ro/alt-infotb/workflows/Deploy/badge.svg';
+  assert.strictEqual(getBadgeActionsUrl(patternB), 'https://github.com/fabian20ro/alt-infotb/actions');
 
   const patternC =
     'https://github.com/fabian20ro/propozitii-nostime/workflows/Deploy%20Frontend%20to%20GitHub%20Pages/badge.svg';

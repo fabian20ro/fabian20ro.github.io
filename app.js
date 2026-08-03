@@ -54,12 +54,12 @@ const projectSections = {
         'https://github.com/fabian20ro/emotid/workflows/Deploy%20to%20GitHub%20Pages/badge.svg'
     },
     {
-      href: 'https://fabian20ro.github.io/alt-stb/',
+      href: 'https://fabian20ro.github.io/alt-infotb/',
       icon: '🚇',
       titleKey: 'betterStbTitle',
       descKey: 'betterStbDesc',
       linkKey: 'visitSite',
-      badgeUrl: 'https://github.com/fabian20ro/alt-stb/workflows/Deploy/badge.svg'
+      badgeUrl: 'https://github.com/fabian20ro/alt-infotb/workflows/Deploy/badge.svg'
     },
     {
       href: 'https://fabian20ro.github.io/propozitii-nostime/',
@@ -181,7 +181,7 @@ const translations = {
     recentActivity: 'Recent Activity',
     emotIdTitle: 'Emot-ID',
     emotIdDesc: 'An emotion identification tool.',
-    betterStbTitle: 'Another STB App',
+    betterStbTitle: 'Alt InfoTB',
     betterStbDesc:
       'A simpler alternative with all data on your phone and open source code. The goal is not to replace the official app, InfoTB.',
     imagePromptTitle: 'Image Prompt Expander',
@@ -262,7 +262,7 @@ const translations = {
     recentActivity: 'Activitate Recentă',
     emotIdTitle: 'Emot-ID',
     emotIdDesc: 'Instrument de identificare a emoțiilor.',
-    betterStbTitle: 'O altă aplicație STB',
+    betterStbTitle: 'Alt InfoTB',
     betterStbDesc:
       'O alternativă mai simplă, cu toate datele pe telefon și cod sursă deschis. Scopul nu este să înlocuiască aplicația oficială, InfoTB.',
     imagePromptTitle: 'Image Prompt Expander',
@@ -341,7 +341,7 @@ const translations = {
     recentActivity: 'Activité récente',
     emotIdTitle: 'Emot-ID',
     emotIdDesc: "Outil d'identification des émotions.",
-    betterStbTitle: 'Autre STB App',
+    betterStbTitle: 'Alt InfoTB',
     betterStbDesc:
       "Une alternative plus simple, avec toutes les données sur téléphone et le code source public. Le but n'est pas de remplacer l'application officielle, InfoTB.",
     imagePromptTitle: 'Image Prompt Expander',
@@ -418,7 +418,7 @@ const translations = {
     recentActivity: 'Actividad reciente',
     emotIdTitle: 'Emot-ID',
     emotIdDesc: 'Una herramienta para identificar emociones.',
-    betterStbTitle: 'Otra app de STB',
+    betterStbTitle: 'Alt InfoTB',
     betterStbDesc:
       'Una alternativa más sencilla, con todos los datos en el teléfono y código fuente público. El objetivo no es reemplazar la aplicación oficial, InfoTB.',
     imagePromptTitle: 'Expansor de prompts de imagen',
@@ -498,7 +498,7 @@ const translations = {
     recentActivity: 'Aktuelle Aktivitäten',
     emotIdTitle: 'Emot-ID',
     emotIdDesc: 'Ein Tool zur Identifizierung von Emotionen.',
-    betterStbTitle: 'Andere STB App',
+    betterStbTitle: 'Alt InfoTB',
     betterStbDesc:
       'Eine einfachere Alternative, mit allen Daten auf dem Telefon und Quellcode öffentlich. Das Ziel ist nicht, die offizielle App, InfoTB, zu ersetzen.',
     imagePromptTitle: 'Bild-Prompt-Erweiterer',
@@ -577,7 +577,7 @@ const translations = {
     recentActivity: 'Attività recente',
     emotIdTitle: 'Emot-ID',
     emotIdDesc: 'Uno strumento per identificare le emozioni.',
-    betterStbTitle: "Un'altra app STB",
+    betterStbTitle: 'Alt InfoTB',
     betterStbDesc:
       "Un'alternativa più semplice, con tutti i dati sul telefono e codice sorgente pubblico. L'obiettivo non è sostituire l'app ufficiale, InfoTB.",
     imagePromptTitle: 'Espansore di prompt per immagini',
@@ -656,7 +656,7 @@ const translations = {
     recentActivity: 'Atividade recente',
     emotIdTitle: 'Emot-ID',
     emotIdDesc: 'Uma ferramenta para identificar emoções.',
-    betterStbTitle: 'Outra app STB',
+    betterStbTitle: 'Alt InfoTB',
     betterStbDesc:
       'Uma alternativa mais simples, com todos os dados no telefone e código fonte público. O objetivo não é substituir a aplicação oficial, InfoTB.',
     imagePromptTitle: 'Expansor de prompts de imagem',

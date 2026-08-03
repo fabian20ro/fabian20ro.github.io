@@ -288,8 +288,8 @@ test('getBadgeActionsUrl idempotence — already-points-to-actions or bare-repo-
   const actionsUrl = 'https://github.com/fabian20ro/emot-id/actions';
   assert.strictEqual(getBadgeActionsUrl(actionsUrl), 'https://github.com/fabian20ro/emot-id', "idempotent: URL already at /actions returns bare repo base");
 
-  const badgeAtActions = 'https://github.com/fabian20ro/alt-stb/actions/workflows/Deploy/badge.svg';
-  assert.strictEqual(getBadgeActionsUrl(badgeAtActions), 'https://github.com/fabian20ro/alt-stb', "idempotent: URL inside /actions subtree returns bare repo base");
+  const badgeAtActions = 'https://github.com/fabian20ro/alt-infotb/actions/workflows/Deploy/badge.svg';
+  assert.strictEqual(getBadgeActionsUrl(badgeAtActions), 'https://github.com/fabian20ro/alt-infotb', "idempotent: URL inside /actions subtree returns bare repo base");
 
   // Regression: a badge URL that is itself the repo base (e.g. from manual config) must pass through unchanged.
   const bareBase = 'https://github.com/fabian20ro/pixel-article-reader';
