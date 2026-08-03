@@ -477,3 +477,11 @@
 **Outcome:** Success — the portfolio points to the verified Alt InfoTB Pages deployment.
 **Insight:** A project rename affects the external card's destination, badge source, displayed brand, and live-project test fixtures together.
 **Promoted to Lessons Learned:** No
+
+### 2026-08-03 — Update Random Passwords project destination
+
+**Context:** The disabled `password-generator` repository was recovered into the fresh `random-passwords` repository and its GitHub Pages path changed.
+**What happened:** Updated the project card destination and deployment badge to `random-passwords`, changed the displayed title to the new Random Passwords brand in every supported locale, and updated the corresponding badge URL fixture.
+**Outcome:** Success — the portfolio now targets the replacement repository and Pages path.
+**Insight:** Repository migrations require the card destination, status badge, localized brand, and URL fixture to move together.
+**Promoted to Lessons Learned:** No

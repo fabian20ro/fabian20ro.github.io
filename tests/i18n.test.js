@@ -35,7 +35,7 @@ test('t() returns Romanian translation when $lang ro', () => {
   setLang('en');
   assert.equal(t('title', 'ro'), 'Proiectele lui Fabian');
   assert.equal(t('liveProjects', 'ro'), 'Proiecte Live');
-  assert.equal(t('passwordGenTitle', 'ro'), 'Generator de Parole');
+  assert.equal(t('passwordGenTitle', 'ro'), 'Random Passwords');
 });
 
 test('t() falls back to English for unknown keys', () => {

@@ -71,13 +71,13 @@ const projectSections = {
         'https://github.com/fabian20ro/propozitii-nostime/workflows/Deploy%20Frontend%20to%20GitHub%20Pages/badge.svg'
     },
     {
-      href: 'https://fabian20ro.github.io/password-generator/',
+      href: 'https://fabian20ro.github.io/random-passwords/',
       icon: '🔐',
       titleKey: 'passwordGenTitle',
       descKey: 'passwordGenDesc',
       linkKey: 'visitSite',
       badgeUrl:
-        'https://github.com/fabian20ro/password-generator/workflows/Deploy%20to%20GitHub%20Pages/badge.svg'
+        'https://github.com/fabian20ro/random-passwords/workflows/Deploy%20to%20GitHub%20Pages/badge.svg'
     },
     {
       href: 'https://fabian20ro.github.io/pixel-article-reader/',
@@ -189,7 +189,7 @@ const translations = {
       'A tool that helps expand and enhance image generation prompts for better AI-generated images.',
     propositionsTitle: 'Absurd Propositions',
     propositionsDesc: 'Sentences made from random words, always absurd, sometimes funny.',
-    passwordGenTitle: 'Password Generator',
+    passwordGenTitle: 'Random Passwords',
     passwordGenDesc:
       'Generates cryptographically secure passwords using the Web Crypto API. Five strong passwords at a click.',
     articleVoiceTitle: 'Article Reader',
@@ -270,7 +270,7 @@ const translations = {
       'Instrument care ajută la extinderea și îmbunătățirea prompt-urilor pentru imagini generate de AI.',
     propositionsTitle: 'Propoziții Absurde',
     propositionsDesc: 'Propoziții din cuvinte aleatoare, mereu absurde, uneori amuzante.',
-    passwordGenTitle: 'Generator de Parole',
+    passwordGenTitle: 'Random Passwords',
     passwordGenDesc:
       'Generează parole sigure criptografic prin Web Crypto API. Cinci parole solide dintr-o singură apăsare.',
     articleVoiceTitle: 'Article Reader',
@@ -348,7 +348,7 @@ const translations = {
     imagePromptDesc: 'Un outil qui aide à améliorer les prompts pour images générées par IA.',
     propositionsTitle: 'Phrases absurdes',
     propositionsDesc: 'Des phrases aléatoires, toujours absurdes, parfois drôles.',
-    passwordGenTitle: 'Générateur de mot de passe',
+    passwordGenTitle: 'Random Passwords',
     passwordGenDesc:
       "Génère des mots de passe sûrs via l'API Web Crypto. Cinq mots de passe en un clic.",
     articleVoiceTitle: "Lecteur d'articles",
@@ -426,7 +426,7 @@ const translations = {
       'Una herramienta que ayuda a mejorar los prompts para imágenes generadas por IA.',
     propositionsTitle: 'Frases absurdas',
     propositionsDesc: 'Frases aleatorias, siempre absurdas, a veces nostálgicas.',
-    passwordGenTitle: 'Generador de contraseñas',
+    passwordGenTitle: 'Random Passwords',
     passwordGenDesc:
       'Genera contraseñas seguras mediante la API Web Crypto. Cinco contraseñas robustas con un clic.',
     articleVoiceTitle: 'Lector de artículos',
@@ -505,7 +505,7 @@ const translations = {
     imagePromptDesc: 'Ein Tool, das hilft, Prompts für KI-generierte Bilder zu verbessern.',
     propositionsTitle: 'Absurde Sätze',
     propositionsDesc: 'Zufällige Sätze, immer absurd, manchmal nostalgisch.',
-    passwordGenTitle: 'Passwortgenerator',
+    passwordGenTitle: 'Random Passwords',
     passwordGenDesc:
       'Generiert kryptografisch sichere Passwörter über die Web Crypto API. Fünf starke Passwörter mit einem Klick.',
     articleVoiceTitle: 'Artikel-Reader',
@@ -584,7 +584,7 @@ const translations = {
     imagePromptDesc: 'Uno strumento che aiuta a migliorare i prompt per immagini generate da IA.',
     propositionsTitle: 'Frasi assurde',
     propositionsDesc: 'Frasi casuali, sempre assurde, a volte nostalgiche.',
-    passwordGenTitle: 'Generatore di password',
+    passwordGenTitle: 'Random Passwords',
     passwordGenDesc:
       "Genera password sicure tramite l'API Web Crypto. Cinque password robuste con un clic.",
     articleVoiceTitle: 'Lettore di articoli',
@@ -663,7 +663,7 @@ const translations = {
     imagePromptDesc: 'Uma ferramenta que ajuda a melhorar os prompts para imagens geradas por IA.',
     propositionsTitle: 'Frases absurdas',
     propositionsDesc: 'Frases aleatórias, sempre absurdas, às vezes nostálgicas.',
-    passwordGenTitle: 'Gerador de senhas',
+    passwordGenTitle: 'Random Passwords',
     passwordGenDesc:
       'Gera senhas seguras através da API Web Crypto. Cinco senhas robustas com um clique.',
     articleVoiceTitle: 'Leitor de artigos',

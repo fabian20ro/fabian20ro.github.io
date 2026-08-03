@@ -48,8 +48,8 @@ try {
     'https://github.com/fabian20ro/propozitii-nostime/workflows/Deploy%20Frontend%20to%20GitHub%20Pages/badge.svg';
   assert.strictEqual(getBadgeActionsUrl(patternC), 'https://github.com/fabian20ro/propozitii-nostime/actions');
 
-  const patternD = 'https://github.com/fabian20ro/password-generator/workflows/Deploy%20to%20GitHub%20Pages/badge.svg';
-  assert.strictEqual(getBadgeActionsUrl(patternD), 'https://github.com/fabian20ro/password-generator/actions');
+  const patternD = 'https://github.com/fabian20ro/random-passwords/workflows/Deploy%20to%20GitHub%20Pages/badge.svg';
+  assert.strictEqual(getBadgeActionsUrl(patternD), 'https://github.com/fabian20ro/random-passwords/actions');
 
   const patternE = 'https://github.com/fabian20ro/pixel-article-reader/workflows/Deploy%20to%20GitHub%20Pages/badge.svg';
   assert.strictEqual(getBadgeActionsUrl(patternE), 'https://github.com/fabian20ro/pixel-article-reader/actions');
