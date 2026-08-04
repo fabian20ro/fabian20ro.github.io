@@ -46,6 +46,14 @@
 **Insight:** Planner + Linguist agent pattern continues to work well (third occurrence). WebFetch on raw GitHub URLs remains the way to read external READMEs.
 **Promoted to Lessons Learned:** No
 
+### 2026-08-04 — Rename Propoziții Absurde repository link
+
+**Context:** The disabled `propozitii-nostime` repository was replaced by `propozitii-absurde`, matching the existing portfolio title.
+**What happened:** Updated the live card destination, workflow badge repository, and badge-to-Actions URL fixture.
+**Outcome:** Success — lint and formatting passed; all 151 tests passed.
+**Insight:** Repository migration still requires the portfolio URL and badge fixture to move together even when localized display copy already matches the new brand.
+**Promoted to Lessons Learned:** No
+
 ### 2026-03-01 — Add Find The Book to live projects
 
 **Context:** Add the find-the-book PWA (book identification via camera OCR) to the portfolio's live projects list. Move Image Prompt Expander to end of list.

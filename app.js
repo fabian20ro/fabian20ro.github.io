@@ -62,13 +62,13 @@ const projectSections = {
       badgeUrl: 'https://github.com/fabian20ro/alt-infotb/workflows/Deploy/badge.svg'
     },
     {
-      href: 'https://fabian20ro.github.io/propozitii-nostime/',
+      href: 'https://fabian20ro.github.io/propozitii-absurde/',
       icon: '🇷🇴',
       titleKey: 'propositionsTitle',
       descKey: 'propositionsDesc',
       linkKey: 'visitSite',
       badgeUrl:
-        'https://github.com/fabian20ro/propozitii-nostime/workflows/Deploy%20Frontend%20to%20GitHub%20Pages/badge.svg'
+        'https://github.com/fabian20ro/propozitii-absurde/workflows/Deploy%20Frontend%20to%20GitHub%20Pages/badge.svg'
     },
     {
       href: 'https://fabian20ro.github.io/random-passwords/',
