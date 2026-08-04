@@ -67,6 +67,13 @@ try {
   const patternG = 'https://github.com/fabian20ro/browser-zodiac/workflows/Deploy%20to%20GitHub%20Pages/badge.svg';
   assert.strictEqual(getBadgeActionsUrl(patternG), 'https://github.com/fabian20ro/browser-zodiac/actions');
 
+  const patternBooking =
+    'https://github.com/fabian20ro/booking-exclusion-filter/workflows/Deploy%20to%20GitHub%20Pages/badge.svg';
+  assert.strictEqual(
+    getBadgeActionsUrl(patternBooking),
+    'https://github.com/fabian20ro/booking-exclusion-filter/actions'
+  );
+
   const patternH = 'https://github.com/fabian20ro/generator-rebus/workflows/Deploy%20Frontend%20to%20GitHub%20Pages/badge.svg';
   assert.strictEqual(getBadgeActionsUrl(patternH), 'https://github.com/fabian20ro/generator-rebus/actions');
 

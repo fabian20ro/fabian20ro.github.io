@@ -145,12 +145,14 @@ const projectSections = {
       liveSiteUrl: 'https://fabian20ro.github.io/word-rarity-classifier/'
     },
     {
-      href: 'https://github.com/fabian20ro/booking-filter-out',
+      href: 'https://github.com/fabian20ro/booking-exclusion-filter',
       icon: '🔍',
       titleKey: 'bookingTitle',
       descKey: 'bookingDesc',
       linkKey: 'viewGithub',
-      liveSiteUrl: 'https://fabian20ro.github.io/booking-filter-out/'
+      badgeUrl:
+        'https://github.com/fabian20ro/booking-exclusion-filter/workflows/Deploy%20to%20GitHub%20Pages/badge.svg',
+      liveSiteUrl: 'https://fabian20ro.github.io/booking-exclusion-filter/'
     },
     {
       href: 'https://github.com/fabian20ro/sudoku-python',
@@ -221,9 +223,9 @@ const translations = {
     wordRarityDesc: 'A classifier that scores and categorizes word rarity.',
     sudokuTitle: 'Sudoku Python',
     sudokuDesc: 'A Python-based Sudoku solver and generator.',
-    bookingTitle: 'Booking Filter',
+    bookingTitle: 'Booking Exclusion Filter',
     bookingDesc:
-      'A browser extension to filter booking.com results, removing locations that do not accept pets.',
+      'Save Booking.com properties to a local list and dim them in results, using a browser extension or mobile bookmarklet.',
     harnessManagerTitle: 'Harness Manager',
     harnessManagerDesc:
       'See which files your editor and configurations actually process in your Git projects.',
@@ -304,9 +306,9 @@ const translations = {
     wordRarityDesc: 'Clasificator care punctează și categorisește raritatea cuvintelor.',
     sudokuTitle: 'Sudoku Python',
     sudokuDesc: 'Rezolvă și generează puzzle-uri Sudoku, scris în Python.',
-    bookingTitle: 'Filtru de rezervări',
+    bookingTitle: 'Booking Exclusion Filter',
     bookingDesc:
-      'O extensie de browser pentru a filtra rezultatele booking.com, eliminând locațiile care nu acceptă animale de companie.',
+      'Salvează cazări de pe Booking.com într-o listă locală și estompează-le în rezultate, prin extensie sau bookmarklet mobil.',
     harnessManagerTitle: 'Harness Manager',
     harnessManagerDesc:
       'Vezi rapid ce fișiere procesează editorul și configurațiile tale în proiectele Git.',
@@ -385,8 +387,9 @@ const translations = {
     wordRarityDesc: 'Un classificateur qui évalue et catégorise la rareté des mots.',
     sudokuTitle: 'Sudoku Python',
     sudokuDesc: 'Un solveur et générateur de Sudoku en Python.',
-    bookingTitle: 'Filtre de réservation',
-    bookingDesc: 'Une extension pour filtrer les résultats de booking.com (lieux pet-friendly).',
+    bookingTitle: 'Booking Exclusion Filter',
+    bookingDesc:
+      'Extension et bookmarklet mobile pour garder une liste locale d’hébergements Booking.com et les griser dans les résultats.',
     harnessManagerTitle: 'Harness Manager',
     harnessManagerDesc: 'Visualisez quels fichiers votre éditeur traite dans vos projets Git.',
     visitSite: 'Visiter le site →',
@@ -467,9 +470,9 @@ const translations = {
     wordRarityDesc: 'Un clasificador que puntúa y categoriza la rareza de las palabras.',
     sudokuTitle: 'Sudoku Python',
     sudokuDesc: 'Un resolvedor y generador de Sudoku escrito en Python.',
-    bookingTitle: 'Filtro de reserva',
+    bookingTitle: 'Booking Exclusion Filter',
     bookingDesc:
-      'Una extensión de navegador para filtrar resultados de booking.com (lugares que aceptan mascotas).',
+      'Guarda alojamientos de Booking.com en una lista local y atenúalos en los resultados, con extensión o bookmarklet móvil.',
     harnessManagerTitle: 'Harness Manager',
     harnessManagerDesc:
       'Mira rápidamente qué archivos procesan tu editor y tus configuraciones en tus proyectos Git.',
@@ -549,9 +552,9 @@ const translations = {
     wordRarityDesc: 'Ein Klassifikator, der die Seltenheit von Wörtern bewertet und kategorisiert.',
     sudokuTitle: 'Sudoku Python',
     sudokuDesc: 'Ein in Python geschriebener Sudoku-Löser und Generator.',
-    bookingTitle: 'Buchungsfilter',
+    bookingTitle: 'Booking Exclusion Filter',
     bookingDesc:
-      'Eine Browser-Erweiterung, um Booking.com-Ergebnisse zu filtern (Orte, die Haustiere akzeptieren).',
+      'Booking.com-Unterkünfte lokal auflisten und in Ergebnissen ausgrauen – per Browser-Erweiterung oder mobilem Bookmarklet.',
     harnessManagerTitle: 'Harness Manager',
     harnessManagerDesc:
       'Sieh schnell, welche Dateien dein Editor und deine Konfigurationen in deinen Git-Projekten verarbeiten.',
@@ -631,9 +634,9 @@ const translations = {
     wordRarityDesc: 'Un classificatore che valuta e categorizza la rarità delle parole.',
     sudokuTitle: 'Sudoku Python',
     sudokuDesc: 'Un risolutore e generatore di Sudoku scritto in Python.',
-    bookingTitle: 'Filtro di prenotazione',
+    bookingTitle: 'Booking Exclusion Filter',
     bookingDesc:
-      "Un'estensione per il browser per filtrare i risultati di booking.com (luoghi che accettano animali domestici).",
+      'Salva le strutture di Booking.com in un elenco locale e attenuale nei risultati, con estensione o bookmarklet mobile.',
     harnessManagerTitle: 'Harness Manager',
     harnessManagerDesc:
       'Vedi rapidamente quali file il tuo editor e le tue configurazioni elaborano nei tuoi progetti Git.',
@@ -713,9 +716,9 @@ const translations = {
     wordRarityDesc: 'Um classificador que avalia e categoriza a raridade das palavras.',
     sudokuTitle: 'Sudoku Python',
     sudokuDesc: 'Um resolvedor e gerador de Sudoku escrito em Python.',
-    bookingTitle: 'Filtro de reserva',
+    bookingTitle: 'Booking Exclusion Filter',
     bookingDesc:
-      'Uma extensão de browser para filtrar resultados de booking.com (locais que aceitam animais de estimação).',
+      'Guarda alojamentos do Booking.com numa lista local e esbate-os nos resultados, com extensão ou bookmarklet móvel.',
     harnessManagerTitle: 'Harness Manager',
     harnessManagerDesc:
       'Vê rapidamente quais ficheiros o teu editor e as tuas configurações processam nos teus projetos Git.',

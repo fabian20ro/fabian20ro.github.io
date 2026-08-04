@@ -517,3 +517,11 @@
 **Outcome:** Success — the portfolio now targets the replacement repository and Pages path.
 **Insight:** Repository migrations require the card destination, status badge, localized brand, and URL fixture to move together.
 **Promoted to Lessons Learned:** No
+
+### 2026-08-04 — Update Booking Exclusion Filter project destination
+
+**Context:** The disabled `booking-filter-out` repository was recovered into the fresh `booking-exclusion-filter` repository and its GitHub Pages path changed.
+**What happened:** Updated the repository card, Pages destination, deployment badge, and focused badge fixture; changed the displayed title to Booking Exclusion Filter and corrected the product description in all seven supported locales.
+**Outcome:** Success — the portfolio now targets the replacement repository and Pages path.
+**Insight:** A repository migration is also a chance to replace stale portfolio copy with a precise description of the current product behavior.
+**Promoted to Lessons Learned:** No
