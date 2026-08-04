@@ -78,11 +78,11 @@ try {
   assert.strictEqual(getBadgeActionsUrl(patternH), 'https://github.com/fabian20ro/generator-rebus/actions');
 
   const patternI =
-    'https://github.com/fabian20ro/image-prompt-expander/actions/workflows/pages/pages-build-deployment/badge.svg';
+    'https://github.com/fabian20ro/prompt-to-image-variations/actions/workflows/pages/pages-build-deployment/badge.svg';
   // /actions prefix already present → return bare repo base (idempotence).
   assert.strictEqual(
     getBadgeActionsUrl(patternI),
-    'https://github.com/fabian20ro/image-prompt-expander'
+    'https://github.com/fabian20ro/prompt-to-image-variations'
   );
 
   // Test case 7: idempotence — bare repo base stays unchanged; URLs already under /actions resolve to the bare repo base (no double-nesting).

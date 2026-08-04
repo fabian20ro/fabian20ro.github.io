@@ -549,3 +549,11 @@
 **Outcome:** Success — the card now exposes only working repository and CI destinations.
 **Insight:** Repository-only projects should use their real CI badge instead of presenting a nonexistent Pages deployment as a live site.
 **Promoted to Lessons Learned:** No
+
+### 2026-08-04 — Update Prompt to Image Variations project destination
+
+**Context:** The disabled `image-prompt-expander` repository was recovered as `prompt-to-image-variations`, and the new name clarifies that one idea becomes multiple concrete visual variants.
+**What happened:** Updated the repository card, Pages URL, deployment badge, focused fixture, displayed title, and product description in all seven supported locales.
+**Outcome:** Success — the portfolio targets the replacement repository and accurately describes its idea-to-variations workflow.
+**Insight:** Migration copy should describe the product transformation, not merely substitute the repository slug.
+**Promoted to Lessons Learned:** No

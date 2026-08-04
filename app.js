@@ -127,14 +127,14 @@ const projectSections = {
   ],
   repositories: [
     {
-      href: 'https://github.com/fabian20ro/image-prompt-expander',
+      href: 'https://github.com/fabian20ro/prompt-to-image-variations',
       icon: '🎨',
       titleKey: 'imagePromptTitle',
       descKey: 'imagePromptDesc',
       linkKey: 'viewGithub',
       badgeUrl:
-        'https://github.com/fabian20ro/image-prompt-expander/actions/workflows/pages/pages-build-deployment/badge.svg',
-      liveSiteUrl: 'https://fabian20ro.github.io/image-prompt-expander/'
+        'https://github.com/fabian20ro/prompt-to-image-variations/actions/workflows/pages/pages-build-deployment/badge.svg',
+      liveSiteUrl: 'https://fabian20ro.github.io/prompt-to-image-variations/'
     },
     {
       href: 'https://github.com/fabian20ro/rarity-classificator',
@@ -188,9 +188,9 @@ const translations = {
     betterStbTitle: 'Alt InfoTB',
     betterStbDesc:
       'A simpler alternative with all data on your phone and open source code. The goal is not to replace the official app, InfoTB.',
-    imagePromptTitle: 'Image Prompt Expander',
+    imagePromptTitle: 'Prompt to Image Variations',
     imagePromptDesc:
-      'A tool that helps expand and enhance image generation prompts for better AI-generated images.',
+      'Turns one image idea into multiple concrete prompt variations, then can render them locally with ERNIE-Image-Turbo.',
     propositionsTitle: 'Absurd Propositions',
     propositionsDesc: 'Sentences made from random words, always absurd, sometimes funny.',
     passwordGenTitle: 'Random Passwords',
@@ -269,9 +269,9 @@ const translations = {
     betterStbTitle: 'Alt InfoTB',
     betterStbDesc:
       'O alternativă mai simplă, cu toate datele pe telefon și cod sursă deschis. Scopul nu este să înlocuiască aplicația oficială, InfoTB.',
-    imagePromptTitle: 'Image Prompt Expander',
+    imagePromptTitle: 'Prompt to Image Variations',
     imagePromptDesc:
-      'Instrument care ajută la extinderea și îmbunătățirea prompt-urilor pentru imagini generate de AI.',
+      'Transformă o idee de imagine în mai multe variații concrete de prompt, apoi le poate reda local cu ERNIE-Image-Turbo.',
     propositionsTitle: 'Propoziții Absurde',
     propositionsDesc: 'Propoziții din cuvinte aleatoare, mereu absurde, uneori amuzante.',
     passwordGenTitle: 'Random Passwords',
@@ -348,8 +348,9 @@ const translations = {
     betterStbTitle: 'Alt InfoTB',
     betterStbDesc:
       "Une alternative plus simple, avec toutes les données sur téléphone et le code source public. Le but n'est pas de remplacer l'application officielle, InfoTB.",
-    imagePromptTitle: 'Image Prompt Expander',
-    imagePromptDesc: 'Un outil qui aide à améliorer les prompts pour images générées par IA.',
+    imagePromptTitle: 'Prompt to Image Variations',
+    imagePromptDesc:
+      'Transforme une idée d’image en plusieurs variantes de prompt concrètes, puis peut les générer localement avec ERNIE-Image-Turbo.',
     propositionsTitle: 'Phrases absurdes',
     propositionsDesc: 'Des phrases aléatoires, toujours absurdes, parfois drôles.',
     passwordGenTitle: 'Random Passwords',
@@ -427,9 +428,9 @@ const translations = {
     betterStbTitle: 'Alt InfoTB',
     betterStbDesc:
       'Una alternativa más sencilla, con todos los datos en el teléfono y código fuente público. El objetivo no es reemplazar la aplicación oficial, InfoTB.',
-    imagePromptTitle: 'Expansor de prompts de imagen',
+    imagePromptTitle: 'Prompt to Image Variations',
     imagePromptDesc:
-      'Una herramienta que ayuda a mejorar los prompts para imágenes generadas por IA.',
+      'Convierte una idea de imagen en varias variantes concretas de prompt y puede generarlas localmente con ERNIE-Image-Turbo.',
     propositionsTitle: 'Frases absurdas',
     propositionsDesc: 'Frases aleatorias, siempre absurdas, a veces nostálgicas.',
     passwordGenTitle: 'Random Passwords',
@@ -507,8 +508,9 @@ const translations = {
     betterStbTitle: 'Alt InfoTB',
     betterStbDesc:
       'Eine einfachere Alternative, mit allen Daten auf dem Telefon und Quellcode öffentlich. Das Ziel ist nicht, die offizielle App, InfoTB, zu ersetzen.',
-    imagePromptTitle: 'Bild-Prompt-Erweiterer',
-    imagePromptDesc: 'Ein Tool, das hilft, Prompts für KI-generierte Bilder zu verbessern.',
+    imagePromptTitle: 'Prompt to Image Variations',
+    imagePromptDesc:
+      'Verwandelt eine Bildidee in mehrere konkrete Prompt-Varianten und kann sie anschließend lokal mit ERNIE-Image-Turbo erzeugen.',
     propositionsTitle: 'Absurde Sätze',
     propositionsDesc: 'Zufällige Sätze, immer absurd, manchmal nostalgisch.',
     passwordGenTitle: 'Random Passwords',
@@ -586,8 +588,9 @@ const translations = {
     betterStbTitle: 'Alt InfoTB',
     betterStbDesc:
       "Un'alternativa più semplice, con tutti i dati sul telefono e codice sorgente pubblico. L'obiettivo non è sostituire l'app ufficiale, InfoTB.",
-    imagePromptTitle: 'Espansore di prompt per immagini',
-    imagePromptDesc: 'Uno strumento che aiuta a migliorare i prompt per immagini generate da IA.',
+    imagePromptTitle: 'Prompt to Image Variations',
+    imagePromptDesc:
+      'Trasforma un’idea per un’immagine in più varianti concrete di prompt e può generarle localmente con ERNIE-Image-Turbo.',
     propositionsTitle: 'Frasi assurde',
     propositionsDesc: 'Frasi casuali, sempre assurde, a volte nostalgiche.',
     passwordGenTitle: 'Random Passwords',
@@ -665,8 +668,9 @@ const translations = {
     betterStbTitle: 'Alt InfoTB',
     betterStbDesc:
       'Uma alternativa mais simples, com todos os dados no telefone e código fonte público. O objetivo não é substituir a aplicação oficial, InfoTB.',
-    imagePromptTitle: 'Expansor de prompts de imagem',
-    imagePromptDesc: 'Uma ferramenta que ajuda a melhorar os prompts para imagens geradas por IA.',
+    imagePromptTitle: 'Prompt to Image Variations',
+    imagePromptDesc:
+      'Transforma uma ideia de imagem em várias variações concretas de prompt e pode gerá-las localmente com ERNIE-Image-Turbo.',
     propositionsTitle: 'Frases absurdas',
     propositionsDesc: 'Frases aleatórias, sempre absurdas, às vezes nostálgicas.',
     passwordGenTitle: 'Random Passwords',
