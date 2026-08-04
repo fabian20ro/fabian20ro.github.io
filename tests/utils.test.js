@@ -58,8 +58,8 @@ try {
     'https://github.com/fabian20ro/goldilocks-engine/actions'
   );
 
-  const patternE = 'https://github.com/fabian20ro/pixel-article-reader/workflows/Deploy%20to%20GitHub%20Pages/badge.svg';
-  assert.strictEqual(getBadgeActionsUrl(patternE), 'https://github.com/fabian20ro/pixel-article-reader/actions');
+  const patternE = 'https://github.com/fabian20ro/listen-to-articles/workflows/Deploy%20to%20GitHub%20Pages/badge.svg';
+  assert.strictEqual(getBadgeActionsUrl(patternE), 'https://github.com/fabian20ro/listen-to-articles/actions');
 
   const patternF = 'https://github.com/fabian20ro/book-finder/workflows/Deploy%20to%20GitHub%20Pages/badge.svg';
   assert.strictEqual(getBadgeActionsUrl(patternF), 'https://github.com/fabian20ro/book-finder/actions');

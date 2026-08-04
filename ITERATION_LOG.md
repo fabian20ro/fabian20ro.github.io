@@ -533,3 +533,11 @@
 **Outcome:** Success — the portfolio reflects the current maintained-project priorities.
 **Insight:** Retired project cards should be removed together with metadata that becomes unreachable from the project lists.
 **Promoted to Lessons Learned:** No
+
+### 2026-08-04 — Update Listen to Articles project destination
+
+**Context:** The disabled `pixel-article-reader` repository was recovered into the fresh `listen-to-articles` repository and its GitHub Pages path changed.
+**What happened:** Updated the project card destination, deployment badge, localized title value, and live-project URL fixtures to the Listen to Articles identity.
+**Outcome:** Success — the portfolio now targets the replacement repository and Pages path.
+**Insight:** Repository migrations require the card destination, status badge, displayed brand, and URL fixtures to move together.
+**Promoted to Lessons Learned:** No

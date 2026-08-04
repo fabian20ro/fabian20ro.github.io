@@ -80,13 +80,13 @@ const projectSections = {
         'https://github.com/fabian20ro/random-passwords/workflows/Deploy%20to%20GitHub%20Pages/badge.svg'
     },
     {
-      href: 'https://fabian20ro.github.io/pixel-article-reader/',
+      href: 'https://fabian20ro.github.io/listen-to-articles/',
       icon: '🔊',
       titleKey: 'articleVoiceTitle',
       descKey: 'articleVoiceDesc',
       linkKey: 'visitSite',
       badgeUrl:
-        'https://github.com/fabian20ro/pixel-article-reader/workflows/Deploy%20to%20GitHub%20Pages/badge.svg'
+        'https://github.com/fabian20ro/listen-to-articles/workflows/Deploy%20to%20GitHub%20Pages/badge.svg'
     },
     {
       href: 'https://fabian20ro.github.io/book-finder/',
@@ -198,7 +198,7 @@ const translations = {
     goldilocksEngineTitle: 'The Goldilocks Engine',
     goldilocksEngineDesc:
       'A portrait-first incremental systems game about building AI infrastructure without losing sight of human purpose.',
-    articleVoiceTitle: 'Article Reader',
+    articleVoiceTitle: 'Listen to Articles',
     articleVoiceDesc:
       'Paste an article URL, read a clean version, or listen to it aloud. Extracts content, renders it as markdown, and speaks it using on-device TTS — with speed control, paragraph skip, and offline support.',
     findBookTitle: 'Book Finder',
@@ -279,7 +279,7 @@ const translations = {
     goldilocksEngineTitle: 'The Goldilocks Engine',
     goldilocksEngineDesc:
       'Un joc incremental creat pentru ecrane verticale, despre construirea infrastructurii AI fără a pierde din vedere scopul uman.',
-    articleVoiceTitle: 'Article Reader',
+    articleVoiceTitle: 'Listen to Articles',
     articleVoiceDesc:
       'Lipește un URL de articol, citește o versiune curată sau ascultă-l. Extrage conținutul, îl redă ca markdown și îl citește cu vocea dispozitivului — cu control de viteză, salt între paragrafe și funcționare offline.',
     findBookTitle: 'Book Finder',
@@ -357,7 +357,7 @@ const translations = {
     goldilocksEngineTitle: 'The Goldilocks Engine',
     goldilocksEngineDesc:
       "Un jeu incrémental pensé pour le format portrait, où vous construisez une infrastructure d'IA sans perdre de vue l'objectif humain.",
-    articleVoiceTitle: "Lecteur d'articles",
+    articleVoiceTitle: 'Listen to Articles',
     articleVoiceDesc:
       "Collez une URL, lisez une version propre ou écoutez-la (TTS). Extrait le contenu en markdown et supporte l'usage hors ligne.",
     findBookTitle: 'Book Finder',
@@ -437,7 +437,7 @@ const translations = {
     goldilocksEngineTitle: 'The Goldilocks Engine',
     goldilocksEngineDesc:
       'Un juego incremental en formato vertical sobre construir infraestructura de IA sin perder de vista el propósito humano.',
-    articleVoiceTitle: 'Lector de artículos',
+    articleVoiceTitle: 'Listen to Articles',
     articleVoiceDesc:
       'Pega una URL de artículo, lee una versión limpia o escúchala. Extrae el contenido, lo renderiza como markdown y lo lee con la voz del dispositivo — con control de velocidad, salto de párrafo y soporte sin conexión.',
     findBookTitle: 'Book Finder',
@@ -516,7 +516,7 @@ const translations = {
     goldilocksEngineTitle: 'The Goldilocks Engine',
     goldilocksEngineDesc:
       'Ein für Hochformat entwickeltes inkrementelles Spiel über den Aufbau von KI-Infrastruktur, ohne den menschlichen Zweck aus den Augen zu verlieren.',
-    articleVoiceTitle: 'Artikel-Reader',
+    articleVoiceTitle: 'Listen to Articles',
     articleVoiceDesc:
       'Füge eine Artikel-URL ein, lese eine saubere Version oder höre sie dir an. Extrahiert den Inhalt, rendert ihn als Markdown und liest ihn mit der Stimme des Geräts vor — mit Geschwindigkeitssteuerung, Absatzsprung und Offline-Unterstützung.',
     findBookTitle: 'Book Finder',
@@ -595,7 +595,7 @@ const translations = {
     goldilocksEngineTitle: 'The Goldilocks Engine',
     goldilocksEngineDesc:
       'Un gioco incrementale pensato per il formato verticale, sulla costruzione di infrastrutture IA senza perdere di vista lo scopo umano.',
-    articleVoiceTitle: 'Lettore di articoli',
+    articleVoiceTitle: 'Listen to Articles',
     articleVoiceDesc:
       "Incolla l'URL di un articolo, leggi una versione pulita o ascoltala. Estrae il contenuto, lo renderizza come markdown e lo legge con la voce del dispositivo — con controllo della velocità, salto di paragrafo e supporto offline.",
     findBookTitle: 'Book Finder',
@@ -674,7 +674,7 @@ const translations = {
     goldilocksEngineTitle: 'The Goldilocks Engine',
     goldilocksEngineDesc:
       'Um jogo incremental em formato vertical sobre construir infraestrutura de IA sem perder de vista o propósito humano.',
-    articleVoiceTitle: 'Leitor de artigos',
+    articleVoiceTitle: 'Listen to Articles',
     articleVoiceDesc:
       'Cola a URL de um artigo, lê uma versão limpa ou ouve-a. Extrai o conteúdo, renderiza-o como markdown e lê-o com a voz do dispositivo — com controlo de velocidade, salto de parágrafo e suporte offline.',
     findBookTitle: 'Book Finder',

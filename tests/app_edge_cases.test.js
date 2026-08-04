@@ -292,7 +292,7 @@ test('getBadgeActionsUrl idempotence — already-points-to-actions or bare-repo-
   assert.strictEqual(getBadgeActionsUrl(badgeAtActions), 'https://github.com/fabian20ro/alt-infotb', "idempotent: URL inside /actions subtree returns bare repo base");
 
   // Regression: a badge URL that is itself the repo base (e.g. from manual config) must pass through unchanged.
-  const bareBase = 'https://github.com/fabian20ro/pixel-article-reader';
+  const bareBase = 'https://github.com/fabian20ro/listen-to-articles';
   assert.strictEqual(getBadgeActionsUrl(bareBase), bareBase, "idempotent: bare repo base URL returns itself");
 });
 
