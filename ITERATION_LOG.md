@@ -509,3 +509,11 @@
 **Outcome:** Success — the portfolio now targets the replacement repository and Pages path.
 **Insight:** Repository migrations require the card destination, status badge, localized brand, and URL fixture to move together.
 **Promoted to Lessons Learned:** No
+
+### 2026-08-04 — Update Browser Zodiac project destination
+
+**Context:** The disabled `horror-scope` repository was recovered into the fresh `browser-zodiac` repository and its GitHub Pages path changed.
+**What happened:** Updated the project card destination and deployment badge to `browser-zodiac`, changed the displayed title to the Browser Zodiac brand in every supported locale, and updated the corresponding badge URL fixture.
+**Outcome:** Success — the portfolio now targets the replacement repository and Pages path.
+**Insight:** Repository migrations require the card destination, status badge, localized brand, and URL fixture to move together.
+**Promoted to Lessons Learned:** No

@@ -64,8 +64,8 @@ try {
   const patternF = 'https://github.com/fabian20ro/book-finder/workflows/Deploy%20to%20GitHub%20Pages/badge.svg';
   assert.strictEqual(getBadgeActionsUrl(patternF), 'https://github.com/fabian20ro/book-finder/actions');
 
-  const patternG = 'https://github.com/fabian20ro/horror-scope/workflows/Deploy%20to%20GitHub%20Pages/badge.svg';
-  assert.strictEqual(getBadgeActionsUrl(patternG), 'https://github.com/fabian20ro/horror-scope/actions');
+  const patternG = 'https://github.com/fabian20ro/browser-zodiac/workflows/Deploy%20to%20GitHub%20Pages/badge.svg';
+  assert.strictEqual(getBadgeActionsUrl(patternG), 'https://github.com/fabian20ro/browser-zodiac/actions');
 
   const patternH = 'https://github.com/fabian20ro/generator-rebus/workflows/Deploy%20Frontend%20to%20GitHub%20Pages/badge.svg';
   assert.strictEqual(getBadgeActionsUrl(patternH), 'https://github.com/fabian20ro/generator-rebus/actions');

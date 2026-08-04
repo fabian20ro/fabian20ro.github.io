@@ -107,13 +107,13 @@ const projectSections = {
         'https://github.com/fabian20ro/book-finder/workflows/Deploy%20to%20GitHub%20Pages/badge.svg'
     },
     {
-      href: 'https://fabian20ro.github.io/horror-scope/',
+      href: 'https://fabian20ro.github.io/browser-zodiac/',
       icon: '🔮',
       titleKey: 'horrorScopeTitle',
       descKey: 'horrorScopeDesc',
       linkKey: 'visitSite',
       badgeUrl:
-        'https://github.com/fabian20ro/horror-scope/workflows/Deploy%20to%20GitHub%20Pages/badge.svg'
+        'https://github.com/fabian20ro/browser-zodiac/workflows/Deploy%20to%20GitHub%20Pages/badge.svg'
     },
     {
       href: 'https://fabian20ro.github.io/generator-rebus/',
@@ -210,7 +210,7 @@ const translations = {
     findBookTitle: 'Book Finder',
     findBookDesc:
       'Point your camera at a bookshelf to identify books instantly. No install, no server.',
-    horrorScopeTitle: 'Horror-Scope',
+    horrorScopeTitle: 'Browser Zodiac',
     horrorScopeDesc:
       "Your browser's fingerprint determines your zodiac sign. The stars didn't ask for your consent.",
     generatorRebusTitle: 'Rebus Generator',
@@ -294,7 +294,7 @@ const translations = {
     findBookTitle: 'Book Finder',
     findBookDesc:
       'Îndreaptă camera spre un raft și identifică cărțile pe loc. Funcționează direct în browser.',
-    horrorScopeTitle: 'Horror-Scope',
+    horrorScopeTitle: 'Browser Zodiac',
     horrorScopeDesc: 'Amprenta browser-ului tău îți decide zodia. Astrele nu ți-au cerut acordul.',
     generatorRebusTitle: 'Generator de Rebusuri',
     generatorRebusDesc: 'Completează rebusuri cu cuvinte din dicționarul de scrabble.',
@@ -374,7 +374,7 @@ const translations = {
       "Collez une URL, lisez une version propre ou écoutez-la (TTS). Extrait le contenu en markdown et supporte l'usage hors ligne.",
     findBookTitle: 'Book Finder',
     findBookDesc: 'Pointez la caméra vers une étagère pour identifier les livres instantanément.',
-    horrorScopeTitle: 'Horror-Scope',
+    horrorScopeTitle: 'Browser Zodiac',
     horrorScopeDesc:
       'Votre navigateur détermine votre signe astrologique. Les étoiles ne vous ont pas demandé votre avis.',
     generatorRebusTitle: 'Générateur de rébus',
@@ -456,7 +456,7 @@ const translations = {
     findBookTitle: 'Book Finder',
     findBookDesc:
       'Apunta la cámara a un estante para identificar los libros al instante. Sin instalar nada, sin servidor.',
-    horrorScopeTitle: 'Horror-Scope',
+    horrorScopeTitle: 'Browser Zodiac',
     horrorScopeDesc:
       'La huella de tu navegador determina tu signo zodiacal. Las estrellas no te han pedido tu consentimiento.',
     generatorRebusTitle: 'Generador de rebus',
@@ -538,7 +538,7 @@ const translations = {
     findBookTitle: 'Book Finder',
     findBookDesc:
       'Richte die Kamera auf ein Bücherregal, um Bücher sofort zu identifizieren. Keine Installation, kein Server.',
-    horrorScopeTitle: 'Horror-Scope',
+    horrorScopeTitle: 'Browser Zodiac',
     horrorScopeDesc:
       'Der Fingerabdruck deines Browsers bestimmt dein Sternzeichen. Die Sterne haben deine Zustimmung nicht eingeholt.',
     generatorRebusTitle: 'Rebus-Generator',
@@ -620,7 +620,7 @@ const translations = {
     findBookTitle: 'Book Finder',
     findBookDesc:
       'Punta la telecamera su uno scaffale per identificare i libri istantaneamente. Senza installazione, senza server.',
-    horrorScopeTitle: 'Horror-Scope',
+    horrorScopeTitle: 'Browser Zodiac',
     horrorScopeDesc:
       "L'impronta del tuo browser determina il tuo segno zodiacale. Le stelle non ti hanno chiesto il consenso.",
     generatorRebusTitle: 'Generatore di rebus',
@@ -702,7 +702,7 @@ const translations = {
     findBookTitle: 'Book Finder',
     findBookDesc:
       'Aponta a câmara para uma estante para identificar os livros instantaneamente. Sem instalação, sem servidor.',
-    horrorScopeTitle: 'Horror-Scope',
+    horrorScopeTitle: 'Browser Zodiac',
     horrorScopeDesc:
       'A impressão do teu browser determina o teu signo zodiacal. As estrelas não te pediram o consentimento.',
     generatorRebusTitle: 'Gerador de rebus',
