@@ -80,15 +80,6 @@ const projectSections = {
         'https://github.com/fabian20ro/random-passwords/workflows/Deploy%20to%20GitHub%20Pages/badge.svg'
     },
     {
-      href: 'https://fabian20ro.github.io/goldilocks-engine/',
-      icon: '⚖️',
-      titleKey: 'goldilocksEngineTitle',
-      descKey: 'goldilocksEngineDesc',
-      linkKey: 'visitSite',
-      badgeUrl:
-        'https://github.com/fabian20ro/goldilocks-engine/workflows/Deploy%20GitHub%20Pages/badge.svg'
-    },
-    {
       href: 'https://fabian20ro.github.io/pixel-article-reader/',
       icon: '🔊',
       titleKey: 'articleVoiceTitle',
@@ -123,6 +114,15 @@ const projectSections = {
       linkKey: 'visitSite',
       badgeUrl:
         'https://github.com/fabian20ro/generator-rebus/workflows/Deploy%20Frontend%20to%20GitHub%20Pages/badge.svg'
+    },
+    {
+      href: 'https://fabian20ro.github.io/goldilocks-engine/',
+      icon: '⚖️',
+      titleKey: 'goldilocksEngineTitle',
+      descKey: 'goldilocksEngineDesc',
+      linkKey: 'visitSite',
+      badgeUrl:
+        'https://github.com/fabian20ro/goldilocks-engine/workflows/Deploy%20GitHub%20Pages/badge.svg'
     }
   ],
   repositories: [
@@ -171,14 +171,6 @@ const projectSections = {
       badgeUrl:
         'https://github.com/fabian20ro/generator-rebus/workflows/Deploy%20Frontend%20to%20GitHub%20Pages/badge.svg',
       liveSiteUrl: 'https://fabian20ro.github.io/generator-rebus/'
-    },
-    {
-      href: 'https://github.com/fabian20ro/harness-manager',
-      icon: '⚙️',
-      titleKey: 'harnessManagerTitle',
-      descKey: 'harnessManagerDesc',
-      linkKey: 'viewGithub',
-      liveSiteUrl: null
     }
   ]
 };
@@ -226,9 +218,6 @@ const translations = {
     bookingTitle: 'Booking Exclusion Filter',
     bookingDesc:
       'Save Booking.com properties to a local list and dim them in results, using a browser extension or mobile bookmarklet.',
-    harnessManagerTitle: 'Harness Manager',
-    harnessManagerDesc:
-      'See which files your editor and configurations actually process in your Git projects.',
     visitSite: 'Visit site →',
     viewGithub: 'View on GitHub →',
     copy: 'Copy link',
@@ -309,9 +298,6 @@ const translations = {
     bookingTitle: 'Booking Exclusion Filter',
     bookingDesc:
       'Salvează cazări de pe Booking.com într-o listă locală și estompează-le în rezultate, prin extensie sau bookmarklet mobil.',
-    harnessManagerTitle: 'Harness Manager',
-    harnessManagerDesc:
-      'Vezi rapid ce fișiere procesează editorul și configurațiile tale în proiectele Git.',
     visitSite: 'Vizitează →',
     viewGithub: 'Vezi pe GitHub →',
     viewAllGithub: 'Vezi toate proiectele pe GitHub →',
@@ -390,8 +376,6 @@ const translations = {
     bookingTitle: 'Booking Exclusion Filter',
     bookingDesc:
       'Extension et bookmarklet mobile pour garder une liste locale d’hébergements Booking.com et les griser dans les résultats.',
-    harnessManagerTitle: 'Harness Manager',
-    harnessManagerDesc: 'Visualisez quels fichiers votre éditeur traite dans vos projets Git.',
     visitSite: 'Visiter le site →',
     viewGithub: 'Voir sur GitHub →',
     viewAllGithub: 'Voir tous les projets sur GitHub →',
@@ -473,9 +457,6 @@ const translations = {
     bookingTitle: 'Booking Exclusion Filter',
     bookingDesc:
       'Guarda alojamientos de Booking.com en una lista local y atenúalos en los resultados, con extensión o bookmarklet móvil.',
-    harnessManagerTitle: 'Harness Manager',
-    harnessManagerDesc:
-      'Mira rápidamente qué archivos procesan tu editor y tus configuraciones en tus proyectos Git.',
     visitSite: 'Visitar sitio →',
     viewGithub: 'Ver en GitHub →',
     viewAllGithub: 'Ver todos los proyectos en GitHub →',
@@ -555,9 +536,6 @@ const translations = {
     bookingTitle: 'Booking Exclusion Filter',
     bookingDesc:
       'Booking.com-Unterkünfte lokal auflisten und in Ergebnissen ausgrauen – per Browser-Erweiterung oder mobilem Bookmarklet.',
-    harnessManagerTitle: 'Harness Manager',
-    harnessManagerDesc:
-      'Sieh schnell, welche Dateien dein Editor und deine Konfigurationen in deinen Git-Projekten verarbeiten.',
     visitSite: 'Website besuchen →',
     viewGithub: 'Auf GitHub ansehen →',
     viewAllGithub: 'Alle Projekte auf GitHub ansehen →',
@@ -637,9 +615,6 @@ const translations = {
     bookingTitle: 'Booking Exclusion Filter',
     bookingDesc:
       'Salva le strutture di Booking.com in un elenco locale e attenuale nei risultati, con estensione o bookmarklet mobile.',
-    harnessManagerTitle: 'Harness Manager',
-    harnessManagerDesc:
-      'Vedi rapidamente quali file il tuo editor e le tue configurazioni elaborano nei tuoi progetti Git.',
     visitSite: 'Visita il sito →',
     viewGithub: 'Vedi su GitHub →',
     viewAllGithub: 'Vedi tutti i progetti su GitHub →',
@@ -719,9 +694,6 @@ const translations = {
     bookingTitle: 'Booking Exclusion Filter',
     bookingDesc:
       'Guarda alojamentos do Booking.com numa lista local e esbate-os nos resultados, com extensão ou bookmarklet móvel.',
-    harnessManagerTitle: 'Harness Manager',
-    harnessManagerDesc:
-      'Vê rapidamente quais ficheiros o teu editor e as tuas configurações processam nos teus projetos Git.',
     visitSite: 'Visitar site →',
     viewGithub: 'Ver no GitHub →',
     viewAllGithub: 'Ver todos os projetos no GitHub →',

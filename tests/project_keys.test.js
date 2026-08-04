@@ -40,7 +40,6 @@ test('projectSections shape contract', () => {
     if (section.liveSiteUrl !== undefined && section.liveSiteUrl !== null) {
       assert.strictEqual(typeof section.liveSiteUrl, 'string', `repo ${i}: liveSiteUrl must be string when present`);
     }
-    // liveSiteUrl may legitimately be null (e.g. harnessManager) — that is valid
   });
 });
 

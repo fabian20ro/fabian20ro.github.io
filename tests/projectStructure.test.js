@@ -31,7 +31,7 @@ try {
 
   // Test structural invariants
   const expectedLiveCount = 9;
-  const expectedRepoCount = 6;
+  const expectedRepoCount = 5;
   assert(
     projectSections.liveProjects.length === expectedLiveCount,
     'Expected ' + expectedLiveCount + ' live projects'
@@ -39,6 +39,10 @@ try {
   assert(
     projectSections.repositories.length === expectedRepoCount,
     'Expected ' + expectedRepoCount + ' repositories'
+  );
+  assert(
+    projectSections.liveProjects.at(-1).titleKey === 'goldilocksEngineTitle',
+    'Goldilocks Engine should be the final live project'
   );
 
   // hrefs unique within each section and no cross-list overlap

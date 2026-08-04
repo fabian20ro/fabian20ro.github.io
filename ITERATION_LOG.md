@@ -525,3 +525,11 @@
 **Outcome:** Success — the portfolio now targets the replacement repository and Pages path.
 **Insight:** A repository migration is also a chance to replace stale portfolio copy with a precise description of the current product behavior.
 **Promoted to Lessons Learned:** No
+
+### 2026-08-04 — Curate visible project lists
+
+**Context:** Harness Manager is no longer maintained or relevant to the public portfolio, and Goldilocks Engine should close the live-project list.
+**What happened:** Removed the Harness Manager repository card and its now-unused translation keys, then moved Goldilocks Engine after Rebus Generator as the final live project.
+**Outcome:** Success — the portfolio reflects the current maintained-project priorities.
+**Insight:** Retired project cards should be removed together with metadata that becomes unreachable from the project lists.
+**Promoted to Lessons Learned:** No
