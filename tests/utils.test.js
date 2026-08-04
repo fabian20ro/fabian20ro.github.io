@@ -51,6 +51,13 @@ try {
   const patternD = 'https://github.com/fabian20ro/random-passwords/workflows/Deploy%20to%20GitHub%20Pages/badge.svg';
   assert.strictEqual(getBadgeActionsUrl(patternD), 'https://github.com/fabian20ro/random-passwords/actions');
 
+  const patternGoldilocks =
+    'https://github.com/fabian20ro/goldilocks-engine/workflows/Deploy%20GitHub%20Pages/badge.svg';
+  assert.strictEqual(
+    getBadgeActionsUrl(patternGoldilocks),
+    'https://github.com/fabian20ro/goldilocks-engine/actions'
+  );
+
   const patternE = 'https://github.com/fabian20ro/pixel-article-reader/workflows/Deploy%20to%20GitHub%20Pages/badge.svg';
   assert.strictEqual(getBadgeActionsUrl(patternE), 'https://github.com/fabian20ro/pixel-article-reader/actions');
 

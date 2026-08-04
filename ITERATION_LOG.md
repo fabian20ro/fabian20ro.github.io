@@ -485,3 +485,11 @@
 **Outcome:** Success — the portfolio now targets the replacement repository and Pages path.
 **Insight:** Repository migrations require the card destination, status badge, localized brand, and URL fixture to move together.
 **Promoted to Lessons Learned:** No
+
+### 2026-08-04 — Add The Goldilocks Engine
+
+**Context:** The disabled `goldlocks-engine` repository was recovered under its intended `goldilocks-engine` name and had no portfolio entry.
+**What happened:** Added a live-project card with the corrected Pages destination, deployment badge, unique icon, and localized description across all seven supported languages; added a focused badge URL fixture.
+**Outcome:** Success — lint, formatting, and all 151 tests passed; deployment verification continues after push.
+**Insight:** A newly indexed migrated project needs the same destination, status, localization, and fixture coverage as an existing renamed card.
+**Promoted to Lessons Learned:** No

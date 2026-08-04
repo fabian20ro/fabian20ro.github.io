@@ -30,7 +30,7 @@ try {
   });
 
   // Test structural invariants
-  const expectedLiveCount = 8;
+  const expectedLiveCount = 9;
   const expectedRepoCount = 6;
   assert(
     projectSections.liveProjects.length === expectedLiveCount,

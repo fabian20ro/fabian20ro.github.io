@@ -80,6 +80,15 @@ const projectSections = {
         'https://github.com/fabian20ro/random-passwords/workflows/Deploy%20to%20GitHub%20Pages/badge.svg'
     },
     {
+      href: 'https://fabian20ro.github.io/goldilocks-engine/',
+      icon: '⚖️',
+      titleKey: 'goldilocksEngineTitle',
+      descKey: 'goldilocksEngineDesc',
+      linkKey: 'visitSite',
+      badgeUrl:
+        'https://github.com/fabian20ro/goldilocks-engine/workflows/Deploy%20GitHub%20Pages/badge.svg'
+    },
+    {
       href: 'https://fabian20ro.github.io/pixel-article-reader/',
       icon: '🔊',
       titleKey: 'articleVoiceTitle',
@@ -192,6 +201,9 @@ const translations = {
     passwordGenTitle: 'Random Passwords',
     passwordGenDesc:
       'Generates cryptographically secure passwords using the Web Crypto API. Five strong passwords at a click.',
+    goldilocksEngineTitle: 'The Goldilocks Engine',
+    goldilocksEngineDesc:
+      'A portrait-first incremental systems game about building AI infrastructure without losing sight of human purpose.',
     articleVoiceTitle: 'Article Reader',
     articleVoiceDesc:
       'Paste an article URL, read a clean version, or listen to it aloud. Extracts content, renders it as markdown, and speaks it using on-device TTS — with speed control, paragraph skip, and offline support.',
@@ -273,6 +285,9 @@ const translations = {
     passwordGenTitle: 'Random Passwords',
     passwordGenDesc:
       'Generează parole sigure criptografic prin Web Crypto API. Cinci parole solide dintr-o singură apăsare.',
+    goldilocksEngineTitle: 'The Goldilocks Engine',
+    goldilocksEngineDesc:
+      'Un joc incremental creat pentru ecrane verticale, despre construirea infrastructurii AI fără a pierde din vedere scopul uman.',
     articleVoiceTitle: 'Article Reader',
     articleVoiceDesc:
       'Lipește un URL de articol, citește o versiune curată sau ascultă-l. Extrage conținutul, îl redă ca markdown și îl citește cu vocea dispozitivului — cu control de viteză, salt între paragrafe și funcționare offline.',
@@ -351,6 +366,9 @@ const translations = {
     passwordGenTitle: 'Random Passwords',
     passwordGenDesc:
       "Génère des mots de passe sûrs via l'API Web Crypto. Cinq mots de passe en un clic.",
+    goldilocksEngineTitle: 'The Goldilocks Engine',
+    goldilocksEngineDesc:
+      "Un jeu incrémental pensé pour le format portrait, où vous construisez une infrastructure d'IA sans perdre de vue l'objectif humain.",
     articleVoiceTitle: "Lecteur d'articles",
     articleVoiceDesc:
       "Collez une URL, lisez une version propre ou écoutez-la (TTS). Extrait le contenu en markdown et supporte l'usage hors ligne.",
@@ -429,6 +447,9 @@ const translations = {
     passwordGenTitle: 'Random Passwords',
     passwordGenDesc:
       'Genera contraseñas seguras mediante la API Web Crypto. Cinco contraseñas robustas con un clic.',
+    goldilocksEngineTitle: 'The Goldilocks Engine',
+    goldilocksEngineDesc:
+      'Un juego incremental en formato vertical sobre construir infraestructura de IA sin perder de vista el propósito humano.',
     articleVoiceTitle: 'Lector de artículos',
     articleVoiceDesc:
       'Pega una URL de artículo, lee una versión limpia o escúchala. Extrae el contenido, lo renderiza como markdown y lo lee con la voz del dispositivo — con control de velocidad, salto de párrafo y soporte sin conexión.',
@@ -508,6 +529,9 @@ const translations = {
     passwordGenTitle: 'Random Passwords',
     passwordGenDesc:
       'Generiert kryptografisch sichere Passwörter über die Web Crypto API. Fünf starke Passwörter mit einem Klick.',
+    goldilocksEngineTitle: 'The Goldilocks Engine',
+    goldilocksEngineDesc:
+      'Ein für Hochformat entwickeltes inkrementelles Spiel über den Aufbau von KI-Infrastruktur, ohne den menschlichen Zweck aus den Augen zu verlieren.',
     articleVoiceTitle: 'Artikel-Reader',
     articleVoiceDesc:
       'Füge eine Artikel-URL ein, lese eine saubere Version oder höre sie dir an. Extrahiert den Inhalt, rendert ihn als Markdown und liest ihn mit der Stimme des Geräts vor — mit Geschwindigkeitssteuerung, Absatzsprung und Offline-Unterstützung.',
@@ -587,6 +611,9 @@ const translations = {
     passwordGenTitle: 'Random Passwords',
     passwordGenDesc:
       "Genera password sicure tramite l'API Web Crypto. Cinque password robuste con un clic.",
+    goldilocksEngineTitle: 'The Goldilocks Engine',
+    goldilocksEngineDesc:
+      'Un gioco incrementale pensato per il formato verticale, sulla costruzione di infrastrutture IA senza perdere di vista lo scopo umano.',
     articleVoiceTitle: 'Lettore di articoli',
     articleVoiceDesc:
       "Incolla l'URL di un articolo, leggi una versione pulita o ascoltala. Estrae il contenuto, lo renderizza come markdown e lo legge con la voce del dispositivo — con controllo della velocità, salto di paragrafo e supporto offline.",
@@ -666,6 +693,9 @@ const translations = {
     passwordGenTitle: 'Random Passwords',
     passwordGenDesc:
       'Gera senhas seguras através da API Web Crypto. Cinco senhas robustas com um clique.',
+    goldilocksEngineTitle: 'The Goldilocks Engine',
+    goldilocksEngineDesc:
+      'Um jogo incremental em formato vertical sobre construir infraestrutura de IA sem perder de vista o propósito humano.',
     articleVoiceTitle: 'Leitor de artigos',
     articleVoiceDesc:
       'Cola a URL de um artigo, lê uma versão limpa ou ouve-a. Extrai o conteúdo, renderiza-o como markdown e lê-o com a voz do dispositivo — com controlo de velocidade, salto de parágrafo e suporte offline.',
