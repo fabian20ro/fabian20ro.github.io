@@ -541,3 +541,11 @@
 **Outcome:** Success — the portfolio now targets the replacement repository and Pages path.
 **Insight:** Repository migrations require the card destination, status badge, displayed brand, and URL fixtures to move together.
 **Promoted to Lessons Learned:** No
+
+### 2026-08-04 — Update Rarity Classificator repository card
+
+**Context:** The disabled `word-rarity-classifier` repository was recovered into the fresh `rarity-classificator` repository. The old portfolio card also exposed a GitHub Pages URL that returned 404 because this CLI project has no Pages deployment.
+**What happened:** Updated the repository destination, changed the displayed title to Rarity Classificator in every supported locale, removed the broken live-site link, and added the real CI workflow badge.
+**Outcome:** Success — the card now exposes only working repository and CI destinations.
+**Insight:** Repository-only projects should use their real CI badge instead of presenting a nonexistent Pages deployment as a live site.
+**Promoted to Lessons Learned:** No
