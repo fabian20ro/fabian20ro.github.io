@@ -98,13 +98,13 @@ const projectSections = {
         'https://github.com/fabian20ro/pixel-article-reader/workflows/Deploy%20to%20GitHub%20Pages/badge.svg'
     },
     {
-      href: 'https://fabian20ro.github.io/find-the-book/',
+      href: 'https://fabian20ro.github.io/book-finder/',
       icon: '📚',
       titleKey: 'findBookTitle',
       descKey: 'findBookDesc',
       linkKey: 'visitSite',
       badgeUrl:
-        'https://github.com/fabian20ro/find-the-book/workflows/Deploy%20to%20GitHub%20Pages/badge.svg'
+        'https://github.com/fabian20ro/book-finder/workflows/Deploy%20to%20GitHub%20Pages/badge.svg'
     },
     {
       href: 'https://fabian20ro.github.io/horror-scope/',
@@ -207,7 +207,7 @@ const translations = {
     articleVoiceTitle: 'Article Reader',
     articleVoiceDesc:
       'Paste an article URL, read a clean version, or listen to it aloud. Extracts content, renders it as markdown, and speaks it using on-device TTS — with speed control, paragraph skip, and offline support.',
-    findBookTitle: 'Find The Book',
+    findBookTitle: 'Book Finder',
     findBookDesc:
       'Point your camera at a bookshelf to identify books instantly. No install, no server.',
     horrorScopeTitle: 'Horror-Scope',
@@ -291,7 +291,7 @@ const translations = {
     articleVoiceTitle: 'Article Reader',
     articleVoiceDesc:
       'Lipește un URL de articol, citește o versiune curată sau ascultă-l. Extrage conținutul, îl redă ca markdown și îl citește cu vocea dispozitivului — cu control de viteză, salt între paragrafe și funcționare offline.',
-    findBookTitle: 'Find The Book',
+    findBookTitle: 'Book Finder',
     findBookDesc:
       'Îndreaptă camera spre un raft și identifică cărțile pe loc. Funcționează direct în browser.',
     horrorScopeTitle: 'Horror-Scope',
@@ -372,7 +372,7 @@ const translations = {
     articleVoiceTitle: "Lecteur d'articles",
     articleVoiceDesc:
       "Collez une URL, lisez une version propre ou écoutez-la (TTS). Extrait le contenu en markdown et supporte l'usage hors ligne.",
-    findBookTitle: 'Trouver le livre',
+    findBookTitle: 'Book Finder',
     findBookDesc: 'Pointez la caméra vers une étagère pour identifier les livres instantanément.',
     horrorScopeTitle: 'Horror-Scope',
     horrorScopeDesc:
@@ -453,7 +453,7 @@ const translations = {
     articleVoiceTitle: 'Lector de artículos',
     articleVoiceDesc:
       'Pega una URL de artículo, lee una versión limpia o escúchala. Extrae el contenido, lo renderiza como markdown y lo lee con la voz del dispositivo — con control de velocidad, salto de párrafo y soporte sin conexión.',
-    findBookTitle: 'Encontrar el libro',
+    findBookTitle: 'Book Finder',
     findBookDesc:
       'Apunta la cámara a un estante para identificar los libros al instante. Sin instalar nada, sin servidor.',
     horrorScopeTitle: 'Horror-Scope',
@@ -535,7 +535,7 @@ const translations = {
     articleVoiceTitle: 'Artikel-Reader',
     articleVoiceDesc:
       'Füge eine Artikel-URL ein, lese eine saubere Version oder höre sie dir an. Extrahiert den Inhalt, rendert ihn als Markdown und liest ihn mit der Stimme des Geräts vor — mit Geschwindigkeitssteuerung, Absatzsprung und Offline-Unterstützung.',
-    findBookTitle: 'Das Buch finden',
+    findBookTitle: 'Book Finder',
     findBookDesc:
       'Richte die Kamera auf ein Bücherregal, um Bücher sofort zu identifizieren. Keine Installation, kein Server.',
     horrorScopeTitle: 'Horror-Scope',
@@ -617,7 +617,7 @@ const translations = {
     articleVoiceTitle: 'Lettore di articoli',
     articleVoiceDesc:
       "Incolla l'URL di un articolo, leggi una versione pulita o ascoltala. Estrae il contenuto, lo renderizza come markdown e lo legge con la voce del dispositivo — con controllo della velocità, salto di paragrafo e supporto offline.",
-    findBookTitle: 'Trova il libro',
+    findBookTitle: 'Book Finder',
     findBookDesc:
       'Punta la telecamera su uno scaffale per identificare i libri istantaneamente. Senza installazione, senza server.',
     horrorScopeTitle: 'Horror-Scope',
@@ -699,7 +699,7 @@ const translations = {
     articleVoiceTitle: 'Leitor de artigos',
     articleVoiceDesc:
       'Cola a URL de um artigo, lê uma versão limpa ou ouve-a. Extrai o conteúdo, renderiza-o como markdown e lê-o com a voz do dispositivo — com controlo de velocidade, salto de parágrafo e suporte offline.',
-    findBookTitle: 'Encontrar o livro',
+    findBookTitle: 'Book Finder',
     findBookDesc:
       'Aponta a câmara para uma estante para identificar os livros instantaneamente. Sem instalação, sem servidor.',
     horrorScopeTitle: 'Horror-Scope',

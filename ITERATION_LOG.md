@@ -501,3 +501,11 @@
 **Outcome:** Success — lint, formatting, and all 151 tests passed; deployment verification continues after push.
 **Insight:** A newly indexed migrated project needs the same destination, status, localization, and fixture coverage as an existing renamed card.
 **Promoted to Lessons Learned:** No
+
+### 2026-08-04 — Update Book Finder project destination
+
+**Context:** The disabled `find-the-book` repository was recovered into the fresh `book-finder` repository and its GitHub Pages path changed.
+**What happened:** Updated the project card destination and deployment badge to `book-finder`, changed the displayed title to the Book Finder brand in every supported locale, and updated the corresponding badge URL fixture.
+**Outcome:** Success — the portfolio now targets the replacement repository and Pages path.
+**Insight:** Repository migrations require the card destination, status badge, localized brand, and URL fixture to move together.
+**Promoted to Lessons Learned:** No
