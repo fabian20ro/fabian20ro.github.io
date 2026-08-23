@@ -244,3 +244,27 @@ test('copy button success transitions aria-label, title, and status text atomica
     }
   }
 });
+
+// Strengthen: cards without an href must not render a copy button.
+test('card header omits the copy button for cards without an href', () => {
+  const originalDocument = global.document;
+  global.document = { createElement };
+
+  try {
+    const card = { ...app.projectSections.liveProjects[0], href: '' };
+    const header = app.createCardHeader(card);
+    const actions = header.children[1];
+
+    assert.equal(actions.className, 'card-actions');
+    assert.equal(actions.children.length, 1, 'actions should hold only the project link');
+    assert.equal(actions.children[0].tagName, 'A');
+    assert.equal(actions.children[0].getAttribute('aria-label'), app.t(card.linkKey));
+    assert.equal(
+      actions.children.some((child) => child.tagName === 'BUTTON'),
+      false,
+      'no copy button should exist without an href'
+    );
+  } finally {
+    global.document = originalDocument;
+  }
+});
