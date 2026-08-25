@@ -565,3 +565,11 @@
 **Outcome:** Success — the switch now displays the Romanian flag from English and the British flag from Romanian or any other supported locale.
 **Insight:** A control's visible destination and its action must derive from the same helper when the application supports more states than the control cycles through.
 **Promoted to Lessons Learned:** No
+
+### 2026-08-26 — Refresh the cached language-toggle implementation
+
+**Context:** The language-toggle behavior changed, but the deployed page used a dated application-script cache key.
+**What happened:** Advanced the `app.js` query version so browsers fetch the corrected English/Romanian destination flag implementation.
+**Outcome:** Success — the deployed HTML now invalidates stale cached application JavaScript.
+**Insight:** User-visible JavaScript fixes need a cache-key change when the site deliberately versions static script URLs.
+**Promoted to Lessons Learned:** No
