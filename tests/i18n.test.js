@@ -1,6 +1,6 @@
 const test = require('node:test');
 const assert = require('node:assert');
-const { translations, t, normalizeLang, setLang } = require('../app.js');
+const { translations, t, normalizeLang, setLang, getToggleTargetLang } = require('../app.js');
 
 test('i18n translation completeness', () => {
   const enKeys = Object.keys(translations.en);
@@ -81,6 +81,12 @@ test('normalizeLang accepts locale subtags and returns base code', () => {
   assert.equal(normalizeLang('fr-ca'), 'fr');
   assert.equal(normalizeLang('en-US'), 'en');
   assert.equal(normalizeLang('de-DE'), 'de');
+});
+
+test('language toggle target matches the EN/RO click behavior', () => {
+  assert.equal(getToggleTargetLang('en'), 'ro');
+  assert.equal(getToggleTargetLang('ro'), 'en');
+  assert.equal(getToggleTargetLang('fr'), 'en');
 });
 
 test('normalizeLang handles case-insensitive subtags', () => {
