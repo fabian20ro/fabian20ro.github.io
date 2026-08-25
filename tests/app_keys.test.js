@@ -77,3 +77,21 @@ test('t() edge cases', () => {
   setLang('fr');
   assert.strictEqual(t('title'), 'Les projets de Fabian');
 });
+
+test('t() explicit language parameter', () => {
+  console.log('Running t() explicit language parameter tests...');
+  setLang('en');
+  assert.strictEqual(t('title', 'fr'), 'Les projets de Fabian');
+  assert.strictEqual(t('title', 'RO-RO'), 'Proiectele lui Fabian');
+  assert.strictEqual(t('title'), "Fabian's Projects");
+  assert.strictEqual(t('nonexistent', 'fr'), 'nonexistent');
+});
+
+test('normalizeLang resolution', () => {
+  console.log('Running normalizeLang resolution tests...');
+  assert.strictEqual(app.normalizeLang('ro-RO'), 'ro');
+  assert.strictEqual(app.normalizeLang('fr_FR'), 'fr');
+  assert.strictEqual(app.normalizeLang('  DE  '), 'de');
+  assert.strictEqual(app.normalizeLang('jp'), 'en');
+  assert.strictEqual(app.normalizeLang(123), 'en');
+});

@@ -195,6 +195,19 @@ test('t() handles empty-string and whitespace keys', () => {
   assert.strictEqual(wsResult, '   ', 'whitespace key returns itself as fallback');
 });
 
+test('t() with an unsupported or blank $lang falls back to EN, never the raw key', () => {
+  setLang('en');
+  // Unsupported locale: normalizeLang('ja') maps to 'en', so t() must return the
+  // English value rather than leaking the raw key to the UI.
+  assert.equal(t('title', 'ja'), "Fabian's Projects");
+  // Whitespace-only $lang is truthy so it goes through normalizeLang, which
+  // trims it to '' and defaults to 'en'.
+  assert.equal(t('title', '   '), "Fabian's Projects");
+  // A locale that shares no supported prefix (e.g. 'pt-BR' is supported, but
+  // 'ptt' is not) must not accidentally prefix-match into a real language.
+  assert.equal(t('title', 'ptt'), "Fabian's Projects");
+});
+
 test('t() preserves emoji and special characters in translation values', () => {
   setLang('ro');
   // The intro contains Romanian diacritics (ă, â, î, ș, ț); verify they round-trip.
