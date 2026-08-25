@@ -166,3 +166,33 @@ test('projectSections icons are strict Unicode emoji', () => {
     }
   }
 });
+
+// liveSiteUrl is rendered by createCardFooter as the href of the 🌐 link and is
+// interpolated into its title via t('liveSite'). Entries with a malformed or
+// missing-url liveSiteUrl would render a broken footer link. The chrome strings
+// (liveSite, deployStatus) must resolve in every language or users see raw keys.
+test('projectSections liveSiteUrl values are well-formed and footer strings resolve', () => {
+  for (const lang of languages) {
+    const trans = translations[lang];
+    assert.ok(trans['liveSite'], `Missing liveSite translation in ${lang}`);
+    assert.ok(trans['deployStatus'], `Missing deployStatus translation in ${lang}`);
+  }
+
+  for (const repo of projectSections.repositories) {
+    if (repo.liveSiteUrl === undefined || repo.liveSiteUrl === null) {
+      continue;
+    }
+
+    assert.ok(
+      typeof repo.liveSiteUrl === 'string' && repo.liveSiteUrl.length > 0,
+      `repositories[${repo.titleKey}]: liveSiteUrl must be a non-empty string`
+    );
+
+    const liveUrl = new URL(repo.liveSiteUrl);
+    assert.strictEqual(liveUrl.protocol, 'https:', `repositories[${repo.titleKey}]: liveSiteUrl must use HTTPS: ${repo.liveSiteUrl}`);
+    assert.ok(
+      liveUrl.hostname.length > 0,
+      `repositories[${repo.titleKey}]: liveSiteUrl must be an absolute URL with a hostname: ${repo.liveSiteUrl}`
+    );
+  }
+});
