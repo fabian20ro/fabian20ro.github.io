@@ -557,3 +557,11 @@
 **Outcome:** Success — the portfolio targets the replacement repository and accurately describes its idea-to-variations workflow.
 **Insight:** Migration copy should describe the product transformation, not merely substitute the repository slug.
 **Promoted to Lessons Learned:** No
+
+### 2026-08-26 — Align the language-toggle flag with its action
+
+**Context:** In Romanian, the EN/RO switch displayed the French flag even though clicking it selected English.
+**What happened:** Reused one target-language helper for both the rendered flag and the click action, then added a focused regression for English, Romanian, and other active locales.
+**Outcome:** Success — the switch now displays the Romanian flag from English and the British flag from Romanian or any other supported locale.
+**Insight:** A control's visible destination and its action must derive from the same helper when the application supports more states than the control cycles through.
+**Promoted to Lessons Learned:** No

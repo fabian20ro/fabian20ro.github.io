@@ -807,6 +807,10 @@ function getDefaultLang() {
   return normalizeLang(browserLang);
 }
 
+function getToggleTargetLang(lang) {
+  return normalizeLang(lang) === 'en' ? 'ro' : 'en';
+}
+
 function getPreferredTheme() {
   const savedTheme = storageGet('theme');
   if (savedTheme === 'light' || savedTheme === 'dark') {
@@ -873,8 +877,7 @@ function setLang(lang) {
   const themeToggle = document.getElementById('theme-toggle');
 
   if (langToggle) {
-    const nextLangIdx = (SUPPORTED_LANGUAGES.indexOf(currentLang) + 1) % SUPPORTED_LANGUAGES.length;
-    const targetLang = SUPPORTED_LANGUAGES[nextLangIdx];
+    const targetLang = getToggleTargetLang(currentLang);
     const langFlag = LANG_FLAGS[targetLang] || '🌐';
 
     langToggle.textContent = `➡️ ${langFlag}`;
@@ -895,7 +898,7 @@ function setLang(lang) {
 }
 
 function toggleLang() {
-  setLang(currentLang === 'en' ? 'ro' : 'en');
+  setLang(getToggleTargetLang(currentLang));
 }
 
 function getBadgeActionsUrl(badgeUrl) {
@@ -1578,6 +1581,7 @@ module.exports = {
   isCacheFresh,
   loadGitHubActivity,
   normalizeLang,
+  getToggleTargetLang,
   parseRepoName,
   buildRepoUrl,
   t,
