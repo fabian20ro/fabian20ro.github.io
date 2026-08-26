@@ -88,7 +88,81 @@ test('loadGitHubActivity renders the empty-cache state instead of leaving loadin
 
   assert.strictEqual(fetchCalls, 0, 'fresh cache should not fetch again');
   assert.strictEqual(feed.children.length, 1, 'feed should replace the loading placeholder');
-  assert.strictEqual(feed.children[0].className, 'activity-error');
+  const errorNode = feed.children[0];
+  assert.strictEqual(errorNode.className, 'activity-error');
+  assert.strictEqual(errorNode.children.length, 2, 'error node should contain message text and a GitHub link');
+  const link = errorNode.children[1];
+  assert.strictEqual(link.tagName, 'a', 'second child of error node should be the GitHub link');
+  assert.strictEqual(link.href, 'https://github.com/fabian20ro?tab=activity', 'link should point at the GitHub activity tab');
+  assert.strictEqual(link.target, '_blank', 'link should open in a new tab');
+  assert.strictEqual(link.rel, 'noopener noreferrer', 'link should be a safe cross-origin link');
+  assert.strictEqual(link.textContent, 'View activity on GitHub', 'link label should use the English translation by default');
+});
+
+test('loadGitHubActivity renders the GitHub link error state when there is no cache and the fetch fails', async (t) => {
+  const now = Date.now();
+  const originalDateNow = Date.now;
+  const originalDocument = global.document;
+  const originalLocalStorage = global.localStorage;
+  const originalSessionStorage = global.sessionStorage;
+  const originalFetch = global.fetch;
+
+  const feed = createElement('div');
+  feed.replaceChildren(createElement('div'));
+
+  global.document = {
+    getElementById(id) {
+      return id === 'activity-feed' ? feed : null;
+    },
+    createElement,
+    createTextNode(text) {
+      return { nodeType: 'text', textContent: text };
+    }
+  };
+
+  global.localStorage = {
+    getItem() {
+      return null;
+    },
+    setItem() {}
+  };
+
+  global.sessionStorage = {
+    getItem() {
+      return null;
+    },
+    setItem() {}
+  };
+
+  let fetchCalls = 0;
+  global.fetch = async () => {
+    fetchCalls += 1;
+    throw new Error('fetch should fail in this test');
+  };
+  Date.now = () => now;
+
+  t.after(() => {
+    Date.now = originalDateNow;
+    global.document = originalDocument;
+    global.localStorage = originalLocalStorage;
+    global.sessionStorage = originalSessionStorage;
+    global.fetch = originalFetch;
+  });
+
+  await loadGitHubActivity();
+
+  assert.strictEqual(fetchCalls, 1, 'missing cache should trigger one fetch attempt');
+  assert.strictEqual(feed.children.length, 1, 'feed should be replaced with the error node');
+  const errorNode = feed.children[0];
+  assert.strictEqual(errorNode.className, 'activity-error');
+  assert.strictEqual(errorNode.children.length, 2, 'error node should contain message text and a GitHub link');
+  assert.strictEqual(errorNode.children[0].textContent, 'Could not load activity. ', 'message should use the English translation');
+  const link = errorNode.children[1];
+  assert.strictEqual(link.tagName, 'a');
+  assert.strictEqual(link.href, 'https://github.com/fabian20ro?tab=activity');
+  assert.strictEqual(link.target, '_blank');
+  assert.strictEqual(link.rel, 'noopener noreferrer');
+  assert.strictEqual(link.textContent, 'View activity on GitHub');
 });
 
 test('loadGitHubActivity keeps rendered cached activity visible when refresh fails', async (t) => {
