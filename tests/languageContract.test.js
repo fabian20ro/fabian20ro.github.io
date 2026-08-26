@@ -218,3 +218,38 @@ test('every non-base language translation differs from English at the value leve
     assert.ok(differs, `Language '${lang}' translation object has no differing values from English`);
   }
 });
+
+test('t() resolves language-specific values and falls back to English', () => {
+  const { t, translations } = require('../app.js');
+  const fs = require('fs');
+  const path = require('path');
+  const src = fs.readFileSync(path.join(__dirname, '..', 'app.js'), 'utf8');
+  const match = src.match(/const\s+SUPPORTED_LANGUAGES\s*=\s*\[([^\]]+)\]/);
+  assert.ok(match, 'SUPPORTED_LANGUAGES declaration not found in app.js');
+  const langs = [...match[1].matchAll(/'([^']+)'/g)].map((m) => m[1]);
+
+  for (const lang of langs) {
+    assert.strictEqual(
+      t('propositionsTitle', lang),
+      translations[lang].propositionsTitle,
+      `t('propositionsTitle', '${lang}') must resolve to the '${lang}' table value`
+    );
+  }
+
+  // Unsupported language code normalizes to English fallback.
+  assert.strictEqual(t('propositionsTitle', 'xx'), translations.en.propositionsTitle);
+
+  // A key absent from every language table falls through to the key itself.
+  assert.strictEqual(t('definitelyNotAKey123', 'en'), 'definitelyNotAKey123');
+});
+
+test('normalizeLang accepts exact, prefixed, and non-string input', () => {
+  const { normalizeLang } = require('../app.js');
+  assert.strictEqual(normalizeLang('en'), 'en');
+  assert.strictEqual(normalizeLang('RO'), 'ro');
+  assert.strictEqual(normalizeLang(' ro-RO '), 'ro');
+  assert.strictEqual(normalizeLang('pt_BR'), 'pt');
+  assert.strictEqual(normalizeLang('zz'), 'en');
+  assert.strictEqual(normalizeLang(''), 'en');
+  assert.strictEqual(normalizeLang(42), 'en');
+});
