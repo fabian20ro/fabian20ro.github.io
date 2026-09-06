@@ -332,6 +332,28 @@ test('getRelativeTime zero-delta and negative-future timestamps return just now'
   assert.strictEqual(getRelativeTime(sixtyOneSecs), '1 minute ago', 'getRelativeTime(61s ago) returns 1 minute ago');
 });
 
+test('getRelativeTime plural unit interpolation for non-singular counts', () => {
+  setLang('en');
+  // Production contract (app.js getRelativeTime): non-singular counts render interpolated
+  // plural strings — these branches are exercised here because existing tests only cover
+  // singular units.
+  assert.strictEqual(
+    getRelativeTime(new Date(Date.now() - 25 * 86400000).toISOString()),
+    '25 days ago',
+    'getRelativeTime(25 days ago) renders plural days string'
+  );
+  assert.strictEqual(
+    getRelativeTime(new Date(Date.now() - 11 * 2592000000).toISOString()),
+    '11 months ago',
+    'getRelativeTime(11 months ago) renders plural months string'
+  );
+  assert.strictEqual(
+    getRelativeTime(new Date(Date.now() - 2 * 31536000000).toISOString()),
+    '2 years ago',
+    'getRelativeTime(2 years ago) renders plural years string'
+  );
+});
+
 test('loadGitHubActivity network failure handles gracefully', async () => {
   setLang('en');
   // Production contract — fetch failures must not throw and should surface an error state.
