@@ -356,6 +356,49 @@ test('projectSections badgeUrls reference valid GitHub workflow badges', () => {
   });
 });
 
+// Badge-to-actions runtime linkage: production renders each project card's badge link via
+// getBadgeActionsUrl(section.badgeUrl). The static shape/regex tests above only pattern-match
+// the raw badgeUrl string; they do not run the production transformation. This test pins the
+// observable runtime contract: every section carrying a badgeUrl must transform through the
+// exported helper into a github.com/{owner}/{repo} URL with an optional /actions suffix. The
+// helper is idempotent: a badge already under /actions (e.g. pages-build-deployment) resolves
+// to the bare repo base, while a plain badge.svg URL gains the /actions suffix. A non-GitHub
+// input would pass through unchanged — impossible here because the badge-pattern test above
+// already guarantees the github.com/{owner}/{repo} structure of every badgeUrl.
+test('projectSections badgeUrls resolve to valid actions dashboard URLs via getBadgeActionsUrl()', () => {
+  const resolvedUrlPattern = /^https:\/\/github\.com\/[a-zA-Z0-9-]+\/[a-zA-Z0-9-]+(\/actions)?\/?$/;
+  const allSections = [...app.projectSections.liveProjects, ...app.projectSections.repositories];
+
+  let sectionsWithBadges = 0;
+  for (const [i, section] of allSections.entries()) {
+    if (section.badgeUrl === undefined || section.badgeUrl === null) continue;
+    sectionsWithBadges += 1;
+
+    const actionsUrl = app.getBadgeActionsUrl(section.badgeUrl);
+    assert.strictEqual(
+      typeof actionsUrl,
+      'string',
+      `section ${i} (${section.href}): getBadgeActionsUrl(badgeUrl) must return a string (got: ${typeof actionsUrl})`
+    );
+    assert.ok(
+      actionsUrl.length > 0,
+      `section ${i} (${section.href}): getBadgeActionsUrl(badgeUrl) resolved to empty string`
+    );
+    assert.ok(
+      resolvedUrlPattern.test(actionsUrl),
+      `section ${i} (${section.href}): badgeUrl "${section.badgeUrl}" must resolve to a github.com/{owner}/{repo}(/actions) URL (got: "${actionsUrl}")`
+    );
+  }
+
+  // Guard against the invariant becoming vacuous: the current production data
+  // ships badges on most sections, so zero matches means the data lost its
+  // badge wiring and this check would pass silently.
+  assert.ok(
+    sectionsWithBadges > 0,
+    `Expected at least one projectSection with a badgeUrl (found ${sectionsWithBadges}) — badge linkage check would be vacuous`
+  );
+});
+
 // LinkKey consistency and translation resolution: every liveProject card uses linkKey='visitSite'
 // and every repository entry uses linkKey='viewGithub'. These are fixed strings (not dynamic
 // translation keys), but they must still resolve through t() to non-empty text in all languages —
