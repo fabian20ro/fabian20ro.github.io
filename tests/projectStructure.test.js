@@ -221,6 +221,14 @@ try {
     }
   }
 
+  // liveSiteUrl (the deployed site) must differ from href (the GitHub repo)
+  for (const repo of projectSections.repositories) {
+    assert(
+      repo.liveSiteUrl !== repo.href,
+      `Repo[${repo.titleKey}] liveSiteUrl must differ from href`
+    );
+  }
+
   console.log('Project structure tests passed!');
 } catch (err) {
   console.error('Project structure tests failed:');
