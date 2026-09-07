@@ -208,13 +208,18 @@ try {
     WatchEvent: '⭐',
     ForkEvent: '🍴',
     IssueEvent: '🐛',
+    IssuesEvent: '🐛',
     PullRequestEvent: '🔀',
     IssueCommentEvent: '💬',
-    PullRequestReviewCommentEvent: '💬'
+    PullRequestReviewCommentEvent: '💬',
+    PullRequestReviewEvent: '👀'
   };
   Object.entries(eventIconMap).forEach(([event, icon]) => {
     assert.strictEqual(app.getEventIcon(event), icon, `getEventIcon('${event}') should return '${icon}'`);
   });
+  // IssuesEvent and PullRequestReviewEvent were missing from the map above and never asserted — pin both explicitly.
+  assert.strictEqual(app.getEventIcon('IssuesEvent'), '🐛', "getEventIcon('IssuesEvent') should return '🐛'");
+  assert.strictEqual(app.getEventIcon('PullRequestReviewEvent'), '👀', "getEventIcon('PullRequestReviewEvent') should return '👀'");
 
   // Unknown events fall back to the default pin emoji — prevents silent breakage if a new event type appears with no mapping.
   assert.strictEqual(app.getEventIcon('UnknownEvent'), '📌');
