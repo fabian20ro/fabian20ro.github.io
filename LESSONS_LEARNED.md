@@ -41,6 +41,8 @@ Obsolete lessons move to the Archive section at bottom (with date and reason). N
 
 ## Localization
 
+**[2026-09-09]** Separate toggle choices from dictionary coverage — The page toggle selects EN/RO, but browser/stored defaults and translation tests currently cover seven UI dictionaries; the multilingual thank-you dataset is separate again. Add every new UI key to all existing dictionaries in one change, even when a proposal describes only EN/RO. Verify current code rather than assuming the proposal's locale inventory is authoritative.
+
 **[2026-06-06]** Deduplicate thank-you exercises by spoken cue — For the multilingual thank-you rotation, the learning key is the opponent's spoken `thankYouPhonetic`, not the written phrase, script, country, or language label. Keep only one entry per normalized thank-you sound unless a variant has a genuinely distinct common spoken cue.
 
 **[2026-05-15]** Reuse the locale normalizer for browser defaults — The browser-language fallback should call the same normalization path as stored preferences so one code path handles trimming, regional tags, and future locale tweaks consistently.

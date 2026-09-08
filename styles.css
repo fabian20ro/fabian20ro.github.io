@@ -386,6 +386,25 @@ div.card:focus-visible {
   text-decoration: none;
 }
 
+.activity-retry {
+  display: block;
+  min-width: 44px;
+  min-height: 44px;
+  margin: 0.75rem auto 0;
+  padding: 0.5rem 1rem;
+  border: 1px solid var(--accent);
+  border-radius: 0.5rem;
+  background: transparent;
+  color: var(--accent);
+  font: inherit;
+  cursor: pointer;
+}
+
+.activity-retry:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
+
 footer {
   text-align: center;
   padding-top: 1rem;

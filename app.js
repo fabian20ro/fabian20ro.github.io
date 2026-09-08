@@ -234,6 +234,7 @@ const translations = {
     toggleTheme: 'Toggle theme',
     activityLoading: 'Loading activity...',
     activityError: 'Could not load activity.',
+    activityRetry: 'Try again',
     activityViewGithub: 'View activity on GitHub',
     pushedTo: 'pushed to',
     created: 'created',
@@ -313,6 +314,7 @@ const translations = {
     toggleTheme: 'Schimbă tema',
     activityLoading: 'Se încarcă activitatea...',
     activityError: 'Nu s-a putut încărca activitatea.',
+    activityRetry: 'Încearcă din nou',
     activityViewGithub: 'Vezi activitatea pe GitHub',
     pushedTo: 'a făcut push în',
     created: 'a creat',
@@ -390,6 +392,7 @@ const translations = {
     toggleTheme: 'Changer le thème',
     activityLoading: "Chargement de l'activité...",
     activityError: "Impossible de charger l'activité.",
+    activityRetry: 'Réessayer',
     activityViewGithub: "Voir l'activité sur GitHub",
     pushedTo: 'a poussé dans',
     created: 'a créé',
@@ -473,6 +476,7 @@ const translations = {
     toggleTheme: 'Cambiar tema',
     activityLoading: 'Cargando actividad...',
     activityError: 'No se pudo cargar la actividad.',
+    activityRetry: 'Volver a intentar',
     activityViewGithub: 'Ver actividad en GitHub',
     pushedTo: 'hizo push en',
     created: 'creó',
@@ -553,6 +557,7 @@ const translations = {
     toggleTheme: 'Design ändern',
     activityLoading: 'Aktivität wird geladen...',
     activityError: 'Aktivität konnte nicht geladen werden.',
+    activityRetry: 'Erneut versuchen',
     activityViewGithub: 'Aktivität auf GitHub ansehen',
     pushedTo: 'hat gepusht in',
     created: 'hat erstellt',
@@ -633,6 +638,7 @@ const translations = {
     toggleTheme: 'Cambia tema',
     activityLoading: 'Caricamento attività...',
     activityError: "Impossibile caricare l'attività.",
+    activityRetry: 'Riprova',
     activityViewGithub: "Vedi l'attività su GitHub",
     pushedTo: 'ha fatto push in',
     created: 'ha creato',
@@ -713,6 +719,7 @@ const translations = {
     toggleTheme: 'Alterar tema',
     activityLoading: 'Carregando atividade...',
     activityError: 'Não foi possível carregar a atividade.',
+    activityRetry: 'Tentar novamente',
     activityViewGithub: 'Ver atividade no GitHub',
     pushedTo: 'fez push em',
     created: 'criou',
@@ -1289,7 +1296,7 @@ function createActivityItem(event) {
   return item;
 }
 
-function showActivityError() {
+function showActivityError(canRetry = false) {
   const feed = document.getElementById('activity-feed');
   if (!feed) {
     return;
@@ -1305,6 +1312,22 @@ function showActivityError() {
   link.rel = 'noopener noreferrer';
   link.textContent = t('activityViewGithub');
   error.appendChild(link);
+
+  if (canRetry) {
+    const retry = document.createElement('button');
+    retry.type = 'button';
+    retry.className = 'activity-retry';
+    retry.textContent = t('activityRetry');
+    retry.setAttribute('data-i18n', 'activityRetry');
+    retry.onclick = async () => {
+      if (retry.disabled) {
+        return;
+      }
+      retry.disabled = true;
+      await loadGitHubActivity();
+    };
+    error.appendChild(retry);
+  }
 
   feed.replaceChildren(error);
 }
@@ -1398,7 +1421,7 @@ async function loadGitHubActivity() {
     renderActivity(activityEvents);
   } catch {
     if (activityEvents.length === 0) {
-      showActivityError();
+      showActivityError(true);
     }
   }
 }

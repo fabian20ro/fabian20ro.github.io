@@ -99,7 +99,7 @@ test('loadGitHubActivity renders the empty-cache state instead of leaving loadin
   assert.strictEqual(link.textContent, 'View activity on GitHub', 'link label should use the English translation by default');
 });
 
-test('loadGitHubActivity renders the GitHub link error state when there is no cache and the fetch fails', async (t) => {
+test('loadGitHubActivity renders a retry after the unchanged GitHub link when there is no cache and the fetch fails', async (t) => {
   const now = Date.now();
   const originalDateNow = Date.now;
   const originalDocument = global.document;
@@ -155,7 +155,7 @@ test('loadGitHubActivity renders the GitHub link error state when there is no ca
   assert.strictEqual(feed.children.length, 1, 'feed should be replaced with the error node');
   const errorNode = feed.children[0];
   assert.strictEqual(errorNode.className, 'activity-error');
-  assert.strictEqual(errorNode.children.length, 2, 'error node should contain message text and a GitHub link');
+  assert.strictEqual(errorNode.children.length, 3, 'error node should contain message text, GitHub link, and retry');
   assert.strictEqual(errorNode.children[0].textContent, 'Could not load activity. ', 'message should use the English translation');
   const link = errorNode.children[1];
   assert.strictEqual(link.tagName, 'a');
@@ -163,6 +163,12 @@ test('loadGitHubActivity renders the GitHub link error state when there is no ca
   assert.strictEqual(link.target, '_blank');
   assert.strictEqual(link.rel, 'noopener noreferrer');
   assert.strictEqual(link.textContent, 'View activity on GitHub');
+  const retry = errorNode.children[2];
+  assert.strictEqual(retry.tagName, 'button');
+  assert.strictEqual(retry.type, 'button');
+  assert.strictEqual(retry.className, 'activity-retry');
+  assert.strictEqual(retry.textContent, 'Try again');
+  assert.strictEqual(retry['data-i18n'], 'activityRetry');
 });
 
 test('loadGitHubActivity keeps rendered cached activity visible when refresh fails', async (t) => {
