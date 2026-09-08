@@ -199,6 +199,16 @@ async function runTests() {
 
     console.log('Cross-language hours plural coverage passed!');
 
+    // Months fallback: 360-364 days ago → N months ago (diffYears === 0 && diffMonths >= 12)
+    console.log('Testing months fallback for 360-364 days...');
+    setLang('en');
+    assert.strictEqual(getRelativeTime(new Date(mockDate.getTime() - 360 * 86400000).toISOString()), `12 ${translations.en.monthsAgo}`);
+    assert.strictEqual(getRelativeTime(new Date(mockDate.getTime() - 364 * 86400000).toISOString()), `12 ${translations.en.monthsAgo}`);
+    setLang('ro');
+    assert.strictEqual(getRelativeTime(new Date(mockDate.getTime() - 360 * 86400000).toISOString()), `12 ${translations.ro.monthsAgo}`);
+
+    console.log('Months fallback tests passed!');
+
   } catch (err) {
     console.error('getRelativeTime tests failed:');
     console.error(err.message);

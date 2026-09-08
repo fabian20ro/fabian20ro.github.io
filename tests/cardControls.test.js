@@ -81,6 +81,31 @@ test('card header groups a functional project link beside a two-rectangle copy b
   }
 });
 
+test('card header title row renders a hidden icon beside the translated title', () => {
+  const originalDocument = global.document;
+  global.document = { createElement };
+
+  try {
+    const card = app.projectSections.liveProjects[0];
+    const header = app.createCardHeader(card);
+    const titleRow = header.children[0];
+    const iconNode = titleRow.children[0];
+    const titleNode = titleRow.children[1];
+
+    assert.equal(titleRow.className, 'card-title-row');
+    assert.equal(iconNode.tagName, 'SPAN');
+    assert.equal(iconNode.className, 'card-icon');
+    assert.equal(iconNode.textContent, card.icon);
+    assert.equal(iconNode.getAttribute('aria-hidden'), 'true');
+    assert.equal(titleNode.tagName, 'SPAN');
+    assert.equal(titleNode.className, 'card-title');
+    assert.equal(titleNode.getAttribute('data-i18n'), card.titleKey);
+    assert.equal(titleNode.textContent, app.t(card.titleKey));
+  } finally {
+    global.document = originalDocument;
+  }
+});
+
 test('arrow and copy controls isolate their events from whole-card navigation', async () => {
   const originalDocument = global.document;
   const originalNavigatorDescriptor = Object.getOwnPropertyDescriptor(global, 'navigator');
