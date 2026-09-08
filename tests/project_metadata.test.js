@@ -45,6 +45,21 @@ test('projectSections entries have required fields', () => {
     assert.strictEqual(typeof item.descKey, 'string', `repositories[${item.href}]: descKey must be a string`);
     assert.ok(item.descKey.length > 0, `repositories[${item.href}]: descKey must not be empty`);
   }
+
+  // createCardHeader assigns card.href directly to an <a href>; a relative or
+  // malformed href would render as a broken navigation target on every card.
+  for (const item of [...projectSections.liveProjects, ...projectSections.repositories]) {
+    const parsed = new URL(item.href);
+    assert.strictEqual(
+      parsed.protocol,
+      'https:',
+      `Card href "${item.href}" must use HTTPS`
+    );
+    assert.ok(
+      parsed.hostname.length > 0,
+      `Card href "${item.href}" must be an absolute URL with a hostname`
+    );
+  }
 });
 test('projectSections titleKeys are unique within each list', () => {
   const checkList = (list) => {
