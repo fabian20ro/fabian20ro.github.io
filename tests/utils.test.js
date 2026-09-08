@@ -144,6 +144,14 @@ try {
     'ftp://github.com/user/repo/workflows/CI/badge.svg';
   assert.strictEqual(getBadgeActionsUrl(patternQ), patternQ);
 
+  // Test case 16: getRelativeTime defensive input handling — non-string input → '',
+  // blank/invalid/future dates → 'just now'.
+  assert.strictEqual(getRelativeTime(12345), '');
+  assert.strictEqual(getRelativeTime({}), '');
+  assert.strictEqual(getRelativeTime('   '), 'just now');
+  assert.strictEqual(getRelativeTime('not-a-date'), 'just now');
+  assert.strictEqual(getRelativeTime(new Date(now + 60000).toISOString()), 'just now');
+
   console.log('getBadgeActionsUrl tests passed!');
   console.log('getEventIcon tests passed!');
   console.log('getRelativeTime tests passed!');

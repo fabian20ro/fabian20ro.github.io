@@ -115,4 +115,39 @@ describe('translation completeness', () => {
     }
   });
 
+  // t(key, $lang) with an explicit language: unsupported languages are
+  // normalized to 'en', regional prefixes resolve to the base language,
+  // and unknown keys echo back even when a language is passed.
+  it('t() explicit language parameter falls back to English and echoes unknown keys', () => {
+    const t = app.t;
+    const enTitle = app.translations.en.title;
+
+    for (const lang of ['xx', 'unsupported', 'en-XYZ']) {
+      assert.strictEqual(
+        t('title', lang),
+        enTitle,
+        `t("title", "${lang}") should fall back to the English value`
+      );
+    }
+
+    // Regional prefix of a supported language resolves to that language
+    assert.strictEqual(
+      t('title', 'RO-RO'),
+      app.translations.ro.title,
+      't("title", "RO-RO") should resolve to the Romanian value'
+    );
+
+    // Unknown keys echo back regardless of the explicit language
+    assert.strictEqual(
+      t('does_not_exist', 'ro'),
+      'does_not_exist',
+      't() should echo the key when it is missing in the explicit language'
+    );
+    assert.strictEqual(
+      t('does_not_exist', 'xx'),
+      'does_not_exist',
+      't() should echo the key when it is missing in all languages'
+    );
+  });
+
 });

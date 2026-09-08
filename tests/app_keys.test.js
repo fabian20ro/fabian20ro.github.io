@@ -95,3 +95,19 @@ test('normalizeLang resolution', () => {
   assert.strictEqual(app.normalizeLang('jp'), 'en');
   assert.strictEqual(app.normalizeLang(123), 'en');
 });
+
+test('getToggleTargetLang language toggle contract', () => {
+  console.log('Running getToggleTargetLang contract tests...');
+  const languages = Object.keys(app.translations);
+  languages.forEach((lang) => {
+    const expected = lang === 'en' ? 'ro' : 'en';
+    assert.strictEqual(
+      app.getToggleTargetLang(lang),
+      expected,
+      `getToggleTargetLang("${lang}") should resolve to "${expected}"`
+    );
+  });
+  assert.strictEqual(app.getToggleTargetLang('EN-GB'), 'ro');
+  assert.strictEqual(app.getToggleTargetLang('FR_FR'), 'en');
+  assert.strictEqual(app.getToggleTargetLang(123), 'ro');
+});
