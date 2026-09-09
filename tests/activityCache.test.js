@@ -2851,3 +2851,66 @@ test('loadGitHubActivity does not throw when activity-feed DOM element is missin
   // The critical assertion: must not throw when DOM element is absent.
   assert.doesNotThrow(async () => { await loadGitHubActivity(); }, 'must not throw when activity-feed element is missing');
 });
+
+test('loadGitHubActivity requests the public events endpoint with the GitHub API accept header', async (t) => {
+  const now = Date.now();
+  const originalDateNow = Date.now;
+  const originalDocument = global.document;
+  const originalLocalStorage = global.localStorage;
+  const originalSessionStorage = global.sessionStorage;
+  const originalFetch = global.fetch;
+
+  const feed = createElement('div');
+  feed.replaceChildren(createElement('div'));
+
+  global.document = {
+    getElementById(id) {
+      return id === 'activity-feed' ? feed : null;
+    },
+    createElement,
+    createTextNode(text) {
+      return { nodeType: 'text', textContent: text };
+    }
+  };
+
+  const storage = new Map();
+  global.localStorage = {
+    getItem(key) { return storage.get(key); },
+    setItem(key, value) { storage.set(key, value); }
+  };
+
+  global.sessionStorage = {
+    getItem() { return null; },
+    setItem() {}
+  };
+
+  const fetchArgs = [];
+  global.fetch = async (url, options) => {
+    fetchArgs.push({ url, options });
+    return new Response(JSON.stringify([]), { status: 200 });
+  };
+  Date.now = () => now;
+
+  t.after(() => {
+    Date.now = originalDateNow;
+    global.document = originalDocument;
+    global.localStorage = originalLocalStorage;
+    global.sessionStorage = originalSessionStorage;
+    global.fetch = originalFetch;
+  });
+
+  await loadGitHubActivity();
+
+  assert.strictEqual(fetchArgs.length, 1, 'a cold start should issue exactly one fetch');
+  const { url, options } = fetchArgs[0];
+  assert.strictEqual(
+    url,
+    'https://api.github.com/users/fabian20ro/events/public',
+    'fetch should target the user public-events endpoint'
+  );
+  assert.deepStrictEqual(
+    options.headers,
+    { Accept: 'application/vnd.github+json' },
+    'fetch should send the GitHub API accept header required by the events API'
+  );
+});
