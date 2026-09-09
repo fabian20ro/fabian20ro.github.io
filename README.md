@@ -10,6 +10,7 @@ Static portfolio page for live demos, repositories, and recent GitHub activity.
 - English/Romanian localization with dynamic `<html lang>` updates and normalized locale tags, including whitespace-trimmed values.
 - The language toggle also updates visible chrome and ARIA labels in both languages.
 - GitHub activity feed lazy-loads when it scrolls into view, refreshes once after a long away period so stale tabs catch up, and uses a local cache (10-minute TTL) to reduce API calls and keep the last rendered feed visible if refresh fails.
+- Failed activity requests with no rendered events offer a localized retry button after the existing GitHub link. Retry is disabled while pending; another failed request leaves a usable retry. Fresh empty caches retain their existing state and TTL.
 - DOM-based activity rendering (no raw `innerHTML` from API data).
 - Keyboard-accessible controls with visible focus states.
 

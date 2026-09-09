@@ -573,3 +573,11 @@
 **Outcome:** Success — the deployed HTML now invalidates stale cached application JavaScript.
 **Insight:** User-visible JavaScript fixes need a cache-key change when the site deliberately versions static script URLs.
 **Promoted to Lessons Learned:** No
+
+### 2026-09-09 — Recover the accepted activity retry feature
+
+**Context:** Proposal `fp-20260906-200810-e37701` exhausted three implementation attempts because new retry copy omitted existing UI translation dictionaries. Its EN/RO-only narrative disagreed with the current seven-locale implementation.
+**What happened:** Added a native retry button only after failed requests with no rendered events, preserving the original message and GitHub anchor positions/attributes. Pending retries ignore duplicate activation; repeated failure replaces the disabled button with another usable retry. Added all seven translations with linguist review, localized the new control through existing `data-i18n` updates, retained fresh-empty-cache and cached-content behavior, added 44px touch styling, and advanced both static asset versions.
+**Outcome:** TDD: four expected failures before implementation; 57 focused tests and all 168 official local-green tests passed afterward, including lint and formatting. Real Chromium checks covered Enter activation with repeated failure, EN/RO retry-label switching, Space activation followed by successful event rendering, and a 153×44px retry at a 390px viewport. Screenshot evidence: `/private/tmp/.playwright-cli/page-2026-09-08T22-31-40-189Z.png`. Existing page-wide card overflow and stale error-message/link translation after toggling were observed but left outside this repair. Proposal state remains untouched for supported lifecycle reconciliation; publication is PR-only.
+**Insight:** Validate new translation keys against every current dictionary in one test, not one missing locale per implementation attempt. Manual local-green checks omit `--run-id` unless an active lifecycle run exists; synthetic IDs fail operation ownership validation.
+**Promoted to Lessons Learned:** Yes — dictionary coverage differs from toggle choices.
