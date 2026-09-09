@@ -214,6 +214,20 @@ test('t() with an unsupported or blank $lang falls back to EN, never the raw key
   assert.equal(t('title', 'ptt'), "Fabian's Projects");
 });
 
+test('t() explicit $lang overrides the active language set by setLang()', () => {
+  setLang('ro');
+  // With currentLang = 'ro', a call with no $lang resolves Romanian...
+  assert.equal(t('title'), 'Proiectele lui Fabian',
+    't() with no $lang must use the active language set by setLang("ro")');
+  // ...but an explicit $lang must win over the active language.
+  assert.equal(t('title', 'en'), "Fabian's Projects",
+    't(key, "en") must override the active ro language and return the English value');
+  assert.equal(t('title', 'fr'), 'Les projets de Fabian',
+    't(key, "fr") must override the active ro language and return the French value');
+  // Restore the default so later tests observe the expected en baseline.
+  setLang('en');
+});
+
 test('t() preserves emoji and special characters in translation values', () => {
   setLang('ro');
   // The intro contains Romanian diacritics (ă, â, î, ș, ț); verify they round-trip.
