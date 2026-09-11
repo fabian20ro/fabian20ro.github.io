@@ -118,3 +118,33 @@ test('failed retry remains recoverable and new retry label follows EN/RO languag
   await retry.onclick();
   assert.equal(calls, 3);
 });
+
+test('failed retry keeps the GitHub fallback link at the fixed error-slot position', async (t) => {
+  const { app, feed } = setup(t);
+  let calls = 0;
+  global.fetch = async () => {
+    calls++;
+    throw new Error('offline');
+  };
+  await app.loadGitHubActivity();
+
+  const verifyFallback = (message) => {
+    const error = feed.children[0];
+    assert.equal(error.className, 'activity-error', message);
+    assert.equal(error.children.length, 3, 'failed retry re-renders message, link, and retry');
+    const link = error.children[1];
+    assert.equal(link.tagName, 'a');
+    assert.equal(link.href, 'https://github.com/fabian20ro?tab=activity');
+    assert.equal(link.target, '_blank');
+    assert.equal(link.rel, 'noopener noreferrer');
+  };
+
+  verifyFallback('initial failed load exposes the GitHub fallback link');
+
+  await feed.children[0].children[2].onclick();
+  assert.equal(calls, 2, 'retry issued a second fetch that also failed');
+  verifyFallback('failed retry re-render preserves the GitHub fallback link');
+
+  app.setLang('ro');
+  verifyFallback('language switch after a failed retry preserves the GitHub fallback link');
+});
