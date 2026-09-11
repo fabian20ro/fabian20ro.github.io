@@ -196,6 +196,34 @@ test('LANG_FLAGS has a flag for every SUPPORTED_LANGUAGE entry', () => {
   }
 });
 
+test('LANG_FLAGS values are non-empty flag strings for every supported language', () => {
+  const fs = require('fs');
+  const path = require('path');
+  const srcPath = path.join(__dirname, '..', 'app.js');
+  const src = fs.readFileSync(srcPath, 'utf8');
+
+  // Parse SUPPORTED_LANGUAGES.
+  const langsMatch = src.match(/const\s+SUPPORTED_LANGUAGES\s*=\s*\[([^\]]+)\]/);
+  assert.ok(langsMatch, 'SUPPORTED_LANGUAGES declaration not found in app.js');
+  const langValues = [...langsMatch[1].matchAll(/'([^']+)'/g)].map((m) => m[1]);
+
+  // Parse LANG_FLAGS values — anchor to single-line declaration.
+  const flagsLine = src.split('\n').find(line => /const\s+LANG_FLAGS\s*=/.test(line));
+  assert.ok(flagsLine, 'LANG_FLAGS declaration not found on a source line');
+
+  const flags = Object.fromEntries(
+    [...flagsLine.matchAll(/(\w+)\s*:\s*'([^']*)'/g)].map((m) => [m[1], m[2]])
+  );
+
+  for (const lang of langValues) {
+    assert.ok(lang in flags, `Missing flag entry for SUPPORTED_LANGUAGE '${lang}'`);
+    assert.ok(
+      typeof flags[lang] === 'string' && flags[lang].length > 0,
+      `LANG_FLAGS['${lang}'] must be a non-empty flag string (empty flags render a bare arrow in the language toggle)`
+    );
+  }
+});
+
 test('every non-base language translation differs from English at the value level', () => {
   const { translations } = require('../app.js');
   const baseLang = 'en';
