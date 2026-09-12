@@ -317,8 +317,16 @@ try {
   assert.strictEqual(isCacheFresh({ timestamp: Date.now() }), true, 'isCacheFresh accepts valid recent timestamp');
 
   // Regression: stale-but-valid cache must be rejected by isCacheFresh (not silently accepted).
-  const staleValid = { timestamp: Date.now() - app.ACTIVITY_CACHE_TTL_MS - 1 };
+  // ACTIVITY_CACHE_TTL_MS is an internal constant in app.js (not in module.exports), so pin the
+  // concrete 10-minute value here — otherwise the timestamp below is NaN and the assertion
+  // degenerates into the Number.isFinite guard already covered above, never the ageMs >= TTL boundary.
+  const ACTIVITY_CACHE_TTL_MS = 10 * 60 * 1000;
+  const staleValid = { timestamp: Date.now() - ACTIVITY_CACHE_TTL_MS - 1 };
   assert.strictEqual(isCacheFresh(staleValid), false, 'isCacheFresh rejects cache older than TTL');
+  // Boundary: a cache one millisecond under TTL must still be accepted — pin the ageMs < TTL
+  // edge from the fresh side so a regression to ageMs <= TTL (or any TTL drift) fails here.
+  const edgeValid = { timestamp: Date.now() - (ACTIVITY_CACHE_TTL_MS - 1) };
+  assert.strictEqual(isCacheFresh(edgeValid), true, 'isCacheFresh accepts cache still within TTL');
 
   // Regression: future-dated cache must be rejected — clock skew or malformed data should not count as fresh.
   const futureValid = { timestamp: Date.now() + 60000 };
