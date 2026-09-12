@@ -354,6 +354,19 @@ test('getRelativeTime plural unit interpolation for non-singular counts', () => 
   );
 });
 
+test('getRelativeTime renders months for the 12-to-sub-year window', () => {
+  setLang('en');
+  // getRelativeTime (app.js) has a distinct branch for durations of 12+ months that still
+  // round to 0 whole years (diffYears === 0 && diffMonths >= 12) → "N months ago". Existing
+  // tests only cover diffMonths < 12 (e.g. "11 months ago"), singular "1 month ago", and
+  // whole years — so this 360-day input drives the untested 12-month boundary specifically.
+  assert.strictEqual(
+    getRelativeTime(new Date(Date.now() - 360 * 86400000).toISOString()),
+    '12 months ago',
+    'getRelativeTime(360 days ago) renders the 12+ months / 0 years branch as "12 months ago"'
+  );
+});
+
 test('loadGitHubActivity network failure handles gracefully', async () => {
   setLang('en');
   // Production contract — fetch failures must not throw and should surface an error state.

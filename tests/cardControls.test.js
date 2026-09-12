@@ -81,6 +81,22 @@ test('card header groups a functional project link beside a two-rectangle copy b
   }
 });
 
+test('card header link carries its navigation key, class, and tooltip', () => {
+  const originalDocument = global.document;
+  global.document = { createElement };
+
+  try {
+    const card = app.projectSections.liveProjects[0];
+    const link = app.createCardHeader(card).children[1].children[0];
+
+    assert.equal(link.className, 'card-link');
+    assert.equal(link.getAttribute('data-link-key'), card.linkKey);
+    assert.equal(link.getAttribute('title'), app.t(card.linkKey));
+  } finally {
+    global.document = originalDocument;
+  }
+});
+
 test('card header title row renders a hidden icon beside the translated title', () => {
   const originalDocument = global.document;
   global.document = { createElement };

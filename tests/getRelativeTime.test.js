@@ -199,6 +199,17 @@ async function runTests() {
 
     console.log('Cross-language hours plural coverage passed!');
 
+    // Plural days: 2-29 days ago → N days ago (diffDays > 1 && diffDays < 30)
+    console.log('Testing plural days forms...');
+    setLang('en');
+    assert.strictEqual(getRelativeTime(new Date(mockDate.getTime() - 2 * 86400000).toISOString()), `2 ${translations.en.daysAgo}`);
+    assert.strictEqual(getRelativeTime(new Date(mockDate.getTime() - 5 * 86400000).toISOString()), `5 ${translations.en.daysAgo}`);
+    setLang('ro');
+    assert.strictEqual(getRelativeTime(new Date(mockDate.getTime() - 2 * 86400000).toISOString()), `2 ${translations.ro.daysAgo}`);
+    assert.strictEqual(getRelativeTime(new Date(mockDate.getTime() - 5 * 86400000).toISOString()), `5 ${translations.ro.daysAgo}`);
+
+    console.log('Plural days tests passed!');
+
     // Months fallback: 360-364 days ago → N months ago (diffYears === 0 && diffMonths >= 12)
     console.log('Testing months fallback for 360-364 days...');
     setLang('en');

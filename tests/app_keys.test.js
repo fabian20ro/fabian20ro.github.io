@@ -111,3 +111,17 @@ test('getToggleTargetLang language toggle contract', () => {
   assert.strictEqual(app.getToggleTargetLang('FR_FR'), 'en');
   assert.strictEqual(app.getToggleTargetLang(123), 'ro');
 });
+
+test('t() EN fallback targets the en dictionary, not the active language', () => {
+  console.log('Running t() EN fallback specificity tests...');
+  setLang('ro');
+  const saved = translations.pt['title'];
+  delete translations.pt['title'];
+  const result = t('title', 'pt');
+  translations.pt['title'] = saved;
+  assert.strictEqual(
+    result,
+    "Fabian's Projects",
+    'key missing from $lang must fall back to the en dictionary, not the active ro language'
+  );
+});
