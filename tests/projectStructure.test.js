@@ -229,6 +229,19 @@ try {
     );
   }
 
+  // Every card must have at least one footer source (badgeUrl or liveSiteUrl)
+  // so that createCardFooter does not silently return null and render a
+  // footer-less card.
+  for (const section of ['liveProjects', 'repositories']) {
+    projectSections[section].forEach((item, i) => {
+      assert(
+        (typeof item.badgeUrl === 'string' && item.badgeUrl.length > 0) ||
+          item.liveSiteUrl != null,
+        `${section}[${i}] (${item.titleKey}) must have a non-empty badgeUrl or liveSiteUrl for its card footer`
+      );
+    });
+  }
+
   console.log('Project structure tests passed!');
 } catch (err) {
   console.error('Project structure tests failed:');

@@ -34,6 +34,10 @@ test('projectSections entries have required fields', () => {
     assert.ok(item.titleKey.length > 0, `liveProjects[${item.href}]: titleKey must not be empty`);
     assert.strictEqual(typeof item.descKey, 'string', `liveProjects[${item.href}]: descKey must be a string`);
     assert.ok(item.descKey.length > 0, `liveProjects[${item.href}]: descKey must not be empty`);
+    // createCardHeader unconditionally renders t(card.linkKey) into the
+    // card-link aria-label and title; a missing linkKey would degrade to
+    // setAttribute(..., undefined) and show a broken "undefined" label.
+    assert.ok(typeof item.linkKey === 'string' && item.linkKey.length > 0, `liveProjects[${item.titleKey}]: linkKey must be a non-empty string`);
     assert.ok(typeof item.badgeUrl === 'string' && item.badgeUrl.length > 0, `liveProjects[${item.titleKey}]: badgeUrl is missing or empty`);
   }
 

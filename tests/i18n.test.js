@@ -87,6 +87,12 @@ test('language toggle target matches the EN/RO click behavior', () => {
   assert.equal(getToggleTargetLang('en'), 'ro');
   assert.equal(getToggleTargetLang('ro'), 'en');
   assert.equal(getToggleTargetLang('fr'), 'en');
+  // Locale-subtagged and unsupported inputs resolve through normalizeLang
+  // before the EN/RO decision: subtagged English still targets Romanian,
+  // and an unsupported locale falls back to the EN base (target 'ro').
+  assert.equal(getToggleTargetLang('en-US'), 'ro');
+  assert.equal(getToggleTargetLang('ro-RO'), 'en');
+  assert.equal(getToggleTargetLang('ja'), 'ro');
 });
 
 test('normalizeLang handles case-insensitive subtags', () => {

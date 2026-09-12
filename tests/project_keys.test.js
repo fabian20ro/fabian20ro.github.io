@@ -399,6 +399,49 @@ test('projectSections badgeUrls resolve to valid actions dashboard URLs via getB
   );
 });
 
+// Exact-branch contract for getBadgeActionsUrl(). The shape test above only regex-matches the
+// resolved output against a permissive pattern, so it cannot tell a correct /actions append or
+// idempotent passthrough apart from a buggy double-"/actions". This test pins the EXACT output
+// of each documented branch (app.js getBadgeActionsUrl), including the guard cases the data-driven
+// test never reaches (non-string input, non-GitHub passthrough).
+test('getBadgeActionsUrl exact per-branch outputs', () => {
+  // Branch: non-string input must yield an empty string (badge link renders as no link).
+  assert.strictEqual(app.getBadgeActionsUrl(undefined), '', 'undefined input must resolve to empty string');
+  assert.strictEqual(app.getBadgeActionsUrl(null), '', 'null input must resolve to empty string');
+  assert.strictEqual(app.getBadgeActionsUrl(123), '', 'non-string input must resolve to empty string');
+
+  // Branch: a non-GitHub URL does not match the github.com/{owner}/{repo} pattern and is
+  // returned unchanged (not rewritten, not blanked).
+  assert.strictEqual(
+    app.getBadgeActionsUrl('https://fabian20ro.github.io/random-passwords/'),
+    'https://fabian20ro.github.io/random-passwords/',
+    'non-GitHub URL must pass through unchanged'
+  );
+
+  // Branch: a plain GitHub workflow badge NOT already under /actions gains exactly one /actions
+  // suffix (resolved from a real production badgeUrl).
+  assert.strictEqual(
+    app.getBadgeActionsUrl('https://github.com/fabian20ro/emotid/workflows/Deploy%20to%20GitHub%20Pages/badge.svg'),
+    'https://github.com/fabian20ro/emotid/actions',
+    'plain GitHub badge must resolve to <repo>/actions (single suffix, no double-append)'
+  );
+
+  // Branch (idempotence): a badge already under /actions resolves to the BARE repo base — not
+  // base+/actions again. This is the regression the permissive shape test cannot catch.
+  assert.strictEqual(
+    app.getBadgeActionsUrl('https://github.com/fabian20ro/prompt-to-image-variations/actions/workflows/pages/pages-build-deployment/badge.svg'),
+    'https://github.com/fabian20ro/prompt-to-image-variations',
+    'badge already under /actions must resolve to the bare repo base (idempotent, no double-append)'
+  );
+
+  // Branch: the bare repo base itself is its own base — returned unchanged.
+  assert.strictEqual(
+    app.getBadgeActionsUrl('https://github.com/fabian20ro/sudoku-python'),
+    'https://github.com/fabian20ro/sudoku-python',
+    'bare repo base must be returned unchanged'
+  );
+});
+
 // LinkKey consistency and translation resolution: every liveProject card uses linkKey='visitSite'
 // and every repository entry uses linkKey='viewGithub'. These are fixed strings (not dynamic
 // translation keys), but they must still resolve through t() to non-empty text in all languages —
