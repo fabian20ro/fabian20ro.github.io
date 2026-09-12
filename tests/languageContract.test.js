@@ -277,6 +277,10 @@ test('normalizeLang accepts exact, prefixed, and non-string input', () => {
   assert.strictEqual(normalizeLang('RO'), 'ro');
   assert.strictEqual(normalizeLang(' ro-RO '), 'ro');
   assert.strictEqual(normalizeLang('pt_BR'), 'pt');
+  // Locale prefix matching also accepts the hyphen separator, not just underscore.
+  assert.strictEqual(normalizeLang('fr-FR'), 'fr');
+  assert.strictEqual(normalizeLang('es-MX'), 'es');
+  assert.strictEqual(normalizeLang('de-DE'), 'de');
   assert.strictEqual(normalizeLang('zz'), 'en');
   assert.strictEqual(normalizeLang(''), 'en');
   assert.strictEqual(normalizeLang(42), 'en');
