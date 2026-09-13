@@ -148,3 +148,26 @@ test('failed retry keeps the GitHub fallback link at the fixed error-slot positi
   app.setLang('ro');
   verifyFallback('language switch after a failed retry preserves the GitHub fallback link');
 });
+
+test('retry that succeeds with an empty list re-renders the error block without a retry control', async (t) => {
+  const { app, feed } = setup(t);
+  let calls = 0;
+  global.fetch = async () => {
+    calls++;
+    if (calls === 1) throw new Error('offline');
+    return { ok: true, json: async () => [] };
+  };
+  await app.loadGitHubActivity();
+  assert.equal(calls, 1);
+  const retry = feed.children[0].children[2];
+  assert.ok(retry, 'failed request renders retry');
+  const settled = retry.onclick();
+  assert.equal(calls, 2);
+  assert.equal(retry.disabled, true);
+  await settled;
+  const error = feed.children[0];
+  assert.equal(error.className, 'activity-error', 'empty success re-renders the error block, not the list');
+  assert.equal(error.children.length, 2, 'empty success removes the retry control');
+  assert.equal(error.children[1].tagName, 'a', 'error block keeps the GitHub fallback link');
+  assert.equal(error.children[1].href, 'https://github.com/fabian20ro?tab=activity');
+});
