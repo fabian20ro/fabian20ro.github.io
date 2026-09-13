@@ -197,6 +197,10 @@ async function runTests() {
     assert.strictEqual(getRelativeTime(new Date(mockDate.getTime() - 2 * 3600000).toISOString()), `2 ${translations.ro.hoursAgo}`);
     assert.strictEqual(getRelativeTime(new Date(mockDate.getTime() - 5 * 3600000).toISOString()), `5 ${translations.ro.hoursAgo}`);
 
+    setLang('es');
+    assert.strictEqual(getRelativeTime(new Date(mockDate.getTime() - 2 * 3600000).toISOString()), `2 ${translations.es.hoursAgo}`);
+    assert.strictEqual(getRelativeTime(new Date(mockDate.getTime() - 5 * 3600000).toISOString()), `5 ${translations.es.hoursAgo}`);
+
     console.log('Cross-language hours plural coverage passed!');
 
     // Plural days: 2-29 days ago → N days ago (diffDays > 1 && diffDays < 30)
