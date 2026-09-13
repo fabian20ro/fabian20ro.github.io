@@ -150,4 +150,22 @@ describe('translation completeness', () => {
     );
   });
 
+  // t(key) without an explicit language resolves through the module-level
+  // currentLang (initially 'en'). This is the primary production call path:
+  // every in-app t() invocation (render, toggle, theme) passes only a key.
+  it('t(key) without an explicit language resolves via the current language', () => {
+    const t = app.t;
+    // currentLang defaults to 'en', so single-arg lookups hit the EN dictionary
+    assert.strictEqual(
+      t('title'),
+      app.translations.en.title,
+      't("title") with no explicit lang should resolve via the current language (en)'
+    );
+    assert.strictEqual(
+      t('does_not_exist'),
+      'does_not_exist',
+      't("does_not_exist") with no explicit lang should echo the missing key'
+    );
+  });
+
 });
