@@ -1332,7 +1332,7 @@ function showActivityError(canRetry = false) {
   feed.replaceChildren(error);
 }
 
-function renderActivity(events) {
+function renderActivity(events, updatedAtMs) {
   const feed = document.getElementById('activity-feed');
   if (!feed) {
     return;
@@ -1346,6 +1346,13 @@ function renderActivity(events) {
   const fragment = document.createDocumentFragment();
   for (const event of events.slice(0, ACTIVITY_LIMIT)) {
     fragment.appendChild(createActivityItem(event));
+  }
+
+  if (Number.isFinite(updatedAtMs)) {
+    const updated = document.createElement('p');
+    updated.className = 'activity-updated';
+    updated.textContent = getRelativeTime(new Date(updatedAtMs).toISOString());
+    fragment.appendChild(updated);
   }
 
   feed.replaceChildren(fragment);
@@ -1406,7 +1413,7 @@ async function loadGitHubActivity() {
 
   if (cache) {
     activityEvents = cache.events.slice(0, ACTIVITY_LIMIT);
-    renderActivity(activityEvents);
+    renderActivity(activityEvents, cache.timestamp);
   }
 
   if (cache && isCacheFresh(cache)) {
@@ -1418,7 +1425,7 @@ async function loadGitHubActivity() {
     activityEvents = events.slice(0, ACTIVITY_LIMIT);
     lastCacheRefreshAt = Date.now();
     writeActivityCache(events);
-    renderActivity(activityEvents);
+    renderActivity(activityEvents, lastCacheRefreshAt);
   } catch {
     if (activityEvents.length === 0) {
       showActivityError(true);
