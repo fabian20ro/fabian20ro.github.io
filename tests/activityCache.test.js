@@ -1527,8 +1527,10 @@ test('isCacheFresh rejects null/undefined/empty-cache arguments defensively', ()
   assert.strictEqual(isFresh({}), false, 'cache without timestamp property should be rejected');
 });
 
-test('isCacheFresh enforces strict TTL boundary and rejects future-dated timestamps', () => {
+test('isCacheFresh enforces strict TTL boundary and rejects future-dated timestamps', (t) => {
   const isFresh = require('../app.js').isCacheFresh;
+  // One millisecond is the contract under test, not a wall-clock execution budget.
+  t.mock.method(Date, 'now', () => 1750000000000);
   const now = Date.now();
 
   // Exactly at the TTL boundary ageMs === ACTIVITY_CACHE_TTL_MS → stale (strict <).
