@@ -55,6 +55,12 @@ try {
   assert.strictEqual(normalizeLang(null), 'en');
   assert.strictEqual(normalizeLang(undefined), 'en');
 
+  // 3b. getToggleTargetLang — the toggle contract must survive nullish inputs from forms/URLs.
+  // normalizeLang maps null/undefined to 'en', so the toggle target is 'ro' — never a raw value.
+  const { getToggleTargetLang } = app;
+  assert.strictEqual(getToggleTargetLang(null), 'ro', 'getToggleTargetLang(null) normalizes to en, targets ro');
+  assert.strictEqual(getToggleTargetLang(undefined), 'ro', 'getToggleTargetLang(undefined) normalizes to en, targets ro');
+
   // 4. Strengthen: Test t fallback behavior
   const { t, setLang } = app;
   assert.strictEqual(t('nonexistent_key'), 'nonexistent_key');
