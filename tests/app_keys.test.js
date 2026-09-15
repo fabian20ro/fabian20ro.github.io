@@ -137,3 +137,20 @@ test('t() EN fallback targets the en dictionary, not the active language', () =>
     translations.ro['app_status'] = savedRo;
   }
 });
+
+test('t() treats an empty-string translation value as missing', () => {
+  console.log('Running t() empty-string value fallback tests...');
+  // The key exists in the language dictionary but its value is falsy:
+  // t() must fall back to the en dictionary instead of leaking "".
+  const saved = translations.pt['title'];
+  translations.pt['title'] = '';
+  try {
+    assert.strictEqual(
+      t('title', 'pt'),
+      "Fabian's Projects",
+      'empty-string value in a supported language must fall back to en, not return ""'
+    );
+  } finally {
+    translations.pt['title'] = saved;
+  }
+});
