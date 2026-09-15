@@ -48,6 +48,11 @@ test('projectSections entries have required fields', () => {
     assert.ok(item.titleKey.length > 0, `repositories[${item.href}]: titleKey must not be empty`);
     assert.strictEqual(typeof item.descKey, 'string', `repositories[${item.href}]: descKey must be a string`);
     assert.ok(item.descKey.length > 0, `repositories[${item.href}]: descKey must not be empty`);
+    // createCardHeader unconditionally renders t(card.linkKey) into the
+    // card-link aria-label and title for cards in both lists; a repository
+    // missing linkKey would show a broken "undefined" label that the
+    // presence-conditional check in the completeness test cannot catch.
+    assert.ok(typeof item.linkKey === 'string' && item.linkKey.length > 0, `repositories[${item.titleKey}]: linkKey must be a non-empty string`);
   }
 
   // createCardHeader assigns card.href directly to an <a href>; a relative or

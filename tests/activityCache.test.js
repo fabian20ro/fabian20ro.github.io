@@ -1,6 +1,16 @@
 const test = require('node:test');
 const assert = require('node:assert');
-const { loadGitHubActivity } = require('../app.js');
+let app;
+test.beforeEach(() => {
+  delete require.cache[require.resolve('../app.js')];
+  app = require('../app.js');
+});
+function loadGitHubActivity() {
+  // Each test represents a fresh page. Model real fragment support in legacy stubs.
+  global.document.createDocumentFragment ??= () => createElement('fragment');
+  global.document.querySelectorAll ??= () => [];
+  return app.loadGitHubActivity();
+}
 
 const ACTIVITY_CACHE_KEY = 'github-activity-cache-v1';
 // ACTIVITY_CACHE_TTL_MS is defined as 600_000 (10 minutes) in app.js but not exported.
@@ -114,7 +124,7 @@ test('loadGitHubActivity shows a last-updated line beneath rendered activity', a
   const paragraphs = descendants(fixture.feed).filter(node => node.tagName === 'p');
   const updated = paragraphs[paragraphs.length - 1];
   assert.strictEqual(updated.className, 'activity-updated', 'last paragraph should be the last-updated line');
-  assert.strictEqual(updated.textContent, '5 minutes ago', 'last-updated line should use the cache timestamp');
+  assert.strictEqual(updated.textContent, 'Last updated: 5 minutes ago', 'last-updated line labels the cache timestamp');
 });
 
 test('loadGitHubActivity renders the empty-cache state instead of leaving loading text stuck', async (t) => {
@@ -174,7 +184,7 @@ test('loadGitHubActivity renders the empty-cache state instead of leaving loadin
 
   assert.strictEqual(fetchCalls, 0, 'fresh cache should not fetch again');
   assert.strictEqual(feed.children.length, 1, 'feed should replace the loading placeholder');
-  const errorNode = feed.children[0];
+  const errorNode = descendants(feed).find(node => node.className === 'activity-error');
   assert.strictEqual(errorNode.className, 'activity-error');
   assert.strictEqual(errorNode.children.length, 2, 'error node should contain message text and a GitHub link');
   const link = errorNode.children[1];
@@ -183,10 +193,8 @@ test('loadGitHubActivity renders the empty-cache state instead of leaving loadin
   assert.strictEqual(link.target, '_blank', 'link should open in a new tab');
   assert.strictEqual(link.rel, 'noopener noreferrer', 'link should be a safe cross-origin link');
   assert.strictEqual(link.textContent, 'View activity on GitHub', 'link label should use the English translation by default');
-  assert.ok(
-    !descendants(feed).some(node => node.className === 'activity-updated'),
-    'error state should not show a last-updated line'
-  );
+  assert.ok(descendants(feed).some(node => node.className === 'activity-updated'), 'successful empty cache retains last-success time');
+  assert.strictEqual(errorNode.children[0].textContent, 'No recent public activity. ');
 });
 
 test('loadGitHubActivity renders a retry after the unchanged GitHub link when there is no cache and the fetch fails', async (t) => {
@@ -284,10 +292,7 @@ for (const { name, fetchResult } of [
       descendants(items[0]).find(node => node.tagName === 'a')?.href,
       'https://github.com/fabian20ro/cache-repo-0/tree/main'
     );
-    assert.ok(
-      !descendants(fixture.feed).some(node => node.className === 'activity-error'),
-      'refresh failure must not replace rendered cache with an error'
-    );
+    assert.ok(descendants(fixture.feed).some(node => node.className === 'activity-retry'), 'stale items coexist with a recoverable refresh warning');
     assert.strictEqual(fixture.storage.get(ACTIVITY_CACHE_KEY), fixture.cacheValue, 'failed refresh preserves cache');
   });
 }
@@ -701,7 +706,7 @@ test('loadGitHubActivity rejects a cache whose events array is not an actual Arr
   assert.strictEqual(fetchCalls, 1, 'non-Array events cache should fall back to fetching');
 });
 
-test('loadGitHubActivity coerces a non-array API response into an empty cached list', async (t) => {
+test('loadGitHubActivity rejects a non-array API response without caching false success', async (t) => {
   const now = Date.now();
   const originalDateNow = Date.now;
   const originalDocument = global.document;
@@ -754,10 +759,8 @@ test('loadGitHubActivity coerces a non-array API response into an empty cached l
 
   assert.strictEqual(fetchCalls, 1, 'should fetch exactly once');
   const cacheRaw = storage.get(ACTIVITY_CACHE_KEY);
-  assert.ok(cacheRaw, 'cache should be written even when API returns non-array data');
-  const cached = JSON.parse(cacheRaw);
-  assert.deepStrictEqual(cached.events, [], 'events array must be empty for non-array response');
-  assert.strictEqual(cached.timestamp, now, 'cache timestamp should reflect fetch moment');
+  assert.strictEqual(cacheRaw, undefined, 'invalid API response must not be recorded as a successful empty fetch');
+  assert.ok(descendants(feed).some(node => node.className === 'activity-retry'));
 });
 
 test('loadGitHubActivity expires the cache when timestamp exceeds TTL', async (t) => {
@@ -1361,7 +1364,7 @@ test('loadGitHubActivity truncates the cached event list to a maximum of 30 entr
   assert.strictEqual(cached.events.length, 30, 'cached events array must be truncated to at most 30 entries');
 });
 
-test('loadGitHubActivity writes empty events to cache and renders error state on successful fetch with zero results', async (t) => {
+test('loadGitHubActivity caches successful zero results and renders explicit empty state', async (t) => {
   const now = Date.now();
   const originalDateNow = Date.now;
   const originalDocument = global.document;
@@ -1416,9 +1419,8 @@ test('loadGitHubActivity writes empty events to cache and renders error state on
   const cached = JSON.parse(cacheRaw);
   assert.strictEqual(cached.timestamp, now, 'new cache timestamp should equal current time');
   assert.deepStrictEqual(cached.events, [], 'cached events array should match fetched data exactly (empty)');
-  // When renderActivity receives an empty list it calls showActivityError() which renders an error element with className "activity-error"
-  assert.strictEqual(feed.children.length, 1, 'feed should contain the error state element');
-  assert.strictEqual(feed.children[0].className, 'activity-error', 'error state should use activity-error class');
+  assert.strictEqual(feed.children.length, 1, 'feed should contain the rendered fragment');
+  assert.ok(descendants(feed).some(node => node.textContent === 'No recent public activity. '));
 });
 
 test('isCacheFresh rejects a cache with NaN or Infinity timestamp as stale', (t) => {
@@ -1917,7 +1919,7 @@ test('loadGitHubActivity ignores a cache whose JSON parses to an integer primiti
 });
 
 
-test('loadGitHubActivity handles a non-array response body defensively via empty-list fallback', async (t) => {
+test('loadGitHubActivity exposes recovery rather than caching a malformed API response', async (t) => {
   const now = Date.now();
   const originalDateNow = Date.now;
   const originalDocument = global.document;
@@ -1968,11 +1970,8 @@ test('loadGitHubActivity handles a non-array response body defensively via empty
 
   assert.strictEqual(fetchCalls, 1, 'should fetch exactly once on a fresh cache');
   const cacheRaw = storage.get(ACTIVITY_CACHE_KEY);
-  assert.ok(cacheRaw, 'cache should be written after fetch completes (even with empty list)');
-  const cached = JSON.parse(cacheRaw);
-  assert.strictEqual(cached.events.length, 0, 'non-array response should result in empty events array');
-  // When renderActivity receives an empty list it calls showActivityError() which renders an error element.
-  assert.strictEqual(feed.children[0].className, 'activity-error', 'error state should be rendered for no-events response');
+  assert.strictEqual(cacheRaw, undefined, 'invalid payload must not overwrite cache');
+  assert.strictEqual(feed.children[0].className, 'activity-error', 'invalid response renders an error');
 });
 
 test('isCacheFresh rejects a cache object missing the timestamp property entirely', () => {
@@ -2218,7 +2217,7 @@ test('loadGitHubActivity truncates cached events to the first 30', async (t) => 
 });
 
 
-test('loadGitHubActivity shows error state when a fresh cache holds zero events and does not fetch', async (t) => {
+test('loadGitHubActivity shows empty state when a fresh cache holds zero events and does not fetch', async (t) => {
   const now = Date.now();
   const originalDateNow = Date.now;
   const originalDocument = global.document;
@@ -2271,9 +2270,9 @@ test('loadGitHubActivity shows error state when a fresh cache holds zero events 
   assert.strictEqual(
     feed.children.length,
     1,
-    'feed should contain the rendered error state element'
+    'feed should contain the rendered empty-state fragment'
   );
-  assert.strictEqual(feed.children[0].className, 'activity-error', 'empty fresh cache must render activity-error class');
+  assert.ok(descendants(feed).some(node => node.textContent === 'No recent public activity. '));
 });
 
 test('loadGitHubActivity does not truncate events that are exactly at the 30-entry limit', async (t) => {
@@ -2434,6 +2433,8 @@ test('loadGitHubActivity refetches when the cached value is a JSON primitive (ar
   ];
 
   for (const { label, value } of rejects) {
+    delete require.cache[require.resolve('../app.js')];
+    app = require('../app.js');
     storageMock.set(ACTIVITY_CACHE_KEY, value);
     feed.replaceChildren(createElement('div'));
     fetchCalls = 0;

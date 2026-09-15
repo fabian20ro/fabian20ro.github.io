@@ -280,20 +280,18 @@ test('getBadgeActionsUrl object and symbol inputs return empty string', () => {
   assert.strictEqual(getBadgeActionsUrl(true), '', 'getBadgeActionsUrl(boolean) returns empty string');
 });
 
-test('getBadgeActionsUrl idempotence — already-points-to-actions or bare-repo-base return repo base', () => {
+test('getBadgeActionsUrl resolves once to Actions from badges and repository roots', () => {
   setLang('en');
-  // Production contract — getBadgeActionsUrl must be idempotent: when the badge URL already
-  // points to /actions or is a bare repo base, it returns the repo base unchanged. Prevents
-  // double-appending /actions on repeated calls.
+  // Resolve all badge variants to one Actions destination; never nest /actions twice.
   const actionsUrl = 'https://github.com/fabian20ro/emot-id/actions';
-  assert.strictEqual(getBadgeActionsUrl(actionsUrl), 'https://github.com/fabian20ro/emot-id', "idempotent: URL already at /actions returns bare repo base");
+  assert.strictEqual(getBadgeActionsUrl(actionsUrl), actionsUrl, 'Actions destination remains stable');
 
   const badgeAtActions = 'https://github.com/fabian20ro/alt-infotb/actions/workflows/Deploy/badge.svg';
-  assert.strictEqual(getBadgeActionsUrl(badgeAtActions), 'https://github.com/fabian20ro/alt-infotb', "idempotent: URL inside /actions subtree returns bare repo base");
+  assert.strictEqual(getBadgeActionsUrl(badgeAtActions), 'https://github.com/fabian20ro/alt-infotb/actions');
 
-  // Regression: a badge URL that is itself the repo base (e.g. from manual config) must pass through unchanged.
+  // A bare repository URL also resolves to its Actions dashboard.
   const bareBase = 'https://github.com/fabian20ro/listen-to-articles';
-  assert.strictEqual(getBadgeActionsUrl(bareBase), bareBase, "idempotent: bare repo base URL returns itself");
+  assert.strictEqual(getBadgeActionsUrl(bareBase), bareBase + '/actions');
 });
 
 test('getBadgeActionsUrl appends /actions to a badge URL and passes through non-GitHub URLs', () => {

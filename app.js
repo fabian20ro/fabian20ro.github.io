@@ -4,9 +4,6 @@ const GITHUB_USERNAME = 'fabian20ro';
 const ACTIVITY_LIMIT = 10;
 const ACTIVITY_CACHE_KEY = 'github-activity-cache-v1';
 const ACTIVITY_CACHE_TTL_MS = 10 * 60 * 1000;
-const PAGE_REFRESH_MARKER_KEY = 'page-refresh-marker-v1';
-const PAGE_LAST_SEEN_AT_KEY = 'page-last-seen-at-v1';
-const PAGE_STALE_REOPEN_THRESHOLD_MS = 12 * 60 * 60 * 1000;
 
 const SUPPORTED_LANGUAGES = ['en', 'ro', 'fr', 'es', 'de', 'it', 'pt'];
 const LANG_FLAGS = { en: '🇬🇧', ro: '🇷🇴', fr: '🇫🇷', es: '🇪🇸', de: '🇩🇪', it: '🇮🇹', pt: '🇵🇹' };
@@ -223,7 +220,7 @@ const translations = {
     viewGithub: 'View on GitHub →',
     copy: 'Copy link',
     copySuccess: 'Copied!',
-    viewAllGithub: 'View all projects on GitHub &rarr;',
+    viewAllGithub: 'View all projects on GitHub →',
     next_thought: 'Next thought',
     app_status: 'App status',
     copy: 'Copy link',
@@ -234,6 +231,9 @@ const translations = {
     toggleTheme: 'Toggle theme',
     activityLoading: 'Loading activity...',
     activityError: 'Could not load activity.',
+    activityEmpty: 'No recent public activity.',
+    activityStale: 'Showing saved activity; could not refresh.',
+    activityUpdated: 'Last updated:',
     activityRetry: 'Try again',
     activityViewGithub: 'View activity on GitHub',
     pushedTo: 'pushed to',
@@ -314,6 +314,9 @@ const translations = {
     toggleTheme: 'Schimbă tema',
     activityLoading: 'Se încarcă activitatea...',
     activityError: 'Nu s-a putut încărca activitatea.',
+    activityEmpty: 'Nicio activitate publică recentă.',
+    activityStale: 'Activitate salvată; actualizarea nu a reușit.',
+    activityUpdated: 'Ultima actualizare:',
     activityRetry: 'Încearcă din nou',
     activityViewGithub: 'Vezi activitatea pe GitHub',
     pushedTo: 'a făcut push în',
@@ -392,6 +395,9 @@ const translations = {
     toggleTheme: 'Changer le thème',
     activityLoading: "Chargement de l'activité...",
     activityError: "Impossible de charger l'activité.",
+    activityEmpty: 'Aucune activité publique récente.',
+    activityStale: 'Activité enregistrée ; impossible de l’actualiser.',
+    activityUpdated: 'Dernière actualisation :',
     activityRetry: 'Réessayer',
     activityViewGithub: "Voir l'activité sur GitHub",
     pushedTo: 'a poussé dans',
@@ -476,6 +482,9 @@ const translations = {
     toggleTheme: 'Cambiar tema',
     activityLoading: 'Cargando actividad...',
     activityError: 'No se pudo cargar la actividad.',
+    activityEmpty: 'No hay actividad pública reciente.',
+    activityStale: 'Actividad guardada; no se pudo actualizar.',
+    activityUpdated: 'Última actualización:',
     activityRetry: 'Volver a intentar',
     activityViewGithub: 'Ver actividad en GitHub',
     pushedTo: 'hizo push en',
@@ -557,6 +566,9 @@ const translations = {
     toggleTheme: 'Design ändern',
     activityLoading: 'Aktivität wird geladen...',
     activityError: 'Aktivität konnte nicht geladen werden.',
+    activityEmpty: 'Keine aktuelle öffentliche Aktivität.',
+    activityStale: 'Gespeicherte Aktivität; Aktualisierung fehlgeschlagen.',
+    activityUpdated: 'Zuletzt aktualisiert:',
     activityRetry: 'Erneut versuchen',
     activityViewGithub: 'Aktivität auf GitHub ansehen',
     pushedTo: 'hat gepusht in',
@@ -638,6 +650,9 @@ const translations = {
     toggleTheme: 'Cambia tema',
     activityLoading: 'Caricamento attività...',
     activityError: "Impossibile caricare l'attività.",
+    activityEmpty: 'Nessuna attività pubblica recente.',
+    activityStale: 'Attività salvata; aggiornamento non riuscito.',
+    activityUpdated: 'Ultimo aggiornamento:',
     activityRetry: 'Riprova',
     activityViewGithub: "Vedi l'attività su GitHub",
     pushedTo: 'ha fatto push in',
@@ -719,6 +734,9 @@ const translations = {
     toggleTheme: 'Alterar tema',
     activityLoading: 'Carregando atividade...',
     activityError: 'Não foi possível carregar a atividade.',
+    activityEmpty: 'Nenhuma atividade pública recente.',
+    activityStale: 'Atividade guardada; não foi possível atualizar.',
+    activityUpdated: 'Última atualização:',
     activityRetry: 'Tentar novamente',
     activityViewGithub: 'Ver atividade no GitHub',
     pushedTo: 'fez push em',
@@ -749,8 +767,15 @@ const translations = {
 };
 
 let currentLang = 'en';
-let activityEvents = [];
-let lastCacheRefreshAt = null;
+const activity = {
+  events: [],
+  updatedAt: null,
+  status: 'idle',
+  started: false,
+  pending: null,
+  nextAttemptAt: 0,
+  retryNotBefore: 0
+};
 
 function storageGet(key) {
   try {
@@ -763,22 +788,6 @@ function storageGet(key) {
 function storageSet(key, value) {
   try {
     localStorage.setItem(key, value);
-  } catch {
-    // Ignore storage errors in restricted/private contexts.
-  }
-}
-
-function sessionGet(key) {
-  try {
-    return sessionStorage.getItem(key);
-  } catch {
-    return null;
-  }
-}
-
-function sessionSet(key, value) {
-  try {
-    sessionStorage.setItem(key, value);
   } catch {
     // Ignore storage errors in restricted/private contexts.
   }
@@ -898,9 +907,7 @@ function setLang(lang) {
 
   storageSet('lang', currentLang);
 
-  if (activityEvents.length > 0) {
-    renderActivity(activityEvents);
-  }
+  if (activity.started) renderActivity();
   renderProjectCards();
 }
 
@@ -918,13 +925,7 @@ function getBadgeActionsUrl(badgeUrl) {
     return badgeUrl;
   }
 
-  // Guard against double-appending /actions (idempotence):
-  // if the URL is already a bare repo base or already contains /actions, return it unchanged.
   const repoBase = match[0];
-  if (repoBase === badgeUrl || badgeUrl.startsWith(repoBase + '/actions')) {
-    return repoBase;
-  }
-
   return repoBase + '/actions';
 }
 
@@ -1290,21 +1291,17 @@ function createActivityItem(event) {
   const time = document.createElement('div');
   time.className = 'activity-time';
   time.textContent = getRelativeTime(event.created_at);
+  time.setAttribute('data-activity-time', event.created_at || '');
 
   content.append(createActivityText(event), time);
   item.append(icon, content);
   return item;
 }
 
-function showActivityError(canRetry = false) {
-  const feed = document.getElementById('activity-feed');
-  if (!feed) {
-    return;
-  }
-
+function activityNotice(key, canRetry = false) {
   const error = document.createElement('div');
   error.className = 'activity-error';
-  appendText(error, `${t('activityError')} `);
+  appendText(error, `${t(key)} `);
 
   const link = document.createElement('a');
   link.href = `https://github.com/${GITHUB_USERNAME}?tab=activity`;
@@ -1319,27 +1316,31 @@ function showActivityError(canRetry = false) {
     retry.className = 'activity-retry';
     retry.textContent = t('activityRetry');
     retry.setAttribute('data-i18n', 'activityRetry');
+    retry.disabled = activity.pending !== null || Date.now() < activity.retryNotBefore;
     retry.onclick = async () => {
       if (retry.disabled) {
         return;
       }
       retry.disabled = true;
-      await loadGitHubActivity();
+      await loadGitHubActivity({ force: true });
     };
     error.appendChild(retry);
   }
 
-  feed.replaceChildren(error);
+  return error;
 }
 
-function renderActivity(events, updatedAtMs) {
+function renderActivity() {
   const feed = document.getElementById('activity-feed');
   if (!feed) {
     return;
   }
 
-  if (!Array.isArray(events) || events.length === 0) {
-    showActivityError();
+  const { events, updatedAt, status } = activity;
+  if (events.length === 0 && updatedAt === null) {
+    feed.replaceChildren(
+      activityNotice(status === 'error' ? 'activityError' : 'activityLoading', status === 'error')
+    );
     return;
   }
 
@@ -1347,15 +1348,30 @@ function renderActivity(events, updatedAtMs) {
   for (const event of events.slice(0, ACTIVITY_LIMIT)) {
     fragment.appendChild(createActivityItem(event));
   }
-
-  if (Number.isFinite(updatedAtMs)) {
+  if (events.length === 0) fragment.appendChild(activityNotice('activityEmpty'));
+  if (status === 'error') fragment.appendChild(activityNotice('activityStale', true));
+  if (Number.isFinite(updatedAt) && updatedAt <= Date.now()) {
     const updated = document.createElement('p');
     updated.className = 'activity-updated';
-    updated.textContent = getRelativeTime(new Date(updatedAtMs).toISOString());
+    updated.setAttribute('data-activity-updated', '');
+    updated.textContent = `${t('activityUpdated')} ${getRelativeTime(new Date(updatedAt).toISOString())}`;
     fragment.appendChild(updated);
   }
 
   feed.replaceChildren(fragment);
+}
+
+function repaintActivityTimes() {
+  // Do not replace links or retry controls on every timer tick: preserve keyboard focus.
+  for (const node of document.querySelectorAll('[data-activity-time]')) {
+    node.textContent = getRelativeTime(node.getAttribute('data-activity-time'));
+  }
+  for (const node of document.querySelectorAll('[data-activity-updated]')) {
+    node.textContent = `${t('activityUpdated')} ${getRelativeTime(new Date(activity.updatedAt).toISOString())}`;
+  }
+  for (const node of document.querySelectorAll('.activity-retry')) {
+    node.disabled = activity.pending !== null || Date.now() < activity.retryNotBefore;
+  }
 }
 
 function readActivityCache() {
@@ -1366,7 +1382,14 @@ function readActivityCache() {
 
   try {
     const parsed = JSON.parse(cacheRaw);
-    if (!parsed || !Array.isArray(parsed.events) || typeof parsed.timestamp !== 'number') {
+    if (
+      !parsed ||
+      !Array.isArray(parsed.events) ||
+      !Number.isFinite(parsed.timestamp) ||
+      !Number.isFinite(new Date(parsed.timestamp).getTime()) ||
+      parsed.timestamp > Date.now() ||
+      parsed.events.some((event) => !event || typeof event !== 'object')
+    ) {
       return null;
     }
     return parsed;
@@ -1375,9 +1398,9 @@ function readActivityCache() {
   }
 }
 
-function writeActivityCache(events) {
+function writeActivityCache(events, timestamp) {
   const payload = {
-    timestamp: Date.now(),
+    timestamp,
     events: events.slice(0, 30)
   };
 
@@ -1394,93 +1417,87 @@ function isCacheFresh(cache) {
 }
 
 async function fetchGitHubActivity() {
-  const response = await fetch(`https://api.github.com/users/${GITHUB_USERNAME}/events/public`, {
-    headers: {
-      Accept: 'application/vnd.github+json'
-    }
-  });
-
-  if (!response.ok) {
-    throw new Error(`GitHub API request failed with status ${response.status}`);
-  }
-
-  const events = await response.json();
-  return Array.isArray(events) ? events : [];
-}
-
-async function loadGitHubActivity() {
-  const cache = readActivityCache();
-
-  if (cache) {
-    activityEvents = cache.events.slice(0, ACTIVITY_LIMIT);
-    renderActivity(activityEvents, cache.timestamp);
-  }
-
-  if (cache && isCacheFresh(cache)) {
-    return;
-  }
-
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 15_000);
   try {
-    const events = await fetchGitHubActivity();
-    activityEvents = events.slice(0, ACTIVITY_LIMIT);
-    lastCacheRefreshAt = Date.now();
-    writeActivityCache(events);
-    renderActivity(activityEvents, lastCacheRefreshAt);
-  } catch {
-    if (activityEvents.length === 0) {
-      showActivityError(true);
+    const response = await fetch(`https://api.github.com/users/${GITHUB_USERNAME}/events/public`, {
+      headers: { Accept: 'application/vnd.github+json' },
+      signal: controller.signal
+    });
+    if (!response.ok) {
+      if (response.status === 403 || response.status === 429) {
+        const retry = response.headers?.get('retry-after');
+        const reset = Number(response.headers?.get('x-ratelimit-reset')) * 1000;
+        const retryAt =
+          retry && Number.isFinite(Number(retry))
+            ? Date.now() + Number(retry) * 1000
+            : Date.parse(retry);
+        activity.retryNotBefore = Math.max(
+          Date.now() + 60_000,
+          Number.isFinite(retryAt) ? retryAt : 0,
+          Number.isFinite(reset) ? reset : 0
+        );
+      }
+      throw new Error(`GitHub API request failed with status ${response.status}`);
     }
+    const events = await response.json();
+    if (!Array.isArray(events) || events.some((event) => !event || typeof event !== 'object'))
+      throw new Error('Invalid GitHub events');
+    return events;
+  } finally {
+    clearTimeout(timeout);
   }
 }
 
-function markPageSeenNow() {
-  storageSet(PAGE_LAST_SEEN_AT_KEY, String(Date.now()));
-}
-
-function refreshPageOncePerSession() {
-  if (sessionGet(PAGE_REFRESH_MARKER_KEY) === '1') {
+async function loadGitHubActivity({ force = false } = {}) {
+  if (activity.pending) return activity.pending;
+  if (!activity.started) {
+    activity.started = true;
+    const cache = readActivityCache();
+    if (cache) {
+      activity.events = cache.events.slice(0, ACTIVITY_LIMIT);
+      activity.updatedAt = cache.timestamp;
+      activity.status = 'ready';
+    }
+    renderActivity();
+  } else {
+    repaintActivityTimes();
+  }
+  if (
+    Date.now() < activity.retryNotBefore ||
+    (!force &&
+      (Date.now() < activity.nextAttemptAt || isCacheFresh({ timestamp: activity.updatedAt })))
+  )
     return;
-  }
-
-  sessionSet(PAGE_REFRESH_MARKER_KEY, '1');
-  window.location.reload();
+  activity.status = 'loading';
+  activity.pending = (async () => {
+    try {
+      const events = await fetchGitHubActivity();
+      activity.events = events.slice(0, ACTIVITY_LIMIT);
+      activity.updatedAt = Date.now();
+      activity.status = 'ready';
+      activity.nextAttemptAt = 0;
+      activity.retryNotBefore = 0;
+      writeActivityCache(events, activity.updatedAt);
+    } catch {
+      activity.status = 'error';
+      activity.nextAttemptAt = Date.now() + 60_000;
+    } finally {
+      activity.pending = null;
+      renderActivity();
+    }
+  })();
+  return activity.pending;
 }
 
-function maybeRefreshAfterLongGap() {
-  const lastSeenRaw = storageGet(PAGE_LAST_SEEN_AT_KEY);
-  const lastSeenAt = Number(lastSeenRaw);
-  const now = Date.now();
-
-  markPageSeenNow();
-
-  if (!Number.isFinite(lastSeenAt)) {
-    return;
-  }
-
-  if (now - lastSeenAt >= PAGE_STALE_REOPEN_THRESHOLD_MS) {
-    refreshPageOncePerSession();
-  }
-}
-
-function setupReopenRefreshGuard() {
-  maybeRefreshAfterLongGap();
-
-  window.addEventListener('pageshow', (event) => {
-    if (event.persisted) {
-      refreshPageOncePerSession();
-      return;
-    }
-
-    maybeRefreshAfterLongGap();
-  });
-
-  window.addEventListener('pagehide', markPageSeenNow);
-
-  document.addEventListener('visibilitychange', () => {
-    if (document.visibilityState === 'hidden') {
-      markPageSeenNow();
-    }
-  });
+function setupActivityRefresh() {
+  const refresh = () => {
+    if (document.visibilityState !== 'hidden' && activity.started) return loadGitHubActivity();
+  };
+  window.addEventListener('pageshow', refresh);
+  document.addEventListener('visibilitychange', refresh);
+  // A minute tick repaints relative times; the TTL/backoff still controls network requests.
+  window.setInterval(refresh, 60_000);
 }
 
 function shuffleThankYouOrder() {
@@ -1556,7 +1573,7 @@ function startThankYouRotation() {
 }
 
 function init() {
-  setupReopenRefreshGuard();
+  setupActivityRefresh();
   startThankYouRotation();
   renderProjectCards();
 
@@ -1603,26 +1620,26 @@ function init() {
 if (typeof window !== 'undefined') {
   init();
 }
-module.exports = {
-  THANK_YOU_LANGUAGES,
-  getDefaultLang,
-  getRelativeTime,
-  getBadgeActionsUrl,
-  isCacheFresh,
-  loadGitHubActivity,
-  normalizeLang,
-  getToggleTargetLang,
-  parseRepoName,
-  buildRepoUrl,
-  t,
-  translations,
-  setLang,
-  projectSections,
-  currentLang,
-  getEventIcon,
-  createCopyButton,
-  createCardHeader,
-  renderThankYouMessage,
-  startThankYouRotation,
-  lastCacheRefreshAt
-};
+if (typeof module !== 'undefined' && module.exports)
+  module.exports = {
+    THANK_YOU_LANGUAGES,
+    getDefaultLang,
+    getRelativeTime,
+    getBadgeActionsUrl,
+    isCacheFresh,
+    loadGitHubActivity,
+    normalizeLang,
+    getToggleTargetLang,
+    parseRepoName,
+    buildRepoUrl,
+    t,
+    translations,
+    setLang,
+    projectSections,
+    currentLang,
+    getEventIcon,
+    createCopyButton,
+    createCardHeader,
+    renderThankYouMessage,
+    startThankYouRotation
+  };

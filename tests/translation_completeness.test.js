@@ -136,6 +136,12 @@ describe('translation completeness', () => {
       app.translations.ro.title,
       't("title", "RO-RO") should resolve to the Romanian value'
     );
+    // Underscore delimiter (distinct branch in normalizeLang) also resolves
+    assert.strictEqual(
+      t('title', 'ro_RO'),
+      app.translations.ro.title,
+      't("title", "ro_RO") should resolve to the Romanian value'
+    );
 
     // Unknown keys echo back regardless of the explicit language
     assert.strictEqual(

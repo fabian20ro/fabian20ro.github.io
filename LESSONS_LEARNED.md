@@ -29,6 +29,8 @@ Obsolete lessons move to the Archive section at bottom (with date and reason). N
 
 ## Architecture
 
+**[2026-09-15]** Give a live feed one state owner — Keep events, last successful fetch, status, and pending request together. Locale changes render that state; visibility/pageshow/timer triggers share the same TTL and request. Relative-time repaint must preserve DOM identity and keyboard focus. Do not combine this lifecycle with a second full-page reload guard.
+
 **[2026-06-06]** Split large static browser data into UMD-style data files — When a classic-script browser app also supports CommonJS imports for tests, large static datasets can move out of `app.js` into a separate script that assigns to `globalThis` in the browser and `module.exports` in Node. Load the data script before `app.js` and keep a guarded loader in app logic.
 
 <!-- Format: **[YYYY-MM-DD]** Brief title — Explanation -->
@@ -61,6 +63,8 @@ Obsolete lessons move to the Archive section at bottom (with date and reason). N
 <!-- Format: **[YYYY-MM-DD]** Brief title — Explanation -->
 
 ## CI / Tooling
+
+**[2026-09-15]** Test user-observable lifecycle transitions, not exported snapshots — Assigning a CommonJS-exported primitive does not mutate internal module state or prove a fetch updated it. Use isolated actual-script fixtures, fake time/network, rendered labels and request counts. Classic browser execution must work without `module`. Acceptances should catch broken behavior even when older tests assert that behavior as the contract.
 
 **[2026-09-12]** Assert semantic activity items, not fragment child counts — The activity-cache DOM stub retains document fragments as wrapper nodes, unlike browsers. Select `.activity-item` descendants to support both shapes and optional status siblings; verify event-link order separately. Shared cache fixtures must restore `Date.now` and every replaced global even after failure tests.
 

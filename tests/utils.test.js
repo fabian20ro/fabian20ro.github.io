@@ -37,6 +37,21 @@ try {
   assert.strictEqual(getRelativeTime(new Date(now - 3600000).toISOString()), '1 hour ago');
   assert.strictEqual(getRelativeTime(new Date(now - 86400000).toISOString()), '1 day ago');
 
+  // Test case 5b: plural unit branches — minutes, hours, days, months, years.
+  assert.strictEqual(getRelativeTime(new Date(now - 5 * 60000).toISOString()), '5 minutes ago');
+  assert.strictEqual(getRelativeTime(new Date(now - 3 * 3600000).toISOString()), '3 hours ago');
+  assert.strictEqual(getRelativeTime(new Date(now - 5 * 86400000).toISOString()), '5 days ago');
+  assert.strictEqual(getRelativeTime(new Date(now - 45 * 86400000).toISOString()), '1 month ago');
+  assert.strictEqual(getRelativeTime(new Date(now - 90 * 86400000).toISOString()), '3 months ago');
+  assert.strictEqual(
+    getRelativeTime(new Date(now - 360 * 86400000).toISOString()),
+    '12 months ago'
+  );
+  assert.strictEqual(
+    getRelativeTime(new Date(now - 730 * 86400000).toISOString()),
+    '2 years ago'
+  );
+
   // Test case 6: all projectSections badgeUrl patterns — lock in coverage for every live project and repo.
   const patternA = 'https://github.com/fabian20ro/emot-id/workflows/Deploy%20to%20GitHub%20Pages/badge.svg';
   assert.strictEqual(getBadgeActionsUrl(patternA), 'https://github.com/fabian20ro/emot-id/actions');
@@ -79,18 +94,18 @@ try {
 
   const patternI =
     'https://github.com/fabian20ro/prompt-to-image-variations/actions/workflows/pages/pages-build-deployment/badge.svg';
-  // /actions prefix already present → return bare repo base (idempotence).
+  // Modern workflow badge retains its Actions destination.
   assert.strictEqual(
     getBadgeActionsUrl(patternI),
-    'https://github.com/fabian20ro/prompt-to-image-variations'
+    'https://github.com/fabian20ro/prompt-to-image-variations/actions'
   );
 
-  // Test case 7: idempotence — bare repo base stays unchanged; URLs already under /actions resolve to the bare repo base (no double-nesting).
+  // Test case 7: idempotence — all GitHub variants resolve to one Actions suffix.
   const repoBase = 'https://github.com/fabian20ro/emot-id';
-  assert.strictEqual(getBadgeActionsUrl(repoBase), repoBase);
+  assert.strictEqual(getBadgeActionsUrl(repoBase), repoBase + '/actions');
   assert.strictEqual(
     getBadgeActionsUrl('https://github.com/fabian20ro/emot-id/actions'),
-    repoBase
+    repoBase + '/actions'
   );
 
   // Test case 8: non-fabian20ro user/org — ensures the regex is not org-hardcoded.
@@ -114,7 +129,7 @@ try {
 
   // Test case 11: /actions already in mid-path with deeper nesting — idempotence still applies.
   const patternM = 'https://github.com/fabian20ro/emot-id/actions/steps/build/badge.svg';
-  assert.strictEqual(getBadgeActionsUrl(patternM), 'https://github.com/fabian20ro/emot-id');
+  assert.strictEqual(getBadgeActionsUrl(patternM), 'https://github.com/fabian20ro/emot-id/actions');
 
   // Test case 12: GitHub URL without workflow prefix — current regex matches org/repo regardless, so it still appends /actions (known limitation).
   const patternN = 'https://github.com/fabian20ro/emot-id/blob/main/README.md';
@@ -136,7 +151,7 @@ try {
     'https://github.com/fabian20ro/emot-id/actions/workflows/ci.yml/badge.svg';
   assert.strictEqual(
     getBadgeActionsUrl(patternP),
-    'https://github.com/fabian20ro/emot-id'
+    'https://github.com/fabian20ro/emot-id/actions'
   );
 
   // Test case 15: a GitHub-shaped URL that isn't https — must be rejected by regex and returned unchanged.
