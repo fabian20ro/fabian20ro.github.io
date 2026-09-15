@@ -459,18 +459,33 @@ test('projectSections linkKey consistency and resolution', () => {
     assert.strictEqual(section.linkKey, expectedRepoLinkKey, `repo ${i}: linkKey must be '${expectedRepoLinkKey}' (got '${section.linkKey}')`);
   });
 
-  // Both fixed linkKey values must resolve through t() to non-empty strings in all languages.
+  // Both fixed linkKey values must resolve through t(key, lang) to a non-empty string in
+  // every language. The previous version called t() with no language argument, so it always
+  // resolved via the default currentLang (en) and could not catch a non-default language
+  // table whose visitSite/viewGithub entry was missing or empty. Passing lang explicitly
+  // exercises the per-language dispatch branch of t() and pins each language's stored value.
   Object.entries(app.translations).forEach(([lang, trans]) => {
-    const liveVal = app.t(expectedLiveLinkKey);
+    const liveVal = app.t(expectedLiveLinkKey, lang);
     assert.ok(expectedLiveLinkKey in trans, `t("${expectedLiveLinkKey}") must work in "${lang}"`);
     assert.strictEqual(typeof liveVal, 'string', `t("${expectedLiveLinkKey}") in "${lang}" must return string (got ${typeof liveVal})`);
     const trimmed = String(liveVal).trim();
     assert.ok(trimmed.length > 0 && trimmed !== expectedLiveLinkKey, `t("${expectedLiveLinkKey}") resolved to empty or raw key in "${lang}"`);
+    assert.strictEqual(
+      liveVal,
+      trans[expectedLiveLinkKey],
+      `t("${expectedLiveLinkKey}", "${lang}") must dispatch to the "${lang}" table value (got "${liveVal}", expected "${trans[expectedLiveLinkKey]}")`
+    );
 
-    const repoVal = app.t(expectedRepoLinkKey);
+    const repoVal = app.t(expectedRepoLinkKey, lang);
+    assert.ok(expectedRepoLinkKey in trans, `t("${expectedRepoLinkKey}") must work in "${lang}"`);
     assert.strictEqual(typeof repoVal, 'string', `t("${expectedRepoLinkKey}") in "${lang}" must return string (got ${typeof repoVal})`);
     const trimmedRepo = String(repoVal).trim();
     assert.ok(trimmedRepo.length > 0 && trimmedRepo !== expectedRepoLinkKey, `t("${expectedRepoLinkKey}") resolved to empty or raw key in "${lang}"`);
+    assert.strictEqual(
+      repoVal,
+      trans[expectedRepoLinkKey],
+      `t("${expectedRepoLinkKey}", "${lang}") must dispatch to the "${lang}" table value (got "${repoVal}", expected "${trans[expectedRepoLinkKey]}")`
+    );
   });
 });
 
