@@ -9,8 +9,9 @@ Static portfolio page for live demos, repositories, and recent GitHub activity.
 - Light/dark theme with persisted preference and system-default fallback.
 - English/Romanian localization with dynamic `<html lang>` updates and normalized locale tags, including whitespace-trimmed values.
 - The language toggle also updates visible chrome and ARIA labels in both languages.
-- GitHub activity feed lazy-loads when it scrolls into view, refreshes once after a long away period so stale tabs catch up, and uses a local cache (10-minute TTL) to reduce API calls and keep the last rendered feed visible if refresh fails.
-- Failed activity requests with no rendered events offer a localized retry button after the existing GitHub link. Retry is disabled while pending; another failed request leaves a usable retry. Fresh empty caches retain their existing state and TTL.
+- GitHub activity lazy-loads when scrolled into view. A 10-minute cache TTL controls refreshes on every visible-tab return, page restore, and a one-minute visible tick; hidden tabs do not poll. Overlapping triggers share one request. No forced page reload.
+- Relative times repaint without replacing focused controls. The styled, localized “Last updated” footer records the last successful fetch, persists through language changes, and never advances on failure.
+- Failed requests retain cached activity with a localized warning/retry; successful empty responses are distinct from errors. Requests abort after 15 seconds. Automatic failures retry no more than once per minute; manual retry remains available except while pending or during GitHub's rate-limit window.
 - DOM-based activity rendering (no raw `innerHTML` from API data).
 - Keyboard-accessible controls with visible focus states.
 

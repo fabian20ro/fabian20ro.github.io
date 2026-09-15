@@ -140,10 +140,9 @@ try {
 
   // 7. Strengthen: Test getBadgeActionsUrl — strict boundary contract (idempotent)
   const { getBadgeActionsUrl } = app;
-  // Bare repo base → returned as-is (no spurious /actions append)
-  assert.strictEqual(getBadgeActionsUrl('https://github.com/owner/repo'), 'https://github.com/owner/repo');
-  // Already contains /actions → stripped back to bare repo base
-  assert.strictEqual(getBadgeActionsUrl('https://github.com/owner/repo/actions'), 'https://github.com/owner/repo');
+  // Both forms navigate to Actions; repeated resolution is idempotent.
+  assert.strictEqual(getBadgeActionsUrl('https://github.com/owner/repo'), 'https://github.com/owner/repo/actions');
+  assert.strictEqual(getBadgeActionsUrl('https://github.com/owner/repo/actions'), 'https://github.com/owner/repo/actions');
   assert.strictEqual(getBadgeActionsUrl(null), '');
   assert.strictEqual(getBadgeActionsUrl(undefined), '');
   // Non-GitHub URLs pass through unchanged (no mangle)
@@ -195,17 +194,8 @@ try {
   assert.strictEqual(t('title', ''), "Proiectele lui Fabian", "empty string lang falls back to currentLang");
   assert.strictEqual(t('title', 42), "Fabian's Projects", "t(key, number $lang) falls back to en");
 
-  // 8g. Strengthen: Test lastCacheRefreshAt contract (synchronous — no fetch polyfill needed)
-  const { lastCacheRefreshAt } = app;
-  assert.strictEqual(lastCacheRefreshAt, null, 'lastCacheRefreshAt starts as null before any fetch');
-
-  // Simulate a successful refresh by directly setting the value via the internal setter pattern.
-  // We verify that loadGitHubActivity would update it correctly by patching Date.now() temporarily.
-  const origNow = global.Date.now;
-  global.Date.now = () => 1751600000000;
-  app.lastCacheRefreshAt = Date.now();
-  assert.strictEqual(app.lastCacheRefreshAt, 1751600000000, 'lastCacheRefreshAt can be updated to a finite number');
-  global.Date.now = origNow;
+  // Last-success behavior is exercised through fetch/render in activityLifecycle.test.js.
+  // Assigning an exported primitive never tested the internal timestamp.
 
   // 9. Strengthen: Test getEventIcon — full mapping coverage with fallback
   const eventIconMap = {
@@ -286,7 +276,8 @@ try {
       return new Response(JSON.stringify([{ type: 'FreshEvent', repo: { name: 'new-repo' }, created_at: new Date(Date.now()).toISOString(), payload: {} }]));
     };
 
-    await app.loadGitHubActivity();
+    delete require.cache[require.resolve('../app.js')];
+    await require('../app.js').loadGitHubActivity();
     assert.ok(fetchCalls >= 1, `fetch was called for scenario "${scenarioName}" — corrupted cache must be replaced`);
     console.log(`Corrupted-cache rejection test passed (${scenarioName})!`);
   }
@@ -339,7 +330,6 @@ try {
   assert.strictEqual(isCacheFresh(futureValid), false, 'isCacheFresh rejects future-dated timestamp');
 
   // 10. Strengthen: Test loadGitHubActivity contract — stale cache must be replaced by fresh fetch
-  const { loadGitHubActivity } = app;
 
   function createElement(tagName) {
     return {
@@ -351,7 +341,7 @@ try {
     };
   }
 
-  (async () => {
+  await (async () => {
     const feed = createElement('div');
     feed.replaceChildren(createElement('div'));
     let fetchCalls = 0;
@@ -375,15 +365,16 @@ try {
       return new Response(JSON.stringify([{ type: 'FreshEvent', repo: { name: 'new-repo' }, created_at: new Date(Date.now()).toISOString(), payload: {} }]));
     };
 
-    await loadGitHubActivity();
+    delete require.cache[require.resolve('../app.js')];
+    await require('../app.js').loadGitHubActivity();
 
     // Contract: stale cache (older than 10-min TTL) must trigger at least one network call.
     assert.strictEqual(fetchCalls, 1, 'stale cache should trigger refresh');
     console.log('Stale-cache regression test passed!');
   })().catch(err => { console.error(err); process.exit(1); });
 
-  // Verify lastCacheRefreshAt gets updated after a successful fetch path through loadGitHubActivity.
-  (async () => {
+  // Verify last success through rendered output, not an assignable export snapshot.
+  await (async () => {
     const feed = createElement('div');
     feed.replaceChildren(createElement('fragment'));
 
@@ -409,10 +400,11 @@ try {
       return new Response(JSON.stringify([{ type: 'PushEvent', repo: { name: 'fresh-repo' }, created_at: new Date().toISOString(), payload: {} }]));
     };
 
-    await loadGitHubActivity();
+    delete require.cache[require.resolve('../app.js')];
+    await require('../app.js').loadGitHubActivity();
 
     assert.ok(didFetch, 'should have called fetch when no cache exists');
-    assert.strictEqual(app.lastCacheRefreshAt != null && Number.isFinite(app.lastCacheRefreshAt), true, 'lastCacheRefreshAt must be set after successful fetch');
+    assert.ok(feed.children[0].children.some(node => node.className === 'activity-updated'), 'successful fetch renders last-success label');
   })().catch(err => { console.error('lastCacheRefreshAt contract failed:', err); process.exit(1); });
 
 } catch (err) {

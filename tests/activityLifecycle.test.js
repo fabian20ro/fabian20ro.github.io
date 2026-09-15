@@ -1,0 +1,237 @@
+const test = require('node:test');
+const assert = require('node:assert/strict');
+const vm = require('node:vm');
+const fs = require('node:fs');
+
+function fixture({ cache, fail = false } = {}) {
+  let now = 1_800_000_000_000;
+  let calls = 0;
+  const events = [
+    { type: 'PushEvent', repo: { name: 'owner/fresh' }, created_at: new Date(now).toISOString() }
+  ];
+  function element(tagName) {
+    return {
+      tagName,
+      children: [],
+      textContent: '',
+      setAttribute(k, v) {
+        this[k] = v;
+      },
+      getAttribute(k) {
+        return this[k];
+      },
+      appendChild(n) {
+        this.children.push(n);
+      },
+      append(...ns) {
+        this.children.push(...ns);
+      },
+      replaceChildren(...ns) {
+        this.children = ns;
+      }
+    };
+  }
+  const feed = element('div');
+  const listeners = {};
+  const intervals = [];
+  const timeouts = new Map();
+  const storage = new Map(cache ? [['github-activity-cache-v1', JSON.stringify(cache)]] : []);
+  const document = {
+    visibilityState: 'visible',
+    documentElement: {},
+    getElementById: (id) => (id === 'activity-feed' ? feed : null),
+    querySelectorAll: (selector) => {
+      const all = (n) => [n, ...(n.children || []).flatMap(all)];
+      return all(feed).filter((n) =>
+        selector.startsWith('[')
+          ? Object.hasOwn(n, selector.slice(1, -1))
+          : n.className === selector.slice(1)
+      );
+    },
+    createElement: element,
+    createDocumentFragment: () => element('fragment'),
+    createTextNode: (textContent) => ({ textContent }),
+    addEventListener: (k, v) => {
+      listeners[k] = v;
+    }
+  };
+  const context = vm.createContext({
+    document,
+    console,
+    AbortController,
+    Date: class extends Date {
+      static now() {
+        return now;
+      }
+    },
+    localStorage: { getItem: (k) => storage.get(k) ?? null, setItem: (k, v) => storage.set(k, v) },
+    setTimeout: (fn, ms) => {
+      const id = {};
+      timeouts.set(id, { fn, ms });
+      return id;
+    },
+    clearTimeout: (id) => timeouts.delete(id),
+    fetch: async () => {
+      calls++;
+      if (fail) throw new Error('offline');
+      return { ok: true, json: async () => events };
+    }
+  });
+  // No module or window: exercise classic-script exports without starting unrelated UI.
+  vm.runInContext(fs.readFileSync(require.resolve('../app.js'), 'utf8'), context);
+  context.window = {
+    addEventListener: (k, v) => {
+      listeners[k] = v;
+    },
+    setInterval: (fn) => intervals.push(fn)
+  };
+  vm.runInContext('setupActivityRefresh()', context);
+  const run = (code) => vm.runInContext(code, context);
+  const nodes = (n) => [n, ...(n.children || []).flatMap(nodes)];
+  return {
+    context,
+    document,
+    listeners,
+    intervals,
+    timeouts,
+    events,
+    run,
+    storage,
+    advance: (ms) => {
+      now += ms;
+    },
+    calls: () => calls,
+    fail: (v) => {
+      fail = v;
+    },
+    all: () => nodes(feed),
+    text: () =>
+      nodes(feed)
+        .map((n) => n.textContent)
+        .join(' ')
+  };
+}
+
+test('freshness and locale survive repeated resumes; visible repaint is not a fetch', async () => {
+  const f = fixture();
+  await f.run('loadGitHubActivity()');
+  assert.match(f.text(), /Last updated: just now/);
+  f.run("setLang('ro')");
+  assert.match(f.text(), /Ultima actualizare:/);
+  f.advance(599_999);
+  await f.listeners.visibilitychange();
+  assert.equal(f.calls(), 1);
+  f.advance(1);
+  await f.listeners.visibilitychange();
+  assert.equal(f.calls(), 2);
+  f.advance(600_000);
+  await f.listeners.pageshow();
+  assert.equal(f.calls(), 3, 'second resume works within same tab');
+  f.advance(60_000);
+  const stableItem = f.all().find((n) => n.className === 'activity-item');
+  await f.intervals[0]();
+  assert.equal(f.calls(), 3);
+  assert.ok(f.all().includes(stableItem), 'repaint preserves focused item identity');
+  assert.match(f.text(), /minut/);
+  f.document.visibilityState = 'hidden';
+  f.advance(600_000);
+  await f.intervals[0]();
+  assert.equal(f.calls(), 3, 'hidden tab does not poll');
+});
+
+test('concurrent resume and interval share request; failed stale refresh preserves last success', async () => {
+  const f = fixture();
+  await f.run('loadGitHubActivity()');
+  f.advance(600_000);
+  let finish;
+  let requests = 0;
+  f.context.fetch = () => {
+    requests++;
+    return new Promise((resolve) => {
+      finish = resolve;
+    });
+  };
+  const a = f.listeners.pageshow();
+  const b = f.listeners.visibilitychange();
+  const c = f.intervals[0]();
+  assert.equal(requests, 1);
+  finish({ ok: false, status: 429, headers: { get: () => '120' } });
+  await Promise.all([a, b, c]);
+  assert.match(f.text(), /owner\/fresh/);
+  assert.match(f.text(), /Last updated: 10 minutes ago/);
+  assert.match(f.text(), /could not refresh/i);
+  f.run("setLang('ro')");
+  assert.doesNotMatch(f.text(), /could not|Try again|View activity/);
+  const retry = f.all().find((n) => n.className === 'activity-retry');
+  assert.equal(retry.disabled, true, 'respect server retry window');
+});
+
+test('request timeout aborts, preserves recovery control; failed empty state fully changes language', async () => {
+  const f = fixture();
+  let signal;
+  f.context.fetch = (_url, options) =>
+    new Promise((_resolve, reject) => {
+      signal = options.signal;
+      signal.addEventListener('abort', () => reject(new Error('aborted')));
+    });
+  const pending = f.run('loadGitHubActivity()');
+  [...f.timeouts.values()][0].fn();
+  await pending;
+  assert.equal(signal.aborted, true);
+  f.run("setLang('ro')");
+  assert.match(f.text(), /Nu s-a putut/);
+  assert.doesNotMatch(f.text(), /Could not|View activity|Try again/);
+});
+
+test('successful empty result is not reported as an API error; malformed payload is', async () => {
+  const f = fixture();
+  f.events.length = 0;
+  await f.run('loadGitHubActivity()');
+  assert.match(f.text(), /No recent public activity/);
+  assert.doesNotMatch(f.text(), /Could not load/);
+  f.advance(600_000);
+  f.context.fetch = async () => ({ ok: true, json: async () => ({ bad: true }) });
+  await f.run('loadGitHubActivity()');
+  assert.match(f.text(), /could not refresh/i);
+});
+
+test('real project badge metadata navigates to Actions, not repository root', () => {
+  const f = fixture();
+  const urls = f.run(
+    'Object.values(projectSections).flat().filter(p => p.badgeUrl).map(p => getBadgeActionsUrl(p.badgeUrl))'
+  );
+  assert.ok(urls.length > 2);
+  for (const url of urls) assert.match(url, /\/actions$/);
+  assert.doesNotMatch(f.run("t('viewAllGithub')"), /&rarr;/);
+});
+
+test('automatic failure backoff does not spam resumes; manual retry recovers in-place', async () => {
+  const f = fixture({ fail: true });
+  await f.listeners.pageshow();
+  await f.intervals[0]();
+  assert.equal(f.calls(), 0, 'lifecycle does not defeat initial lazy load');
+  await f.run('loadGitHubActivity()');
+  await f.listeners.pageshow();
+  await f.listeners.visibilitychange();
+  assert.equal(f.calls(), 1);
+  f.fail(false);
+  const retry = f.all().find((n) => n.className === 'activity-retry');
+  await retry.onclick();
+  assert.equal(f.calls(), 2);
+  assert.match(f.text(), /Last updated: just now/);
+  assert.doesNotMatch(f.text(), /Could not load/);
+});
+
+test('corrupted restored timestamp or null event never breaks rendering or replaces valid API data', async () => {
+  for (const cache of [
+    { timestamp: -1e100, events: [] },
+    { timestamp: 1_800_000_000_000, events: [null] },
+    { timestamp: 1_800_000_060_000, events: [] }
+  ]) {
+    const f = fixture({ cache });
+    await f.run('loadGitHubActivity()');
+    assert.equal(f.calls(), 1);
+    assert.match(f.text(), /owner\/fresh/);
+    assert.match(f.text(), /Last updated: just now/);
+  }
+});

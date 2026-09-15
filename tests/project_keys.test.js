@@ -426,19 +426,16 @@ test('getBadgeActionsUrl exact per-branch outputs', () => {
     'plain GitHub badge must resolve to <repo>/actions (single suffix, no double-append)'
   );
 
-  // Branch (idempotence): a badge already under /actions resolves to the BARE repo base — not
-  // base+/actions again. This is the regression the permissive shape test cannot catch.
+  // Actual badge destinations must stay in Actions, including modern workflow URLs.
   assert.strictEqual(
     app.getBadgeActionsUrl('https://github.com/fabian20ro/prompt-to-image-variations/actions/workflows/pages/pages-build-deployment/badge.svg'),
-    'https://github.com/fabian20ro/prompt-to-image-variations',
-    'badge already under /actions must resolve to the bare repo base (idempotent, no double-append)'
+    'https://github.com/fabian20ro/prompt-to-image-variations/actions'
   );
 
-  // Branch: the bare repo base itself is its own base — returned unchanged.
+  // Bare repository links likewise resolve to their Actions dashboard.
   assert.strictEqual(
     app.getBadgeActionsUrl('https://github.com/fabian20ro/sudoku-python'),
-    'https://github.com/fabian20ro/sudoku-python',
-    'bare repo base must be returned unchanged'
+    'https://github.com/fabian20ro/sudoku-python/actions'
   );
 });
 
