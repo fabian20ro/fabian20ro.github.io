@@ -194,7 +194,7 @@ try {
     });
   }
 
-  // All titleKeys/descKeys must exist as actual keys in every language's translations object — prevents stale references.
+  // All titleKeys/descKeys/linkKeys must exist as actual keys in every language's translations object — prevents stale references.
   const { translations } = require('../app.js');
   for (const lang of Object.keys(translations)) {
     for (const section of ['liveProjects', 'repositories']) {
@@ -206,6 +206,10 @@ try {
         assert(
           item.descKey in translations[lang],
           `${section}[${i}] descKey "${item.descKey}" must be a key in the ${lang} translations object`
+        );
+        assert(
+          item.linkKey in translations[lang],
+          `${section}[${i}] linkKey "${item.linkKey}" must be a key in the ${lang} translations object`
         );
       });
     }
