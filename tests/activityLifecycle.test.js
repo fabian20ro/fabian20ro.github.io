@@ -235,3 +235,78 @@ test('corrupted restored timestamp or null event never breaks rendering or repla
     assert.match(f.text(), /Last updated: just now/);
   }
 });
+
+function datedEvents() {
+  // Newest event deliberately beyond the ten-item display limit.
+  return Array.from({ length: 12 }, (_, i) => ({
+    id: String(i),
+    type: 'PushEvent',
+    repo: { name: `owner/event-${i}` },
+    created_at: new Date(1_800_000_000_000 - (12 - i) * 60_000).toISOString()
+  }));
+}
+
+function renderedDates(f) {
+  return f
+    .all()
+    .filter((n) => Object.hasOwn(n, 'data-activity-time'))
+    .map((n) => n['data-activity-time']);
+}
+
+test('live activity sorts newest first before limiting; locale repaint and cache retain order', async () => {
+  const f = fixture();
+  f.events.splice(0, f.events.length, ...datedEvents());
+  const original = JSON.stringify(f.events);
+  const expected = f.events
+    .slice()
+    .reverse()
+    .slice(0, 10)
+    .map((e) => e.created_at);
+  await f.run('loadGitHubActivity()');
+  assert.deepEqual(renderedDates(f), expected);
+  assert.equal(JSON.stringify(f.events), original, 'API array must not be mutated');
+  f.run("setLang('ro')");
+  assert.deepEqual(renderedDates(f), expected);
+  const saved = JSON.parse(f.storage.get('github-activity-cache-v1'));
+  assert.deepEqual(
+    saved.events.map((e) => e.id),
+    f.events
+      .slice()
+      .reverse()
+      .map((e) => e.id)
+  );
+});
+
+test('existing unsorted fresh cache renders newest first without network or rewriting storage', async () => {
+  const cache = { timestamp: 1_800_000_000_000, events: datedEvents() };
+  const f = fixture({ cache });
+  await f.run('loadGitHubActivity()');
+  assert.equal(f.calls(), 0);
+  assert.deepEqual(
+    renderedDates(f),
+    cache.events
+      .slice()
+      .reverse()
+      .slice(0, 10)
+      .map((e) => e.created_at)
+  );
+  assert.equal(f.storage.get('github-activity-cache-v1'), JSON.stringify(cache));
+});
+
+test('undated activity sorts last and tied timestamps preserve source order', async () => {
+  const f = fixture();
+  const events = datedEvents().slice(0, 4);
+  events[0].created_at = 'invalid';
+  events[1].created_at = events[3].created_at;
+  delete events[2].created_at;
+  f.events.splice(0, f.events.length, ...events);
+  await f.run('loadGitHubActivity()');
+  const links = f
+    .all()
+    .filter((n) => n.tagName === 'a')
+    .map((n) => n.href);
+  assert.deepEqual(
+    links,
+    [1, 3, 0, 2].map((i) => `https://github.com/owner/event-${i}/tree/main`)
+  );
+});

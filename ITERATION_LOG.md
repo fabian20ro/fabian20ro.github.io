@@ -607,3 +607,11 @@
 **Verification:** New test first failed for the missing icon link. Full `npm run check` passed: lint, formatting and 194 tests. Both SVG assets served HTTP 200 with `image/svg+xml`. Browser visual checks at 16px/32px on light/dark backgrounds, plus 16px monochrome artwork. Native Safari pinned-tab chrome not directly tested. Existing Compound branch committed/pushed; no merge or deployment claimed.
 **Insight:** Font-free silhouettes remain recognizable at tab sizes; separate monochrome masks avoid turning a colored background into a solid pinned-tab square.
 **Promoted to Lessons Learned:** No
+
+### 2026-09-16 — Chronological activity feed
+
+**Context:** User observed an older event ahead of newer activity. Actual GitHub response confirmed a 15:31 event before a 20:10 event, plus an out-of-order timestamp pair. The renderer preserved API order and truncated before ordering; this was not a CSS reversal.
+**What happened:** One non-mutating timestamp sort now normalizes both fetched events and restored caches before display limits. Network results persist in chronological order. Invalid/missing timestamps sort last, ties stay stable, and locale rerenders consume the same ordered state. Bumped the JS asset version; no cache reset, dependencies or global reload.
+**Verification:** Three new actual-script lifecycle tests failed before implementation, then passed: unsorted data with newest events beyond the ten-item limit; an existing fresh unsorted cache without fetching/rewriting it; malformed/tied timestamps. Full `npm run check`: lint, formatting, 197 tests passed. Playwright browser with the real GitHub response showed ten descending timestamps and retained order after EN to RO, with localized freshness. Existing unrelated CSP `default-s-src` warning remains; this change does not claim a complete site audit. Existing Compound branch reserved during editing; no merge performed.
+**Insight:** API delivery order is not necessarily event-time order. Boundary sorting and tests using unsorted input are necessary even if most feeds appear sorted.
+**Promoted to Lessons Learned:** Yes.

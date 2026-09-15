@@ -29,6 +29,8 @@ Obsolete lessons move to the Archive section at bottom (with date and reason). N
 
 ## Architecture
 
+**[2026-09-16]** Sort activity by event time before truncation — The live GitHub public-events response can arrive out of chronological order. Normalize both network data and restored caches by descending `created_at` before applying display/cache limits. Preserve ties and the source array; undated events belong last. Already-sorted fixtures cannot catch this regression.
+
 **[2026-09-15]** Give a live feed one state owner — Keep events, last successful fetch, status, and pending request together. Locale changes render that state; visibility/pageshow/timer triggers share the same TTL and request. Relative-time repaint must preserve DOM identity and keyboard focus. Do not combine this lifecycle with a second full-page reload guard.
 
 **[2026-06-06]** Split large static browser data into UMD-style data files — When a classic-script browser app also supports CommonJS imports for tests, large static datasets can move out of `app.js` into a separate script that assigns to `globalThis` in the browser and `module.exports` in Node. Load the data script before `app.js` and keep a guarded loader in app logic.
