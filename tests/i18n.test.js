@@ -1,6 +1,6 @@
 const test = require('node:test');
 const assert = require('node:assert');
-const { translations, t, normalizeLang, setLang, getToggleTargetLang } = require('../app.js');
+const { translations, t, normalizeLang, setLang, getToggleTargetLang, getDefaultLang } = require('../app.js');
 
 test('i18n translation completeness', () => {
   const enKeys = Object.keys(translations.en);
@@ -245,4 +245,40 @@ test('t() preserves emoji and special characters in translation values', () => {
   // Title contains an apostrophe — common source of encoding issues.
   const titleEn = t('title', 'en');
   assert.ok(titleEn.includes("'"), "English title must preserve apostrophe");
+});
+
+test('getDefaultLang() resolves navigator.language through normalizeLang in browser-like environments', () => {
+  // Implemented contract (app.js): nav?.language || nav?.languages[0] || 'en',
+  // then normalizeLang. Existing tests only pin the no-navigator Node fallback,
+  // so this verifies the navigator-driven path end to end.
+  const original = globalThis.navigator;
+  const hadNavigator = 'navigator' in globalThis;
+  try {
+    Object.defineProperty(globalThis, 'navigator', {
+      value: { language: 'fr-ca' },
+      configurable: true,
+    });
+    assert.equal(getDefaultLang(), 'fr',
+      'navigator.language "fr-ca" must normalize to the "fr" base code');
+
+    Object.defineProperty(globalThis, 'navigator', {
+      value: { language: '', languages: ['de-DE'] },
+      configurable: true,
+    });
+    assert.equal(getDefaultLang(), 'de',
+      'empty navigator.language must fall back to languages[0] ("de-DE" → "de")');
+
+    Object.defineProperty(globalThis, 'navigator', {
+      value: { language: 'ja' },
+      configurable: true,
+    });
+    assert.equal(getDefaultLang(), 'en',
+      'unsupported navigator.language must normalize to the "en" default');
+  } finally {
+    if (hadNavigator) {
+      Object.defineProperty(globalThis, 'navigator', { value: original, configurable: true });
+    } else {
+      delete globalThis.navigator;
+    }
+  }
 });

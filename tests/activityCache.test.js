@@ -105,6 +105,18 @@ test('activity item selection ignores status siblings with direct or fragment-wr
   }
 });
 
+test('loadGitHubActivity shows a last-updated line beneath rendered activity', async (t) => {
+  const fixture = cachedActivityFixture(t, { count: 2, ageMs: 5 * 60_000 });
+  await loadGitHubActivity();
+
+  assert.strictEqual(fixture.fetchCalls(), 0, 'fresh cache should not fetch again');
+  assert.strictEqual(activityItems(fixture.feed).length, 2, 'cached activity should render');
+  const paragraphs = descendants(fixture.feed).filter(node => node.tagName === 'p');
+  const updated = paragraphs[paragraphs.length - 1];
+  assert.strictEqual(updated.className, 'activity-updated', 'last paragraph should be the last-updated line');
+  assert.strictEqual(updated.textContent, '5 minutes ago', 'last-updated line should use the cache timestamp');
+});
+
 test('loadGitHubActivity renders the empty-cache state instead of leaving loading text stuck', async (t) => {
   const now = Date.now();
   const originalDateNow = Date.now;
@@ -171,6 +183,10 @@ test('loadGitHubActivity renders the empty-cache state instead of leaving loadin
   assert.strictEqual(link.target, '_blank', 'link should open in a new tab');
   assert.strictEqual(link.rel, 'noopener noreferrer', 'link should be a safe cross-origin link');
   assert.strictEqual(link.textContent, 'View activity on GitHub', 'link label should use the English translation by default');
+  assert.ok(
+    !descendants(feed).some(node => node.className === 'activity-updated'),
+    'error state should not show a last-updated line'
+  );
 });
 
 test('loadGitHubActivity renders a retry after the unchanged GitHub link when there is no cache and the fetch fails', async (t) => {
@@ -243,6 +259,10 @@ test('loadGitHubActivity renders a retry after the unchanged GitHub link when th
   assert.strictEqual(retry.className, 'activity-retry');
   assert.strictEqual(retry.textContent, 'Try again');
   assert.strictEqual(retry['data-i18n'], 'activityRetry');
+  assert.ok(
+    !descendants(feed).some(node => node.className === 'activity-updated'),
+    'error state should not show a last-updated line'
+  );
 });
 
 for (const { name, fetchResult } of [
@@ -1527,8 +1547,10 @@ test('isCacheFresh rejects null/undefined/empty-cache arguments defensively', ()
   assert.strictEqual(isFresh({}), false, 'cache without timestamp property should be rejected');
 });
 
-test('isCacheFresh enforces strict TTL boundary and rejects future-dated timestamps', () => {
+test('isCacheFresh enforces strict TTL boundary and rejects future-dated timestamps', (t) => {
   const isFresh = require('../app.js').isCacheFresh;
+  // One millisecond is the contract under test, not a wall-clock execution budget.
+  t.mock.method(Date, 'now', () => 1750000000000);
   const now = Date.now();
 
   // Exactly at the TTL boundary ageMs === ACTIVITY_CACHE_TTL_MS → stale (strict <).

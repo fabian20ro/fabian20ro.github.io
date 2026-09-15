@@ -271,6 +271,21 @@ test('t() resolves language-specific values and falls back to English', () => {
   assert.strictEqual(t('definitelyNotAKey123', 'en'), 'definitelyNotAKey123');
 });
 
+test('t() with an empty-string language resolves the active currentLang, not a hardcoded English fallback', () => {
+  const { t, setLang, translations } = require('../app.js');
+  // normalizeLang('') returns 'en', but t() short-circuits a falsy language to
+  // the ACTIVE currentLang before normalizing. That distinction is only
+  // observable with a non-default active language: the existing "blank $lang
+  // -> EN" test passes only because currentLang defaults to 'en' there.
+  setLang('ro');
+  assert.strictEqual(
+    t('propositionsTitle', ''),
+    translations.ro.propositionsTitle,
+    "t(key, '') with active currentLang='ro' must resolve the ro table, not a hardcoded 'en'"
+  );
+  setLang('en');
+});
+
 test('normalizeLang accepts exact, prefixed, and non-string input', () => {
   const { normalizeLang } = require('../app.js');
   assert.strictEqual(normalizeLang('en'), 'en');

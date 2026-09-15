@@ -124,4 +124,16 @@ test('t() EN fallback targets the en dictionary, not the active language', () =>
     "Fabian's Projects",
     'key missing from $lang must fall back to the en dictionary, not the active ro language'
   );
+
+  const savedRo = translations.ro['app_status'];
+  delete translations.ro['app_status'];
+  try {
+    assert.strictEqual(
+      t('app_status'),
+      'App status',
+      'key missing from the active language must fall back to the en dictionary'
+    );
+  } finally {
+    translations.ro['app_status'] = savedRo;
+  }
 });

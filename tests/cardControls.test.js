@@ -286,6 +286,54 @@ test('copy button success transitions aria-label, title, and status text atomica
   }
 });
 
+// Strengthen: the delayed reset must clear the status text node, not just aria-label/title.
+test('copy button delayed reset clears the status text node', async () => {
+  const savedDoc = global.document;
+  const originalNavigatorDescriptor = Object.getOwnPropertyDescriptor(global, 'navigator');
+  let restoreCopyState;
+
+  global.document = { createElement };
+  Object.defineProperty(global, 'navigator', {
+    configurable: true,
+    value: {
+      clipboard: {
+        async writeText() {}
+      }
+    }
+  });
+  global.setTimeout = (callback) => {
+    restoreCopyState = callback;
+    return 1;
+  };
+
+  try {
+    const card = app.projectSections.liveProjects[0];
+    const copyButton = app.createCopyButton(card.href, 'Copy link');
+    await copyButton.dispatch('click', { stopPropagation() {} });
+
+    assert.equal(
+      copyButton.children[1].textContent,
+      app.t('copySuccess'),
+      'status text node must show the success message after copy'
+    );
+
+    restoreCopyState();
+    assert.equal(
+      copyButton.children[1].textContent,
+      '',
+      'delayed reset must clear the status text node'
+    );
+  } finally {
+    global.document = savedDoc;
+    global.setTimeout = (cb) => cb();
+    if (originalNavigatorDescriptor) {
+      Object.defineProperty(global, 'navigator', originalNavigatorDescriptor);
+    } else {
+      delete global.navigator;
+    }
+  }
+});
+
 // Strengthen: cards without an href must not render a copy button.
 test('card header omits the copy button for cards without an href', () => {
   const originalDocument = global.document;

@@ -296,6 +296,27 @@ test('getBadgeActionsUrl idempotence — already-points-to-actions or bare-repo-
   assert.strictEqual(getBadgeActionsUrl(bareBase), bareBase, "idempotent: bare repo base URL returns itself");
 });
 
+test('getBadgeActionsUrl appends /actions to a badge URL and passes through non-GitHub URLs', () => {
+  setLang('en');
+  // Production contract (app.js getBadgeActionsUrl): a GitHub badge URL that does not already
+  // contain /actions must return the repo base + '/actions' (the untested happy path — existing
+  // tests only cover the type-guard and idempotent branches).
+  const badgeUrl = 'https://github.com/fabian20ro/emotid/workflows/Deploy%20to%20GitHub%20Pages/badge.svg';
+  assert.strictEqual(
+    getBadgeActionsUrl(badgeUrl),
+    'https://github.com/fabian20ro/emotid/actions',
+    'GitHub badge URL without /actions appends /actions to the repo base'
+  );
+
+  // Non-GitHub URLs do not match the repo pattern and must pass through unchanged.
+  const externalUrl = 'https://example.com/badge.svg';
+  assert.strictEqual(
+    getBadgeActionsUrl(externalUrl),
+    externalUrl,
+    'non-GitHub URL passes through unchanged'
+  );
+});
+
 test('normalizeLang exact two-letter codes without suffix', () => {
   setLang('en');
   // Production contract — normalizeLang must accept plain two-letter language codes (no region suffix).
