@@ -599,3 +599,11 @@
 **Promoted to Lessons Learned:** Yes — single state owner and observable lifecycle tests.
 
 **Browser follow-up:** Independent in-app browser check loaded real GitHub activity and retained the localized last-success label EN→RO. Playwright local Chromium at 390×844/light rendered a 340px-wide footer at x25, 12.8px muted text, 12×16px padding; screenshot `/tmp/portfolio-mobile-light.png`. Accelerated stale refresh with a 429 fixture preserved the event and Romanian last-success timestamp, with localized retry disabled at 153.4×44px. Recovery later rendered the replacement event with no retry; 1280px/dark screenshot `/tmp/portfolio-desktop-dark-recovered.png`. No uncaught page exceptions. One accelerated recovery locator wait timed out; subsequent direct browser state and DOM confirmed successful recovery, so exact wall-clock recovery latency is not asserted. Known unrelated baseline issues remain: 411px document width at a 390px viewport from project cards, invalid `default-s-src` CSP directive, favicon 404. These do not count as a globally clean visual/security audit. No deployed repair claimed.
+
+### 2026-09-15 — Recognizable portfolio tab icon
+
+**Context:** User requested an identifying favicon, especially in pinned tabs.
+**What happened:** Added a blue/white F monogram drawn as SVG paths and a monochrome Safari pinned-tab mask. Both explicitly linked from HTML; no font, dependency, external asset, or CSP change. Added a local-asset contract test.
+**Verification:** New test first failed for the missing icon link. Full `npm run check` passed: lint, formatting and 194 tests. Both SVG assets served HTTP 200 with `image/svg+xml`. Browser visual checks at 16px/32px on light/dark backgrounds, plus 16px monochrome artwork. Native Safari pinned-tab chrome not directly tested. Existing Compound branch committed/pushed; no merge or deployment claimed.
+**Insight:** Font-free silhouettes remain recognizable at tab sizes; separate monochrome masks avoid turning a colored background into a solid pinned-tab square.
+**Promoted to Lessons Learned:** No
