@@ -37,6 +37,21 @@ try {
   assert.strictEqual(getRelativeTime(new Date(now - 3600000).toISOString()), '1 hour ago');
   assert.strictEqual(getRelativeTime(new Date(now - 86400000).toISOString()), '1 day ago');
 
+  // Test case 5b: plural unit branches — minutes, hours, days, months, years.
+  assert.strictEqual(getRelativeTime(new Date(now - 5 * 60000).toISOString()), '5 minutes ago');
+  assert.strictEqual(getRelativeTime(new Date(now - 3 * 3600000).toISOString()), '3 hours ago');
+  assert.strictEqual(getRelativeTime(new Date(now - 5 * 86400000).toISOString()), '5 days ago');
+  assert.strictEqual(getRelativeTime(new Date(now - 45 * 86400000).toISOString()), '1 month ago');
+  assert.strictEqual(getRelativeTime(new Date(now - 90 * 86400000).toISOString()), '3 months ago');
+  assert.strictEqual(
+    getRelativeTime(new Date(now - 360 * 86400000).toISOString()),
+    '12 months ago'
+  );
+  assert.strictEqual(
+    getRelativeTime(new Date(now - 730 * 86400000).toISOString()),
+    '2 years ago'
+  );
+
   // Test case 6: all projectSections badgeUrl patterns — lock in coverage for every live project and repo.
   const patternA = 'https://github.com/fabian20ro/emot-id/workflows/Deploy%20to%20GitHub%20Pages/badge.svg';
   assert.strictEqual(getBadgeActionsUrl(patternA), 'https://github.com/fabian20ro/emot-id/actions');
