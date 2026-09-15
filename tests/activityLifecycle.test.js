@@ -166,6 +166,28 @@ test('concurrent resume and interval share request; failed stale refresh preserv
   assert.equal(retry.disabled, true, 'respect server retry window');
 });
 
+test('manual retry inside the server retry window never starts a request, even forced', async () => {
+  const f = fixture();
+  await f.run('loadGitHubActivity()');
+  f.advance(600_000);
+  let requests = 0;
+  f.context.fetch = async () => {
+    requests++;
+    return { ok: false, status: 429, headers: { get: () => '120' } };
+  };
+  await f.listeners.visibilitychange();
+  assert.equal(requests, 1, 'stale refresh after TTL hits the network');
+  const retry = f.all().find((n) => n.className === 'activity-retry');
+  assert.equal(retry.disabled, true, 'server retry window disables the control');
+  await retry.onclick();
+  await retry.onclick();
+  assert.equal(requests, 1, 'disabled retry handler never starts a request');
+  await f.run('loadGitHubActivity({ force: true })');
+  await new Promise((r) => setTimeout(r, 0));
+  assert.equal(requests, 1, 'force bypasses backoff, not the server retry window');
+  assert.match(f.text(), /could not refresh/i);
+});
+
 test('request timeout aborts, preserves recovery control; failed empty state fully changes language', async () => {
   const f = fixture();
   let signal;
