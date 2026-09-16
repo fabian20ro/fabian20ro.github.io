@@ -202,7 +202,9 @@ test('request timeout aborts, preserves recovery control; failed empty state ful
       signal.addEventListener('abort', () => reject(new Error('aborted')));
     });
   const pending = f.run('loadGitHubActivity()');
-  [...f.timeouts.values()][0].fn();
+  const abortTimer = [...f.timeouts.values()].find((t) => t.ms === 15_000);
+  assert.ok(abortTimer, 'request schedules a 15-second abort timeout');
+  abortTimer.fn();
   await pending;
   assert.equal(signal.aborted, true);
   f.run("setLang('ro')");
