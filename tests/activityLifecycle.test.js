@@ -277,6 +277,27 @@ test('corrupted restored timestamp or null event never breaks rendering or repla
     assert.match(f.text(), /owner\/fresh/);
     assert.match(f.text(), /Last updated: just now/);
   }
+  const nonArrayEvents = fixture({ cache: { timestamp: 1_800_000_000_000, events: 'owner/fresh' } });
+  await nonArrayEvents.run('loadGitHubActivity()');
+  assert.equal(nonArrayEvents.calls(), 1, 'non-array events are rejected, not restored');
+  assert.match(nonArrayEvents.text(), /owner\/fresh/);
+  assert.match(nonArrayEvents.text(), /Last updated: just now/);
+  const scalarEvent = fixture({
+    cache: { timestamp: 1_800_000_000_000, events: ['owner/fresh'] }
+  });
+  await scalarEvent.run('loadGitHubActivity()');
+  assert.equal(scalarEvent.calls(), 1, 'non-object event entries are rejected, not restored');
+  assert.match(scalarEvent.text(), /owner\/fresh/);
+  assert.match(scalarEvent.text(), /Last updated: just now/);
+  const truncated = fixture();
+  truncated.storage.set(
+    'github-activity-cache-v1',
+    '{"timestamp":1800000000000,"events":[{"repo":'
+  );
+  await truncated.run('loadGitHubActivity()');
+  assert.equal(truncated.calls(), 1, 'truncated cache JSON is rejected, not restored');
+  assert.match(truncated.text(), /owner\/fresh/);
+  assert.match(truncated.text(), /Last updated: just now/);
 });
 
 function datedEvents() {
