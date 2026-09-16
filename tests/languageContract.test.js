@@ -286,6 +286,22 @@ test('t() with an empty-string language resolves the active currentLang, not a h
   setLang('en');
 });
 
+test('t() resolves locale-subtagged $lang end to end through normalizeLang', () => {
+  const { t, translations, setLang } = require('../app.js');
+  setLang('en');
+  // The per-language loop above only feeds base codes to t(); browsers deliver
+  // subtagged codes (navigator.language). Verify the full t() → normalizeLang
+  // chain resolves one per language instead of normalizing every subtag to 'en'.
+  for (const [base, locale] of Object.entries({ it: 'it-IT', pt: 'pt-BR', de: 'de-AT', fr: 'fr-CA', es: 'es-AR', ro: 'ro-MD' })) {
+    assert.strictEqual(
+      t('propositionsTitle', locale),
+      translations[base].propositionsTitle,
+      `t('propositionsTitle', '${locale}') must resolve the '${base}' table via locale subtag`
+    );
+  }
+  setLang('en');
+});
+
 test('normalizeLang accepts exact, prefixed, and non-string input', () => {
   const { normalizeLang } = require('../app.js');
   assert.strictEqual(normalizeLang('en'), 'en');
