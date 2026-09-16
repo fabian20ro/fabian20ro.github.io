@@ -165,8 +165,20 @@ test('concurrent resume and interval share request; failed stale refresh preserv
   assert.match(f.text(), /owner\/fresh/);
   assert.match(f.text(), /Last updated: 10 minutes ago/);
   assert.match(f.text(), /could not refresh/i);
+  assert.equal(
+    f.document.querySelectorAll('[data-activity-updated]')[0].textContent,
+    'Last updated: 10 minutes ago',
+    'failed stale refresh does not repaint the updated line'
+  );
   f.run("setLang('ro')");
   assert.doesNotMatch(f.text(), /could not|Try again|View activity/);
+  f.advance(60_000);
+  await f.intervals[0]();
+  assert.equal(
+    f.document.querySelectorAll('[data-activity-updated]')[0].textContent,
+    'Ultima actualizare: 11 minute în urmă',
+    'minute tick repaints the preserved updated line with the exact localized bucket'
+  );
   const retry = f.all().find((n) => n.className === 'activity-retry');
   assert.equal(retry.disabled, true, 'respect server retry window');
 });
