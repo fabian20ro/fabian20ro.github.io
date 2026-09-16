@@ -132,7 +132,12 @@ test('freshness and locale survive repeated resumes; visible repaint is not a fe
   await f.intervals[0]();
   assert.equal(f.calls(), 3);
   assert.ok(f.all().includes(stableItem), 'repaint preserves focused item identity');
-  assert.match(f.text(), /minut/);
+  const updated = f.document.querySelectorAll('[data-activity-updated]')[0];
+  assert.equal(
+    updated.textContent,
+    'Ultima actualizare: acum 1 minut',
+    'minute tick repaints the updated line with the exact localized bucket'
+  );
   f.document.visibilityState = 'hidden';
   f.advance(600_000);
   await f.intervals[0]();
@@ -160,10 +165,44 @@ test('concurrent resume and interval share request; failed stale refresh preserv
   assert.match(f.text(), /owner\/fresh/);
   assert.match(f.text(), /Last updated: 10 minutes ago/);
   assert.match(f.text(), /could not refresh/i);
+  assert.equal(
+    f.document.querySelectorAll('[data-activity-updated]')[0].textContent,
+    'Last updated: 10 minutes ago',
+    'failed stale refresh does not repaint the updated line'
+  );
   f.run("setLang('ro')");
   assert.doesNotMatch(f.text(), /could not|Try again|View activity/);
+  f.advance(60_000);
+  await f.intervals[0]();
+  assert.equal(
+    f.document.querySelectorAll('[data-activity-updated]')[0].textContent,
+    'Ultima actualizare: 11 minute în urmă',
+    'minute tick repaints the preserved updated line with the exact localized bucket'
+  );
   const retry = f.all().find((n) => n.className === 'activity-retry');
   assert.equal(retry.disabled, true, 'respect server retry window');
+});
+
+test('manual retry inside the server retry window never starts a request, even forced', async () => {
+  const f = fixture();
+  await f.run('loadGitHubActivity()');
+  f.advance(600_000);
+  let requests = 0;
+  f.context.fetch = async () => {
+    requests++;
+    return { ok: false, status: 429, headers: { get: () => '120' } };
+  };
+  await f.listeners.visibilitychange();
+  assert.equal(requests, 1, 'stale refresh after TTL hits the network');
+  const retry = f.all().find((n) => n.className === 'activity-retry');
+  assert.equal(retry.disabled, true, 'server retry window disables the control');
+  await retry.onclick();
+  await retry.onclick();
+  assert.equal(requests, 1, 'disabled retry handler never starts a request');
+  await f.run('loadGitHubActivity({ force: true })');
+  await new Promise((r) => setTimeout(r, 0));
+  assert.equal(requests, 1, 'force bypasses backoff, not the server retry window');
+  assert.match(f.text(), /could not refresh/i);
 });
 
 test('request timeout aborts, preserves recovery control; failed empty state fully changes language', async () => {
@@ -175,7 +214,9 @@ test('request timeout aborts, preserves recovery control; failed empty state ful
       signal.addEventListener('abort', () => reject(new Error('aborted')));
     });
   const pending = f.run('loadGitHubActivity()');
-  [...f.timeouts.values()][0].fn();
+  const abortTimer = [...f.timeouts.values()].find((t) => t.ms === 15_000);
+  assert.ok(abortTimer, 'request schedules a 15-second abort timeout');
+  abortTimer.fn();
   await pending;
   assert.equal(signal.aborted, true);
   f.run("setLang('ro')");
@@ -202,6 +243,20 @@ test('real project badge metadata navigates to Actions, not repository root', ()
   );
   assert.ok(urls.length > 2);
   for (const url of urls) assert.match(url, /\/actions$/);
+  // Exact transformation: GitHub repo URL → same URL + '/actions'
+  assert.equal(
+    f.run("getBadgeActionsUrl('https://github.com/user/repo')"),
+    'https://github.com/user/repo/actions',
+    'GitHub repo URL gets /actions appended'
+  );
+  // Non-GitHub URL passes through unchanged
+  assert.equal(
+    f.run("getBadgeActionsUrl('https://gitlab.com/user/repo')"),
+    'https://gitlab.com/user/repo',
+    'non-GitHub URL is returned unchanged'
+  );
+  // Non-string input returns empty string
+  assert.equal(f.run('getBadgeActionsUrl(null)'), '', 'non-string input returns empty string');
   assert.doesNotMatch(f.run("t('viewAllGithub')"), /&rarr;/);
 });
 
@@ -234,4 +289,100 @@ test('corrupted restored timestamp or null event never breaks rendering or repla
     assert.match(f.text(), /owner\/fresh/);
     assert.match(f.text(), /Last updated: just now/);
   }
+  const nonArrayEvents = fixture({ cache: { timestamp: 1_800_000_000_000, events: 'owner/fresh' } });
+  await nonArrayEvents.run('loadGitHubActivity()');
+  assert.equal(nonArrayEvents.calls(), 1, 'non-array events are rejected, not restored');
+  assert.match(nonArrayEvents.text(), /owner\/fresh/);
+  assert.match(nonArrayEvents.text(), /Last updated: just now/);
+  const scalarEvent = fixture({
+    cache: { timestamp: 1_800_000_000_000, events: ['owner/fresh'] }
+  });
+  await scalarEvent.run('loadGitHubActivity()');
+  assert.equal(scalarEvent.calls(), 1, 'non-object event entries are rejected, not restored');
+  assert.match(scalarEvent.text(), /owner\/fresh/);
+  assert.match(scalarEvent.text(), /Last updated: just now/);
+  const truncated = fixture();
+  truncated.storage.set(
+    'github-activity-cache-v1',
+    '{"timestamp":1800000000000,"events":[{"repo":'
+  );
+  await truncated.run('loadGitHubActivity()');
+  assert.equal(truncated.calls(), 1, 'truncated cache JSON is rejected, not restored');
+  assert.match(truncated.text(), /owner\/fresh/);
+  assert.match(truncated.text(), /Last updated: just now/);
+});
+
+function datedEvents() {
+  // Newest event deliberately beyond the ten-item display limit.
+  return Array.from({ length: 12 }, (_, i) => ({
+    id: String(i),
+    type: 'PushEvent',
+    repo: { name: `owner/event-${i}` },
+    created_at: new Date(1_800_000_000_000 - (12 - i) * 60_000).toISOString()
+  }));
+}
+
+function renderedDates(f) {
+  return f
+    .all()
+    .filter((n) => Object.hasOwn(n, 'data-activity-time'))
+    .map((n) => n['data-activity-time']);
+}
+
+test('live activity sorts newest first before limiting; locale repaint and cache retain order', async () => {
+  const f = fixture();
+  f.events.splice(0, f.events.length, ...datedEvents());
+  const original = JSON.stringify(f.events);
+  const expected = f.events
+    .slice()
+    .reverse()
+    .slice(0, 10)
+    .map((e) => e.created_at);
+  await f.run('loadGitHubActivity()');
+  assert.deepEqual(renderedDates(f), expected);
+  assert.equal(JSON.stringify(f.events), original, 'API array must not be mutated');
+  f.run("setLang('ro')");
+  assert.deepEqual(renderedDates(f), expected);
+  const saved = JSON.parse(f.storage.get('github-activity-cache-v1'));
+  assert.deepEqual(
+    saved.events.map((e) => e.id),
+    f.events
+      .slice()
+      .reverse()
+      .map((e) => e.id)
+  );
+});
+
+test('existing unsorted fresh cache renders newest first without network or rewriting storage', async () => {
+  const cache = { timestamp: 1_800_000_000_000, events: datedEvents() };
+  const f = fixture({ cache });
+  await f.run('loadGitHubActivity()');
+  assert.equal(f.calls(), 0);
+  assert.deepEqual(
+    renderedDates(f),
+    cache.events
+      .slice()
+      .reverse()
+      .slice(0, 10)
+      .map((e) => e.created_at)
+  );
+  assert.equal(f.storage.get('github-activity-cache-v1'), JSON.stringify(cache));
+});
+
+test('undated activity sorts last and tied timestamps preserve source order', async () => {
+  const f = fixture();
+  const events = datedEvents().slice(0, 4);
+  events[0].created_at = 'invalid';
+  events[1].created_at = events[3].created_at;
+  delete events[2].created_at;
+  f.events.splice(0, f.events.length, ...events);
+  await f.run('loadGitHubActivity()');
+  const links = f
+    .all()
+    .filter((n) => n.tagName === 'a')
+    .map((n) => n.href);
+  assert.deepEqual(
+    links,
+    [1, 3, 0, 2].map((i) => `https://github.com/owner/event-${i}/tree/main`)
+  );
 });
