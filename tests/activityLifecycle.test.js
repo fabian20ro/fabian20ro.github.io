@@ -231,6 +231,20 @@ test('real project badge metadata navigates to Actions, not repository root', ()
   );
   assert.ok(urls.length > 2);
   for (const url of urls) assert.match(url, /\/actions$/);
+  // Exact transformation: GitHub repo URL → same URL + '/actions'
+  assert.equal(
+    f.run("getBadgeActionsUrl('https://github.com/user/repo')"),
+    'https://github.com/user/repo/actions',
+    'GitHub repo URL gets /actions appended'
+  );
+  // Non-GitHub URL passes through unchanged
+  assert.equal(
+    f.run("getBadgeActionsUrl('https://gitlab.com/user/repo')"),
+    'https://gitlab.com/user/repo',
+    'non-GitHub URL is returned unchanged'
+  );
+  // Non-string input returns empty string
+  assert.equal(f.run('getBadgeActionsUrl(null)'), '', 'non-string input returns empty string');
   assert.doesNotMatch(f.run("t('viewAllGithub')"), /&rarr;/);
 });
 
