@@ -132,7 +132,12 @@ test('freshness and locale survive repeated resumes; visible repaint is not a fe
   await f.intervals[0]();
   assert.equal(f.calls(), 3);
   assert.ok(f.all().includes(stableItem), 'repaint preserves focused item identity');
-  assert.match(f.text(), /minut/);
+  const updated = f.document.querySelectorAll('[data-activity-updated]')[0];
+  assert.equal(
+    updated.textContent,
+    'Ultima actualizare: acum 1 minut',
+    'minute tick repaints the updated line with the exact localized bucket'
+  );
   f.document.visibilityState = 'hidden';
   f.advance(600_000);
   await f.intervals[0]();
