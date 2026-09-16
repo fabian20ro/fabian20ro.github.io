@@ -189,6 +189,21 @@ test('setLang() in Node (no DOM) sets currentLang and returns cleanly', () => {
     'setLang("fr") must switch active language for subsequent t() calls'
   );
 
+  // Locale-subtagged and mixed-case arguments must resolve through
+  // normalizeLang so the active language is always a base code.
+  setLang('ro-RO');
+  assert.equal(t('title'), 'Proiectele lui Fabian',
+    'setLang("ro-RO") must normalize to the ro base code'
+  );
+  setLang('FR-FR');
+  assert.equal(t('title'), 'Les projets de Fabian',
+    'setLang("FR-FR") must normalize to the fr base code'
+  );
+  setLang('DE-de');
+  assert.equal(t('title'), "Fabians Projekte",
+    'setLang("DE-de") must normalize to the de base code'
+  );
+
   // Reset back to en so other tests in this file see the expected default.
   setLang('en');
   assert.equal(t('title'), before,
