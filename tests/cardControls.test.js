@@ -73,6 +73,7 @@ test('card header groups a functional project link beside a two-rectangle copy b
     assert.equal(copyButton.tagName, 'BUTTON');
     assert.equal(copyButton.type, 'button');
     assert.equal(copyButton.getAttribute('aria-label'), app.t(card.copyTitle || 'copy'));
+    assert.equal(copyButton.getAttribute('title'), app.t(card.copyTitle || 'copy'));
     assert.equal(copyIcon.getAttribute('aria-hidden'), 'true');
     assert.match(copyIcon.children[0].className, /copy-icon-rectangle-back/);
     assert.match(copyIcon.children[1].className, /copy-icon-rectangle-front/);

@@ -224,6 +224,17 @@ async function runTests() {
 
     console.log('Months fallback tests passed!');
 
+    // Plural months range: 2-11 months ago → N months ago (diffMonths === 2..11)
+    console.log('Testing plural months range (2-11 months)...');
+    setLang('en');
+    assert.strictEqual(getRelativeTime(new Date(mockDate.getTime() - 60 * 86400000).toISOString()), `2 ${translations.en.monthsAgo}`);
+    assert.strictEqual(getRelativeTime(new Date(mockDate.getTime() - 359 * 86400000).toISOString()), `11 ${translations.en.monthsAgo}`);
+    setLang('ro');
+    assert.strictEqual(getRelativeTime(new Date(mockDate.getTime() - 60 * 86400000).toISOString()), `2 ${translations.ro.monthsAgo}`);
+    assert.strictEqual(getRelativeTime(new Date(mockDate.getTime() - 359 * 86400000).toISOString()), `11 ${translations.ro.monthsAgo}`);
+
+    console.log('Plural months range tests passed!');
+
   } catch (err) {
     console.error('getRelativeTime tests failed:');
     console.error(err.message);

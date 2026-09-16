@@ -1449,13 +1449,25 @@ async function fetchGitHubActivity() {
   }
 }
 
+function sortActivityEvents(events) {
+  // GitHub delivery order is not necessarily event-time order. Sort before limiting,
+  // including restored caches; copy so callers retain their original data.
+  return [...events].sort((a, b) => {
+    const aTime = Date.parse(a.created_at);
+    const bTime = Date.parse(b.created_at);
+    const left = Number.isFinite(aTime) ? aTime : -Infinity;
+    const right = Number.isFinite(bTime) ? bTime : -Infinity;
+    return left === right ? 0 : right > left ? 1 : -1;
+  });
+}
+
 async function loadGitHubActivity({ force = false } = {}) {
   if (activity.pending) return activity.pending;
   if (!activity.started) {
     activity.started = true;
     const cache = readActivityCache();
     if (cache) {
-      activity.events = cache.events.slice(0, ACTIVITY_LIMIT);
+      activity.events = sortActivityEvents(cache.events).slice(0, ACTIVITY_LIMIT);
       activity.updatedAt = cache.timestamp;
       activity.status = 'ready';
     }
@@ -1472,7 +1484,7 @@ async function loadGitHubActivity({ force = false } = {}) {
   activity.status = 'loading';
   activity.pending = (async () => {
     try {
-      const events = await fetchGitHubActivity();
+      const events = sortActivityEvents(await fetchGitHubActivity());
       activity.events = events.slice(0, ACTIVITY_LIMIT);
       activity.updatedAt = Date.now();
       activity.status = 'ready';
