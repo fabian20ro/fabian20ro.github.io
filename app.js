@@ -220,6 +220,7 @@ const translations = {
     viewGithub: 'View on GitHub →',
     copy: 'Copy link',
     copySuccess: 'Copied!',
+    copied: 'Copied',
     viewAllGithub: 'View all projects on GitHub →',
     next_thought: 'Next thought',
     app_status: 'App status',
@@ -304,6 +305,7 @@ const translations = {
     viewGithub: 'Vezi pe GitHub →',
     viewAllGithub: 'Vezi toate proiectele pe GitHub →',
     copySuccess: 'Copiat!',
+    copied: 'Copiat',
     copyTitle: 'Copiere link către clipboard',
     copy: 'Copiere',
     next_thought: 'Următoarea gândire',
@@ -387,6 +389,7 @@ const translations = {
     viewGithub: 'Voir sur GitHub →',
     viewAllGithub: 'Voir tous les projets sur GitHub →',
     copySuccess: 'Copié !',
+    copied: 'Copié',
     copyTitle: 'Copier le lien dans le presse-papier',
     copy: 'Copier',
     next_thought: 'La pensée suivante',
@@ -472,6 +475,7 @@ const translations = {
     viewGithub: 'Ver en GitHub →',
     viewAllGithub: 'Ver todos los proyectos en GitHub →',
     copySuccess: '¡Copiado!',
+    copied: 'Copiado',
     copyTitle: 'Copiar enlace al portapapeles',
     copy: 'Copiar',
     next_thought: 'Próximo pensamiento',
@@ -556,6 +560,7 @@ const translations = {
     viewGithub: 'Auf GitHub ansehen →',
     viewAllGithub: 'Alle Projekte auf GitHub ansehen →',
     copySuccess: 'Kopiert!',
+    copied: 'Kopiert',
     copyTitle: 'Link in die Zwischenablage kopieren',
     copy: 'Kopieren',
     next_thought: 'Nächster Gedanke',
@@ -640,6 +645,7 @@ const translations = {
     viewGithub: 'Vedi su GitHub →',
     viewAllGithub: 'Vedi tutti i progetti su GitHub →',
     copySuccess: 'Copiato!',
+    copied: 'Copiato',
     copyTitle: 'Copia il link negli appunti',
     copy: 'Copia',
     next_thought: 'Prossimo pensiero',
@@ -724,6 +730,7 @@ const translations = {
     viewGithub: 'Ver no GitHub →',
     viewAllGithub: 'Ver todos os projetos no GitHub →',
     copySuccess: 'Copiado!',
+    copied: 'Copiado',
     copyTitle: 'Copiar link para a área de transferência',
     copy: 'Copiar',
     next_thought: 'Próximo pensamento',
@@ -954,20 +961,28 @@ function createCopyButton(href, title) {
   iconNode.append(backRectangle, frontRectangle);
   btn.append(iconNode, statusNode);
   btn.addEventListener('keydown', (e) => e.stopPropagation());
+  let copyTimer = null;
   btn.addEventListener('click', async (e) => {
     e.stopPropagation();
     try {
       await navigator.clipboard.writeText(href);
       btn.classList.add('card-copy-btn-success');
       statusNode.textContent = t('copySuccess');
-      btn.setAttribute('title', t('copySuccess'));
-      btn.setAttribute('aria-label', t('copySuccess'));
-      setTimeout(() => {
+      iconNode.textContent = '✓';
+      btn.setAttribute('title', t('copied'));
+      btn.setAttribute('aria-label', t('copied'));
+      if (copyTimer !== null) {
+        clearTimeout(copyTimer);
+      }
+      copyTimer = setTimeout(() => {
+        copyTimer = null;
         btn.classList.remove('card-copy-btn-success');
         statusNode.textContent = '';
+        iconNode.textContent = '';
+        iconNode.append(backRectangle, frontRectangle);
         btn.setAttribute('title', title);
         btn.setAttribute('aria-label', title);
-      }, 2000);
+      }, 1500);
     } catch (err) {
       console.error('Failed to copy:', err);
     }
