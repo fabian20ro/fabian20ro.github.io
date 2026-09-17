@@ -167,7 +167,7 @@ test('arrow and copy controls isolate their events from whole-card navigation', 
     assert.equal(copyKeydownStopped, true);
     assert.deepEqual(copiedUrls, [card.href]);
     assert.equal(copyButton.classList.contains('card-copy-btn-success'), true);
-    assert.equal(copyButton.getAttribute('aria-label'), app.t('copySuccess'));
+    assert.equal(copyButton.getAttribute('aria-label'), app.t('copied'));
 
     restoreCopyState();
     assert.equal(copyButton.classList.contains('card-copy-btn-success'), false);
@@ -265,8 +265,8 @@ test('copy button success transitions aria-label, title, and status text atomica
     const copyButton = app.createCopyButton(card.href, 'Copy link');
     await copyButton.dispatch('click', { stopPropagation() {} });
 
-    assert.equal(copyButton.getAttribute('aria-label'), app.t('copySuccess'), 'aria-label must update on success');
-    assert.equal(copyButton.getAttribute('title'), app.t('copySuccess'), 'title attribute must update on success');
+    assert.equal(copyButton.getAttribute('aria-label'), app.t('copied'), 'aria-label must update on success');
+    assert.equal(copyButton.getAttribute('title'), app.t('copied'), 'title attribute must update on success');
     assert.equal(
       copyButton.children[1].textContent,
       app.t('copySuccess'),
@@ -356,5 +356,66 @@ test('card header omits the copy button for cards without an href', () => {
     );
   } finally {
     global.document = originalDocument;
+  }
+});
+
+// Strengthen: copy button shows a brief checkmark, then restores the icon and label.
+test('copy button shows a brief checkmark before restoring the icon and label', async () => {
+  const savedDoc = global.document;
+  const originalNavigatorDescriptor = Object.getOwnPropertyDescriptor(global, 'navigator');
+  const originalSetTimeout = global.setTimeout;
+  let restoreCopyState;
+
+  global.document = { createElement };
+  Object.defineProperty(global, 'navigator', {
+    configurable: true,
+    value: {
+      clipboard: {
+        async writeText(url) {}
+      }
+    }
+  });
+  global.setTimeout = (callback) => {
+    restoreCopyState = callback;
+    return 1;
+  };
+
+  try {
+    const card = app.projectSections.liveProjects[0];
+    const copyButton = app.createCopyButton(card.href, app.t(card.copyTitle || 'copy'));
+    const copyIcon = copyButton.children[0];
+
+    await copyButton.dispatch('click', { stopPropagation() {} });
+
+    assert.equal(
+      copyIcon.textContent,
+      '✓',
+      'icon must briefly show a checkmark after a successful copy'
+    );
+    assert.equal(
+      copyButton.getAttribute('aria-label'),
+      app.t('copied'),
+      'aria-label must switch to the copied label after copy'
+    );
+
+    restoreCopyState();
+    assert.equal(
+      copyIcon.textContent,
+      '',
+      'icon must clear the checkmark when the timer fires'
+    );
+    assert.equal(
+      copyButton.getAttribute('aria-label'),
+      app.t(card.copyTitle || 'copy'),
+      'aria-label must revert to the original copy state'
+    );
+  } finally {
+    global.document = savedDoc;
+    global.setTimeout = originalSetTimeout;
+    if (originalNavigatorDescriptor) {
+      Object.defineProperty(global, 'navigator', originalNavigatorDescriptor);
+    } else {
+      delete global.navigator;
+    }
   }
 });
