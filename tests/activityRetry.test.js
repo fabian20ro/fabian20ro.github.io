@@ -171,3 +171,70 @@ test('retry that succeeds with an empty list shows successful empty state withou
   assert.equal(error.children[1].tagName, 'a', 'error block keeps the GitHub fallback link');
   assert.equal(error.children[1].href, 'https://github.com/fabian20ro?tab=activity');
 });
+
+test('429 rate-limit window disables retry, survives forced loads, and resets on success', async (t) => {
+  const { app, feed } = setup(t);
+  const realNow = Date.now;
+  let offset = 0;
+  Date.now = () => realNow() + offset;
+  t.after(() => {
+    Date.now = realNow;
+  });
+  let calls = 0;
+  let finishFetch;
+  global.fetch = async () => {
+    calls++;
+    if (calls === 1) {
+      return {
+        ok: false,
+        status: 429,
+        headers: { get: (key) => (key === 'retry-after' ? '300' : null) }
+      };
+    }
+    if (calls === 2) {
+      return new Promise((resolve) => {
+        finishFetch = resolve;
+      });
+    }
+    throw new Error('offline again');
+  };
+  await app.loadGitHubActivity();
+  const retry = feed.children[0].children[2];
+  assert.ok(retry, 'failed request renders retry');
+  assert.equal(retry.disabled, true, 'server retry window disables the control');
+  await retry.onclick();
+  assert.equal(calls, 1, 'disabled retry starts no request');
+  await app.loadGitHubActivity({ force: true });
+  assert.equal(calls, 1, 'force bypasses backoff, not the server retry window');
+  offset = 310_000;
+  const settled = app.loadGitHubActivity();
+  assert.equal(calls, 2, 'request resumes once the server window elapses');
+  finishFetch({
+    ok: true,
+    json: async () => [
+      {
+        type: 'PushEvent',
+        repo: { name: 'fabian20ro/rate-limit-recovery' },
+        created_at: new Date().toISOString(),
+        payload: { ref: 'refs/heads/main' }
+      }
+    ]
+  });
+  await settled;
+  assert.equal(feed.children[0].tagName, 'fragment');
+  assert.equal(feed.children[0].children[0].className, 'activity-item');
+  assert.equal(
+    feed.children[0].children.some((child) => child.className === 'activity-retry'),
+    false,
+    'successful retry removes the rate-limit control'
+  );
+  await app.loadGitHubActivity({ force: true });
+  assert.equal(calls, 3, 'forced reload after success hits the network');
+  const freshRetry = feed.children[0].children[1].children[2];
+  assert.ok(freshRetry, 'new failure renders a retry control');
+  assert.equal(
+    freshRetry.disabled,
+    false,
+    'success cleared the server retry window, so the new control is immediately usable'
+  );
+});

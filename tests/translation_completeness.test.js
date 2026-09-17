@@ -156,6 +156,19 @@ describe('translation completeness', () => {
     );
   });
 
+  // normalizeLang only accepts a supported code when it is followed by a
+  // language delimiter ('-' or '_'). A code that merely starts with a
+  // supported code (e.g. 'root' starts with 'ro') must NOT resolve to that
+  // language — it falls back to English.
+  it('t() does not match prefix-only codes that lack a language delimiter', () => {
+    const t = app.t;
+    assert.strictEqual(
+      t('title', 'root'),
+      app.translations.en.title,
+      't("title", "root") must not match the "ro" prefix without a delimiter; falls back to en'
+    );
+  });
+
   // t(key) without an explicit language resolves through the module-level
   // currentLang (initially 'en'). This is the primary production call path:
   // every in-app t() invocation (render, toggle, theme) passes only a key.
