@@ -220,3 +220,31 @@ test('projectSections liveSiteUrl values are well-formed and footer strings reso
     );
   }
 });
+
+// createCardHeader renders a copy button on every card using
+// t(card.copyTitle || 'copy') as its title and aria-label. The footer chrome
+// strings (liveSite, deployStatus) are asserted per-language above, but the
+// header's chrome string is not — a missing key would silently render the raw
+// key ("copy") as the button label in that language.
+test('projectSections copy-button chrome string resolves in every language', () => {
+  const allCards = [...projectSections.liveProjects, ...projectSections.repositories];
+
+  for (const card of allCards) {
+    const chromeKey = card.copyTitle || 'copy';
+    for (const lang of languages) {
+      const value = translations[lang][chromeKey];
+      assert.strictEqual(
+        typeof value,
+        'string',
+        `Copy-button chrome key "${chromeKey}" is missing or not a string in ${lang}`
+      );
+      const trimmed = value.trim();
+      assert.ok(trimmed.length > 0, `Copy-button chrome key "${chromeKey}" is empty in ${lang}`);
+      assert.notStrictEqual(
+        trimmed,
+        chromeKey,
+        `Copy-button chrome key "${chromeKey}" echoes the raw key in ${lang}`
+      );
+    }
+  }
+});
