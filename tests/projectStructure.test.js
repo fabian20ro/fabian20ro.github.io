@@ -233,6 +233,19 @@ try {
     );
   }
 
+  // liveSiteUrl uniqueness: two repositories must not share the same deployed
+  // site — otherwise createCardFooter renders an identical "Live site" link for
+  // two different projects.
+  {
+    const liveSites = projectSections.repositories
+      .filter(repo => repo.liveSiteUrl != null)
+      .map(repo => repo.liveSiteUrl);
+    assert(
+      new Set(liveSites).size === liveSites.length,
+      'Duplicate liveSiteUrl found in repositories'
+    );
+  }
+
   // Every card must have at least one footer source (badgeUrl or liveSiteUrl)
   // so that createCardFooter does not silently return null and render a
   // footer-less card.
