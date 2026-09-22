@@ -377,12 +377,37 @@ test('undated activity sorts last and tied timestamps preserve source order', as
   delete events[2].created_at;
   f.events.splice(0, f.events.length, ...events);
   await f.run('loadGitHubActivity()');
-  const links = f
-    .all()
+  const descendants = node => [node, ...(node.children || []).flatMap(descendants)];
+  const links = f.all()
+    .filter(n => n.className === 'activity-item')
+    .flatMap(descendants)
     .filter((n) => n.tagName === 'a')
     .map((n) => n.href);
   assert.deepEqual(
     links,
     [1, 3, 0, 2].map((i) => `https://github.com/owner/event-${i}/tree/main`)
   );
+});
+
+test('successful activity includes a localized GitHub link after updated time without disturbing event order', async () => {
+  const f = fixture();
+  await f.run('loadGitHubActivity()');
+  const url = 'https://github.com/fabian20ro?tab=activity';
+  for (const lang of ['en', 'ro']) {
+    f.run(`currentLang = '${lang}'; renderActivity()`);
+    const all = f.all();
+    const links = all.filter(n => n.tagName === 'a' && n.href === url);
+    assert.equal(links.length, 1);
+    assert.equal(links[0].target, '_blank');
+    assert.equal(links[0].rel, 'noopener noreferrer');
+    assert.equal(links[0].textContent, f.run("t('activityViewGithub')"));
+    assert.ok(all.indexOf(links[0]) > all.findIndex(n => n.className === 'activity-updated'));
+  }
+  f.events.splice(0);
+  await f.run('loadGitHubActivity({force: true})');
+  const all = f.all();
+  const notice = all.find(n => n.className === 'activity-error');
+  assert.ok(notice);
+  assert.equal(all.filter(n => n.tagName === 'a' && n.href === url).length, 1);
+  assert.ok(notice.children.some(n => n.href === url));
 });
