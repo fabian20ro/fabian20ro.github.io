@@ -225,11 +225,36 @@ try {
     }
   }
 
+  // liveSiteUrl must be hosted on the owner's GitHub Pages user site
+  // (fabian20ro.github.io) — the footer renders it as the project's
+  // "Live site", so a foreign domain would link away from the project.
+  for (const repo of projectSections.repositories) {
+    if (repo.liveSiteUrl != null) {
+      assert(
+        /^https:\/\/fabian20ro\.github\.io\/.+$/.test(repo.liveSiteUrl),
+        `Repo[${repo.titleKey}] liveSiteUrl must be hosted on fabian20ro.github.io: ${repo.liveSiteUrl}`
+      );
+    }
+  }
+
   // liveSiteUrl (the deployed site) must differ from href (the GitHub repo)
   for (const repo of projectSections.repositories) {
     assert(
       repo.liveSiteUrl !== repo.href,
       `Repo[${repo.titleKey}] liveSiteUrl must differ from href`
+    );
+  }
+
+  // liveSiteUrl uniqueness: two repositories must not share the same deployed
+  // site — otherwise createCardFooter renders an identical "Live site" link for
+  // two different projects.
+  {
+    const liveSites = projectSections.repositories
+      .filter(repo => repo.liveSiteUrl != null)
+      .map(repo => repo.liveSiteUrl);
+    assert(
+      new Set(liveSites).size === liveSites.length,
+      'Duplicate liveSiteUrl found in repositories'
     );
   }
 

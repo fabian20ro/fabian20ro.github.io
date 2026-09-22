@@ -147,6 +147,13 @@ try {
   assert.strictEqual(getBadgeActionsUrl(undefined), '');
   // Non-GitHub URLs pass through unchanged (no mangle)
   assert.strictEqual(getBadgeActionsUrl('not-a-github-url'), 'not-a-github-url');
+  // Nested non-Actions paths (e.g. workflow badge URLs) truncate to the repo base — only the
+  // first two path segments survive, so deep paths never produce a nested /actions URL.
+  assert.strictEqual(
+    getBadgeActionsUrl('https://github.com/owner/repo/deeper/path'),
+    'https://github.com/owner/repo/actions',
+    'nested non-Actions path truncates to the repo base before /actions'
+  );
   // Regression: non-plain-string inputs must not produce a URL containing raw input — defensive contract.
   assert.strictEqual(getBadgeActionsUrl(true), '', 'getBadgeActionsUrl(boolean) returns empty string');
 

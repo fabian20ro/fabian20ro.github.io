@@ -1313,17 +1313,20 @@ function createActivityItem(event) {
   return item;
 }
 
-function activityNotice(key, canRetry = false) {
-  const error = document.createElement('div');
-  error.className = 'activity-error';
-  appendText(error, `${t(key)} `);
-
+function createActivityGithubLink() {
   const link = document.createElement('a');
   link.href = `https://github.com/${GITHUB_USERNAME}?tab=activity`;
   link.target = '_blank';
   link.rel = 'noopener noreferrer';
   link.textContent = t('activityViewGithub');
-  error.appendChild(link);
+  return link;
+}
+
+function activityNotice(key, canRetry = false) {
+  const error = document.createElement('div');
+  error.className = 'activity-error';
+  appendText(error, `${t(key)} `);
+  error.appendChild(createActivityGithubLink());
 
   if (canRetry) {
     const retry = document.createElement('button');
@@ -1371,6 +1374,9 @@ function renderActivity() {
     updated.setAttribute('data-activity-updated', '');
     updated.textContent = `${t('activityUpdated')} ${getRelativeTime(new Date(updatedAt).toISOString())}`;
     fragment.appendChild(updated);
+  }
+  if (events.length > 0 && status === 'ready') {
+    fragment.appendChild(createActivityGithubLink());
   }
 
   feed.replaceChildren(fragment);

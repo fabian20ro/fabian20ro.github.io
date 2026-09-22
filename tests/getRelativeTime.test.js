@@ -203,6 +203,16 @@ async function runTests() {
 
     console.log('Cross-language hours plural coverage passed!');
 
+    // Exact 23h boundary: max of the hours branch (diffHours < 24), just before the hours→days transition
+    setLang('en');
+    const enTwentyThree = getRelativeTime(new Date(mockDate.getTime() - 23 * 3600000).toISOString());
+    assert.strictEqual(enTwentyThree, `23 ${translations.en.hoursAgo}`);
+    setLang('ro');
+    const roTwentyThree = getRelativeTime(new Date(mockDate.getTime() - (23 * 3600000 + 59 * 60000 + 59000)).toISOString());
+    assert.strictEqual(roTwentyThree, `23 ${translations.ro.hoursAgo}`);
+
+    console.log('Hours-to-days boundary tests passed!');
+
     // Plural days: 2-29 days ago → N days ago (diffDays > 1 && diffDays < 30)
     console.log('Testing plural days forms...');
     setLang('en');
