@@ -234,6 +234,34 @@ test('projectSection translation keys resolve to non-empty strings via t()', () 
   }
 });
 
+// Per-language runtime dispatch for section title/description keys: every project card renders
+// its title and description through t(key, lang). The no-argument t() test above always resolves
+// via currentLang (en) and cannot detect a non-default language table regression. This test pins
+// that for every language, t(key, lang) returns exactly that language's stored value — catching
+// both deleted keys and empty values, which t() would otherwise silently replace with English.
+test('projectSection title/desc keys dispatch to each language table via t(key, lang)', () => {
+  const sectionKeys = new Set();
+
+  [...app.projectSections.liveProjects, ...app.projectSections.repositories].forEach(section => {
+    if (section.titleKey) sectionKeys.add(section.titleKey);
+    if (section.descKey) sectionKeys.add(section.descKey);
+  });
+
+  for (const [lang, trans] of Object.entries(app.translations)) {
+    for (const key of sectionKeys) {
+      const value = app.t(key, lang);
+      assert.strictEqual(typeof value, 'string', `t("${key}", "${lang}") must return a string (got: ${typeof value})`);
+      assert.strictEqual(
+        value,
+        trans[key],
+        `t("${key}", "${lang}") must dispatch to the "${lang}" table value (got "${value}", expected "${trans[key]}") — a missing or empty "${lang}" entry silently falls back to English`
+      );
+      const trimmed = String(value).trim();
+      assert.ok(trimmed.length > 0, `t("${key}", "${lang}") must resolve to non-empty text (got: "${value}")`);
+    }
+  }
+});
+
 // Icon format: every icon must be a non-empty emoji character.
 // Non-emoji icons would render inconsistently across OS/browsers — breaking the
 // visual identity of project cards. The production data uses only single-character
