@@ -19,9 +19,11 @@ try {
   const res2b = getBadgeActionsUrl(url2b);
   assert.strictEqual(res2b, url2b);
 
-  // Test case 3: Not a string
+  // Test case 3: Not a string — the guard is typeof-based, so any non-string type yields ''.
   assert.strictEqual(getBadgeActionsUrl(null), '');
   assert.strictEqual(getBadgeActionsUrl(undefined), '');
+  assert.strictEqual(getBadgeActionsUrl(0), '');
+  assert.strictEqual(getBadgeActionsUrl({}), '');
 
   // Test case 4: getEventIcon
   assert.strictEqual(getEventIcon('PushEvent'), '📤');
