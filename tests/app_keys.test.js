@@ -154,3 +154,25 @@ test('t() treats an empty-string translation value as missing', () => {
     translations.pt['title'] = saved;
   }
 });
+
+test('t() blank-only $lang is truthy and resolves to the en dictionary, unlike a falsy empty string', () => {
+  console.log('Running t() blank-vs-empty $lang divergence tests...');
+  // The guard `($lang && normalizeLang($lang)) || currentLang` treats the two
+  // blank inputs differently:
+  //   ''    is falsy   -> short-circuits to the ACTIVE currentLang
+  //   '   ' is truthy  -> reaches normalizeLang, which trims to '' and
+  //                       defaults to 'en' -> the English dictionary
+  // That divergence is only observable with a non-default active language.
+  setLang('fr');
+  assert.strictEqual(
+    t('title', '   '),
+    "Fabian's Projects",
+    "whitespace-only $lang is truthy, normalizes to 'en', and must NOT leak the active fr language"
+  );
+  assert.strictEqual(
+    t('title', ''),
+    'Les projets de Fabian',
+    "empty-string $lang is falsy and must resolve the active fr language, not a hardcoded 'en'"
+  );
+  setLang('en');
+});
