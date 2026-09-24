@@ -248,3 +248,31 @@ test('projectSections copy-button chrome string resolves in every language', () 
     }
   }
 });
+
+// createCopyButton renders t('copySuccess') into the status node and
+// t('copied') into the button title/aria-label after every click succeeds.
+// The test above covers only the pre-click chrome key (copyTitle); these two
+// post-click feedback keys are asserted nowhere in this file. A missing or
+// empty value in a language would render the raw key ("copySuccess"/"copied")
+// back to the user on click in that language.
+test('projectSections copy-button click-feedback strings resolve in every language', () => {
+  const feedbackKeys = ['copySuccess', 'copied'];
+
+  for (const key of feedbackKeys) {
+    for (const lang of languages) {
+      const value = translations[lang][key];
+      assert.strictEqual(
+        typeof value,
+        'string',
+        `Click-feedback key "${key}" is missing or not a string in ${lang}`
+      );
+      const trimmed = value.trim();
+      assert.ok(trimmed.length > 0, `Click-feedback key "${key}" is empty in ${lang}`);
+      assert.notStrictEqual(
+        trimmed,
+        key,
+        `Click-feedback key "${key}" echoes the raw key in ${lang}`
+      );
+    }
+  }
+});
