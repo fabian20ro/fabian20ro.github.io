@@ -1372,6 +1372,8 @@ function renderActivity() {
     const updated = document.createElement('p');
     updated.className = 'activity-updated';
     updated.setAttribute('data-activity-updated', '');
+    updated.setAttribute('role', 'status');
+    updated.setAttribute('aria-live', 'polite');
     updated.textContent = `${t('activityUpdated')} ${getRelativeTime(new Date(updatedAt).toISOString())}`;
     fragment.appendChild(updated);
   }
