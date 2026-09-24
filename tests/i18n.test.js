@@ -158,6 +158,22 @@ test('t() full partial-fallback via direct lang stub', () => {
   translations.fr['title'] = saved;
 });
 
+test('t() falls back to EN when the selected language value is an empty string', () => {
+  setLang('en');
+  // Counterexample: a bad merge can blank a value instead of deleting the key.
+  // t()'s truthy lookup must treat '' as missing and return the English value,
+  // so the UI renders the EN label rather than a blank string.
+  const saved = translations.fr['title'];
+  translations.fr['title'] = '';
+  try {
+    assert.equal(t('title', 'fr'), "Fabian's Projects",
+      'empty-string value in $lang must fall back to EN, not render an empty label'
+    );
+  } finally {
+    translations.fr['title'] = saved;
+  }
+});
+
 test('normalizeLang rejects non-string input', () => {
   assert.equal(normalizeLang(undefined), 'en');
   assert.equal(normalizeLang(null), 'en');
