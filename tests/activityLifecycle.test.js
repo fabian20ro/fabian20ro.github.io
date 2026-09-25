@@ -116,6 +116,16 @@ test('freshness and locale survive repeated resumes; visible repaint is not a fe
   const f = fixture();
   await f.run('loadGitHubActivity()');
   assert.match(f.text(), /Last updated: just now/);
+  assert.equal(
+    f.document.querySelectorAll('[data-activity-updated]')[0].getAttribute('role'),
+    'status',
+    'live region role on initial render'
+  );
+  assert.equal(
+    f.document.querySelectorAll('[data-activity-updated]')[0].getAttribute('aria-live'),
+    'polite',
+    'live region politeness on initial render'
+  );
   f.run("setLang('ro')");
   assert.match(f.text(), /Ultima actualizare:/);
   f.advance(599_999);
@@ -137,6 +147,16 @@ test('freshness and locale survive repeated resumes; visible repaint is not a fe
     updated.textContent,
     'Ultima actualizare: acum 1 minut',
     'minute tick repaints the updated line with the exact localized bucket'
+  );
+  assert.equal(
+    updated.getAttribute('role'),
+    'status',
+    'live region role survives the repaint that reuses the element'
+  );
+  assert.equal(
+    updated.getAttribute('aria-live'),
+    'polite',
+    'live region politeness survives the repaint that reuses the element'
   );
   f.document.visibilityState = 'hidden';
   f.advance(600_000);

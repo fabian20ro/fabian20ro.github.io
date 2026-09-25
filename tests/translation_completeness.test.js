@@ -142,6 +142,14 @@ describe('translation completeness', () => {
       app.translations.ro.title,
       't("title", "ro_RO") should resolve to the Romanian value'
     );
+    // Exact match on a supported code (no regional suffix) resolves to that
+    // language's dictionary, not the English fallback. Catches a normalizeLang
+    // regression that breaks the `normalized === s` exact-match branch.
+    assert.strictEqual(
+      t('title', 'ro'),
+      app.translations.ro.title,
+      't("title", "ro") should resolve to the Romanian value via exact language match'
+    );
 
     // Unknown keys echo back regardless of the explicit language
     assert.strictEqual(

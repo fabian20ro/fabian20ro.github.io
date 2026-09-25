@@ -54,6 +54,14 @@ try {
     '2 years ago'
   );
 
+  // Test case 5c: singular 1-year branch — a 365-day-old date returns the singular
+  // '1 year ago' (t('yearAgo')). Distinguishes it from the '12 months ago' fallback
+  // (360-364 days) and the plural 'N years ago' (730+ days).
+  assert.strictEqual(
+    getRelativeTime(new Date(now - 365 * 86400000).toISOString()),
+    '1 year ago'
+  );
+
   // Test case 6: all projectSections badgeUrl patterns — lock in coverage for every live project and repo.
   const patternA = 'https://github.com/fabian20ro/emot-id/workflows/Deploy%20to%20GitHub%20Pages/badge.svg';
   assert.strictEqual(getBadgeActionsUrl(patternA), 'https://github.com/fabian20ro/emot-id/actions');

@@ -144,6 +144,25 @@ test('getRelativeTime edge cases', () => {
   assert.strictEqual(getRelativeTime('invalid'), 'just now');
 });
 
+test('getRelativeTime empty and whitespace-only strings return just now', () => {
+  setLang('en');
+  // Production contract (app.js getRelativeTime): an empty or whitespace-only STRING hits the
+  // `!dateString.trim()` guard and returns the localized t('justNow') = 'just now' — distinct
+  // from the '' that non-string inputs return (getRelativeTime(1234567890) -> ''). Collapsing
+  // these two "no meaningful date" branches would flip '' vs 'just now'; this pins the string
+  // branch to the displayable localized string.
+  assert.strictEqual(
+    getRelativeTime(''),
+    'just now',
+    'empty string returns localized just now, not the empty string non-strings yield'
+  );
+  assert.strictEqual(
+    getRelativeTime('   '),
+    'just now',
+    'whitespace-only string returns localized just now, not the empty string non-strings yield'
+  );
+});
+
 test('isCacheFresh guard paths', () => {
   setLang('en');
   // Non-finite timestamps must be rejected by isCacheFresh — prevents silent acceptance of corrupted cache data.
