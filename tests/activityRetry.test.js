@@ -75,6 +75,11 @@ test('retry uses a second fetch, prevents duplicate activation, and replaces the
   await app.loadGitHubActivity();
   const retry = feed.children[0].children[2];
   assert.ok(retry, 'failed request renders retry');
+  assert.equal(
+    retry.disabled,
+    false,
+    'a plain network failure opens no server retry window, so the control is immediately usable'
+  );
   const pending = retry.onclick();
   assert.equal(calls, 2);
   assert.equal(retry.disabled, true);
