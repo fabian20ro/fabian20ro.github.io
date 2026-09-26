@@ -224,6 +224,32 @@ test('LANG_FLAGS values are non-empty flag strings for every supported language'
   }
 });
 
+test('LANG_FLAGS keys exactly mirror SUPPORTED_LANGUAGES with no orphan or missing flag keys', () => {
+  const fs = require('fs');
+  const path = require('path');
+  const srcPath = path.join(__dirname, '..', 'app.js');
+  const src = fs.readFileSync(srcPath, 'utf8');
+
+  const langsMatch = src.match(/const\s+SUPPORTED_LANGUAGES\s*=\s*\[([^\]]+)\]/);
+  assert.ok(langsMatch, 'SUPPORTED_LANGUAGES declaration not found in app.js');
+  const langValues = [...langsMatch[1].matchAll(/'([^']+)'/g)].map((m) => m[1]).sort();
+
+  const flagsLine = src.split('\n').find((line) => /const\s+LANG_FLAGS\s*=/.test(line));
+  assert.ok(flagsLine, 'LANG_FLAGS declaration not found on a source line');
+  const flagKeys = [...flagsLine.matchAll(/\b([a-z]{2}):/g)].map((m) => m[1]).sort();
+
+  // The one-way direction (every supported language has a flag) is covered by
+  // the earlier test. The reverse is checked nowhere: an orphan flag key for a
+  // language absent from SUPPORTED_LANGUAGES would silently render a flag with
+  // no selectable language. Require the two declarations to match exactly,
+  // mirroring the translations-vs-SUPPORTED_LANGUAGES equality check.
+  assert.deepStrictEqual(
+    flagKeys,
+    langValues,
+    `LANG_FLAGS keys must exactly mirror SUPPORTED_LANGUAGES (missing or orphan keys indicate flag/data drift)`
+  );
+});
+
 test('every non-base language translation differs from English at the value level', () => {
   const { translations } = require('../app.js');
   const baseLang = 'en';
