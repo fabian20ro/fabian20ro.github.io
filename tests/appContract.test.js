@@ -60,6 +60,18 @@ try {
   const { getToggleTargetLang } = app;
   assert.strictEqual(getToggleTargetLang(null), 'ro', 'getToggleTargetLang(null) normalizes to en, targets ro');
   assert.strictEqual(getToggleTargetLang(undefined), 'ro', 'getToggleTargetLang(undefined) normalizes to en, targets ro');
+  // Full toggle mapping drives the visible language button: English targets Romanian;
+  // every other supported language targets English. A regression to a raw (un-normalized)
+  // comparison — e.g. lang === 'ro' ? 'ro' : ... — makes the button a no-op in Romanian
+  // while the nullish assertions above still pass.
+  assert.strictEqual(getToggleTargetLang('en'), 'ro', "getToggleTargetLang('en') targets ro");
+  assert.strictEqual(getToggleTargetLang('ro'), 'en', "getToggleTargetLang('ro') targets en");
+  ['fr', 'es', 'de', 'it', 'pt'].forEach(lang => {
+    assert.strictEqual(getToggleTargetLang(lang), 'en', `getToggleTargetLang('${lang}') targets en`);
+  });
+  // Regional variants follow the normalized base language, not the raw regional form.
+  assert.strictEqual(getToggleTargetLang('en-US'), 'ro', "getToggleTargetLang('en-US') targets ro via normalized base");
+  assert.strictEqual(getToggleTargetLang('ro_RO'), 'en', "getToggleTargetLang('ro_RO') targets en via normalized base");
 
   // 4. Strengthen: Test t fallback behavior
   const { t, setLang } = app;

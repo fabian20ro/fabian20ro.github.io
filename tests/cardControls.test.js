@@ -404,6 +404,17 @@ test('copy button shows a brief checkmark before restoring the icon and label', 
       '',
       'icon must clear the checkmark when the timer fires'
     );
+    const restoredRectangles = copyIcon.children.slice(-2);
+    assert.equal(
+      restoredRectangles[0].className,
+      'copy-icon-rectangle copy-icon-rectangle-back',
+      'delayed reset must restore the back rectangle first'
+    );
+    assert.equal(
+      restoredRectangles[1].className,
+      'copy-icon-rectangle copy-icon-rectangle-front',
+      'delayed reset must restore the front rectangle second'
+    );
     assert.equal(
       copyButton.getAttribute('aria-label'),
       app.t(card.copyTitle || 'copy'),

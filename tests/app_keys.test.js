@@ -176,3 +176,21 @@ test('t() blank-only $lang is truthy and resolves to the en dictionary, unlike a
   );
   setLang('en');
 });
+
+test('t() returns the key itself when both the target and en dictionaries hold falsy values', () => {
+  console.log('Running t() double-falsy fallback tests...');
+  const savedPt = translations.pt['title'];
+  const savedEn = translations.en['title'];
+  translations.pt['title'] = '';
+  translations.en['title'] = '';
+  try {
+    assert.strictEqual(
+      t('title', 'pt'),
+      'title',
+      'falsy values in both pt and en must fall through to the key itself, not return an empty string'
+    );
+  } finally {
+    translations.pt['title'] = savedPt;
+    translations.en['title'] = savedEn;
+  }
+});

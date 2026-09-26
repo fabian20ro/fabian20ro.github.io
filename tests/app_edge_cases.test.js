@@ -142,6 +142,22 @@ test('getRelativeTime edge cases', () => {
   assert.strictEqual(getRelativeTime(undefined), 'just now');
   assert.strictEqual(getRelativeTime(null), 'just now');
   assert.strictEqual(getRelativeTime('invalid'), 'just now');
+  // Production contract (app.js getRelativeTime): a VALID date within the last minute
+  // hits the `diffSec < 60` branch and renders the localized 'just now'. Every other
+  // 'just now' assertion above is null/undefined/invalid-date/future, so this is the
+  // only one that exercises the sub-minute readability path. A merge that changed the
+  // threshold (e.g. `diffSec <= 60` or a minutes bucket for sub-minute) would let a
+  // 30- or 50-second-old event read as '1 minute ago' instead.
+  assert.strictEqual(
+    getRelativeTime(new Date(Date.now() - 50000).toISOString()),
+    'just now',
+    'valid date 50s ago (diffSec < 60) renders localized just now, not a minute bucket'
+  );
+  assert.strictEqual(
+    getRelativeTime(new Date(Date.now() - 30000).toISOString()),
+    'just now',
+    'valid date 30s ago (diffSec < 60) renders localized just now'
+  );
 });
 
 test('getRelativeTime empty and whitespace-only strings return just now', () => {
