@@ -224,6 +224,16 @@ async function runTests() {
 
     console.log('Plural days tests passed!');
 
+    // Exact 29-day boundary: max of the days branch (diffDays < 30), just before the days→months transition
+    setLang('en');
+    const enTwentyNine = getRelativeTime(new Date(mockDate.getTime() - 29 * 86400000).toISOString());
+    assert.strictEqual(enTwentyNine, `29 ${translations.en.daysAgo}`);
+    setLang('ro');
+    const roTwentyNine = getRelativeTime(new Date(mockDate.getTime() - (29 * 86400000 + 23 * 3600000 + 59 * 60000 + 59000)).toISOString());
+    assert.strictEqual(roTwentyNine, `29 ${translations.ro.daysAgo}`);
+
+    console.log('Days-to-months boundary tests passed!');
+
     // Months fallback: 360-364 days ago → N months ago (diffYears === 0 && diffMonths >= 12)
     console.log('Testing months fallback for 360-364 days...');
     setLang('en');
