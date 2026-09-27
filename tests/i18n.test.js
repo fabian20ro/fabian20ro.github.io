@@ -251,6 +251,25 @@ test('t() with an unsupported or blank $lang falls back to EN, never the raw key
   assert.equal(t('title', 'ptt'), "Fabian's Projects");
 });
 
+test('t() routes a whitespace-only $lang through normalizeLang (to en), not the active language', () => {
+  setLang('ro');
+  try {
+    // A whitespace-only $lang is a truthy string, so t() must route it through
+    // normalizeLang() (which maps whitespace to 'en') rather than fall back to the
+    // active language via the `|| currentLang` branch. The earlier whitespace test
+    // set currentLang to 'en', so it cannot tell the two resolution paths apart;
+    // asserting the same input against a diverging (ro) baseline pins which one t()
+    // actually takes, catching a regression that treated blank $lang as "unprovided".
+    assert.equal(
+      t('title', '   '),
+      "Fabian's Projects",
+      'whitespace-only $lang must resolve to EN via normalizeLang, not the active ro language'
+    );
+  } finally {
+    setLang('en');
+  }
+});
+
 test('t() explicit $lang overrides the active language set by setLang()', () => {
   setLang('ro');
   // With currentLang = 'ro', a call with no $lang resolves Romanian...
