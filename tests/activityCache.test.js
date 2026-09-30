@@ -297,6 +297,14 @@ for (const { name, fetchResult } of [
   });
 }
 
+test('loadGitHubActivity backoff prevents a second immediate fetch after a failed refresh', async (t) => {
+  const fixture = cachedActivityFixture(t, { count: 1, ageMs: 11 * 60_000, fetchResult: async () => { throw new Error('refresh failed'); } });
+  await loadGitHubActivity();
+  assert.strictEqual(fixture.fetchCalls(), 1, 'stale cache should trigger one refresh attempt');
+  await loadGitHubActivity();
+  assert.strictEqual(fixture.fetchCalls(), 1, '60s backoff should block a second immediate fetch');
+});
+
 test('loadGitHubActivity updates the cache with an empty list if the fetch returns an empty list', async (t) => {
   const now = Date.now();
   const originalDateNow = Date.now;
