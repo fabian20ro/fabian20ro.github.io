@@ -115,7 +115,11 @@ function fixture({ cache, fail = false } = {}) {
 test('freshness and locale survive repeated resumes; visible repaint is not a fetch', async () => {
   const f = fixture();
   await f.run('loadGitHubActivity()');
-  assert.match(f.text(), /Last updated: just now/);
+  assert.equal(
+    f.document.querySelectorAll('[data-activity-updated]')[0].textContent,
+    'Last updated: just now',
+    'initial render shows the exact localized just-now line on the updated node'
+  );
   assert.equal(
     f.document.querySelectorAll('[data-activity-updated]')[0].getAttribute('role'),
     'status',
