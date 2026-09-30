@@ -115,7 +115,11 @@ function fixture({ cache, fail = false } = {}) {
 test('freshness and locale survive repeated resumes; visible repaint is not a fetch', async () => {
   const f = fixture();
   await f.run('loadGitHubActivity()');
-  assert.match(f.text(), /Last updated: just now/);
+  assert.equal(
+    f.document.querySelectorAll('[data-activity-updated]')[0].textContent,
+    'Last updated: just now',
+    'initial render shows the exact localized just-now line on the updated node'
+  );
   assert.equal(
     f.document.querySelectorAll('[data-activity-updated]')[0].getAttribute('role'),
     'status',
@@ -182,6 +186,11 @@ test('concurrent resume and interval share request; failed stale refresh preserv
   assert.equal(requests, 1);
   finish({ ok: false, status: 429, headers: { get: () => '120' } });
   await Promise.all([a, b, c]);
+  assert.equal(
+    requests,
+    1,
+    'no refetch is issued while the server retry window is active'
+  );
   assert.match(f.text(), /owner\/fresh/);
   assert.match(f.text(), /Last updated: 10 minutes ago/);
   assert.match(f.text(), /could not refresh/i);
