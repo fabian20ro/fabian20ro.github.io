@@ -430,3 +430,53 @@ test('copy button shows a brief checkmark before restoring the icon and label', 
     }
   }
 });
+
+// Strengthen: rapid successive clicks debounce the 1500 ms reset timer.
+test('rapid copy clicks debounce the success timeout to the latest click', async () => {
+  const savedDoc = global.document;
+  const originalNavigatorDescriptor = Object.getOwnPropertyDescriptor(global, 'navigator');
+  const originalSetTimeout = global.setTimeout;
+  const originalClearTimeout = global.clearTimeout;
+  const clearedIds = [];
+  let timeoutId = 0;
+
+  global.document = { createElement };
+  Object.defineProperty(global, 'navigator', {
+    configurable: true,
+    value: {
+      clipboard: {
+        async writeText() {}
+      }
+    }
+  });
+  global.setTimeout = (callback) => {
+    timeoutId += 1;
+    return timeoutId;
+  };
+  global.clearTimeout = (id) => {
+    clearedIds.push(id);
+  };
+
+  try {
+    const card = app.projectSections.liveProjects[0];
+    const copyButton = app.createCopyButton(card.href, 'Copy link');
+
+    await copyButton.dispatch('click', { stopPropagation() {} });
+    await copyButton.dispatch('click', { stopPropagation() {} });
+
+    assert.deepEqual(
+      clearedIds,
+      [1],
+      'second click must clear only the first scheduled timeout'
+    );
+  } finally {
+    global.document = savedDoc;
+    global.setTimeout = originalSetTimeout;
+    global.clearTimeout = originalClearTimeout;
+    if (originalNavigatorDescriptor) {
+      Object.defineProperty(global, 'navigator', originalNavigatorDescriptor);
+    } else {
+      delete global.navigator;
+    }
+  }
+});
