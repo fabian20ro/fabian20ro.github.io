@@ -243,3 +243,56 @@ test('429 rate-limit window disables retry, survives forced loads, and resets on
     'success cleared the server retry window, so the new control is immediately usable'
   );
 });
+
+test('429 without a usable retry-after header still applies the bounded 60-second floor', async (t) => {
+  const { app, feed } = setup(t);
+  const realNow = Date.now;
+  let offset = 0;
+  Date.now = () => realNow() + offset;
+  t.after(() => {
+    Date.now = realNow;
+  });
+  let calls = 0;
+  let finishFetch;
+  global.fetch = async () => {
+    calls++;
+    if (calls === 1) {
+      return { ok: false, status: 429, headers: { get: () => null } };
+    }
+    return new Promise((resolve) => {
+      finishFetch = resolve;
+    });
+  };
+  await app.loadGitHubActivity();
+  const retry = feed.children[0].children[2];
+  assert.ok(retry, 'failed request renders retry');
+  assert.equal(
+    retry.disabled,
+    true,
+    'a 429 without a retry-after header still opens the 60-second floor, so the control is held'
+  );
+  await app.loadGitHubActivity({ force: true });
+  assert.equal(calls, 1, 'force bypasses local backoff but not the 60-second floor');
+  offset = 61_000;
+  const settled = app.loadGitHubActivity();
+  assert.equal(calls, 2, 'the floor is bounded: the request resumes once 60 seconds elapse');
+  finishFetch({
+    ok: true,
+    json: async () => [
+      {
+        type: 'PushEvent',
+        repo: { name: 'fabian20ro/floor-recovery' },
+        created_at: new Date().toISOString(),
+        payload: { ref: 'refs/heads/main' }
+      }
+    ]
+  });
+  await settled;
+  assert.equal(feed.children[0].tagName, 'fragment');
+  assert.equal(feed.children[0].children[0].className, 'activity-item');
+  assert.equal(
+    feed.children[0].children.some((child) => child.className === 'activity-retry'),
+    false,
+    'success clears the floor and removes the retry control'
+  );
+});
