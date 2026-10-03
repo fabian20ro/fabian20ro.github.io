@@ -714,6 +714,69 @@ test('loadGitHubActivity rejects a cache whose events array is not an actual Arr
   assert.strictEqual(fetchCalls, 1, 'non-Array events cache should fall back to fetching');
 });
 
+test('loadGitHubActivity rejects a cache whose events array contains a null entry', async (t) => {
+  const now = Date.now();
+  const originalDateNow = Date.now;
+  const originalDocument = global.document;
+  const originalLocalStorage = global.localStorage;
+  const originalSessionStorage = global.sessionStorage;
+  const originalFetch = global.fetch;
+
+  const feed = createElement('div');
+  feed.replaceChildren(createElement('div'));
+
+  global.document = {
+    getElementById(id) {
+      return id === 'activity-feed' ? feed : null;
+    },
+    createElement,
+    createTextNode(text) {
+      return { nodeType: 'text', textContent: text };
+    }
+  };
+
+  const storage = new Map();
+  global.localStorage = {
+    getItem(key) { return storage.get(key); },
+    setItem(key, value) { storage.set(key, value); }
+  };
+
+  // A valid numeric timestamp, but the events array holds a corrupted (null) element.
+  // readActivityCache must reject the whole cache (not just the non-Array field) and
+  // fall back to fetching, so a null entry is never rendered or persisted.
+  storage.set(ACTIVITY_CACHE_KEY, JSON.stringify({
+    timestamp: now,
+    events: [null, { type: 'PushEvent', repo: { name: 'corrupt-repo' }, created_at: new Date(now).toISOString(), payload: {} }]
+  }));
+
+  global.sessionStorage = { getItem() { return null; }, setItem() {} };
+
+  let fetchCalls = 0;
+  const mockEvents = [{ type: 'WatchEvent', repo: { name: 'fresh-repo' }, created_at: new Date(now).toISOString(), payload: {} }];
+  global.fetch = async () => {
+    fetchCalls += 1;
+    return new Response(JSON.stringify(mockEvents), { status: 200 });
+  };
+  Date.now = () => now;
+
+  t.after(() => {
+    Date.now = originalDateNow;
+    global.document = originalDocument;
+    global.localStorage = originalLocalStorage;
+    global.sessionStorage = originalSessionStorage;
+    global.fetch = originalFetch;
+  });
+
+  await loadGitHubActivity();
+
+  assert.strictEqual(fetchCalls, 1, 'cache with a null event entry should be rejected and trigger a fresh fetch');
+  const cacheRaw = storage.get(ACTIVITY_CACHE_KEY);
+  assert.ok(cacheRaw, 'cache should be rewritten after the successful fetch');
+  const cached = JSON.parse(cacheRaw);
+  assert.strictEqual(cached.events.length, 1, 'rewritten cache should hold only the freshly fetched event');
+  assert.strictEqual(cached.events[0].repo.name, 'fresh-repo', 'rewritten cache should contain fresh data, not the corrupted entry');
+});
+
 test('loadGitHubActivity rejects a non-array API response without caching false success', async (t) => {
   const now = Date.now();
   const originalDateNow = Date.now;
