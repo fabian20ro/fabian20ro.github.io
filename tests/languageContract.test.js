@@ -342,3 +342,27 @@ test('normalizeLang accepts exact, prefixed, and non-string input', () => {
   assert.strictEqual(normalizeLang(''), 'en');
   assert.strictEqual(normalizeLang(42), 'en');
 });
+
+test('t() falls back to the English table when a key is absent from the requested language but present in English', () => {
+  const { t, translations } = require('../app.js');
+  // Every non-base table mirrors every base key in the live data, so the
+  // English-fallback branch (translations[lang][key] missing -> translations.en[key])
+  // is unreachable with static data and is exercised by no existing test: the
+  // earlier t() tests only hit the own-table branch and the key-echo branch.
+  // Temporarily delete a key from one non-base table, observe the en value,
+  // and restore it to keep the shared module state intact.
+  const key = 'visitSite';
+  const original = translations.ro[key];
+  assert.ok(original !== undefined, 'precondition: ro table contains the key');
+  assert.notStrictEqual(original, translations.en[key], 'precondition: ro value must differ from en');
+  delete translations.ro[key];
+  try {
+    assert.strictEqual(
+      t(key, 'ro'),
+      translations.en[key],
+      "t(key, 'ro') with the key absent from the ro table must resolve the English table value"
+    );
+  } finally {
+    translations.ro[key] = original;
+  }
+});

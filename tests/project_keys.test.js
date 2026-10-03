@@ -350,6 +350,11 @@ test('projectSections hrefs match expected URL structures', () => {
     if (section.href !== undefined && section.href !== null) {
       assert.ok(repoHrefPattern.test(section.href), `repo ${i}: href "${section.href}" does not match github.com repo URL pattern`);
     }
+    // liveSiteUrl is user-visible in the card footer; it must point to the
+    // expected fabian20ro.github.io subdomain, not an arbitrary HTTPS host.
+    if (section.liveSiteUrl !== undefined && section.liveSiteUrl !== null) {
+      assert.ok(liveHrefPattern.test(section.liveSiteUrl), `repo ${i}: liveSiteUrl "${section.liveSiteUrl}" does not match expected fabian20ro.github.io subdomain pattern`);
+    }
   });
 });
 
