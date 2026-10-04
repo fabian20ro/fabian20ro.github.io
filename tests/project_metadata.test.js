@@ -1,6 +1,6 @@
 const test = require('node:test');
 const assert = require('node:assert');
-const { projectSections, translations } = require('../app.js');
+const { projectSections, translations, getBadgeActionsUrl } = require('../app.js');
 
 const languages = ['en', 'ro', 'fr', 'es', 'de', 'it', 'pt'];
 
@@ -275,4 +275,45 @@ test('projectSections copy-button click-feedback strings resolve in every langua
       );
     }
   }
+});
+
+// createCardFooter assigns getBadgeActionsUrl(card.badgeUrl) as the badge link's href.
+// The shape tests above only inspect the badgeUrl string itself and never run the
+// shipped data through the resolver — a resolver regression (e.g. passing the
+// .svg URL through unchanged, or double-appending /actions) would still pass them
+// while pointing every card's badge link at the image instead of the Actions page.
+test('projectSections badgeUrls resolve to a valid GitHub Actions link via getBadgeActionsUrl', () => {
+  const allSections = [...projectSections.liveProjects, ...projectSections.repositories];
+  let checked = 0;
+
+  for (const section of allSections) {
+    if (!section.badgeUrl) {
+      continue;
+    }
+    checked += 1;
+
+    const derived = getBadgeActionsUrl(section.badgeUrl);
+    assert.ok(
+      typeof derived === 'string' && derived.length > 0,
+      `getBadgeActionsUrl returned an empty link for ${section.href}`
+    );
+
+    const parsed = new URL(derived);
+    assert.strictEqual(
+      parsed.protocol,
+      'https:',
+      `Badge actions link for ${section.href} must use HTTPS: ${derived}`
+    );
+    assert.strictEqual(
+      parsed.hostname,
+      'github.com',
+      `Badge actions link for ${section.href} must point at github.com: ${derived}`
+    );
+    assert.ok(
+      parsed.pathname.endsWith('/actions'),
+      `Badge actions link for ${section.href} must end with /actions, not a nested path or the .svg image: ${derived}`
+    );
+  }
+
+  assert.ok(checked > 0, 'Expected at least one projectSection entry with a badgeUrl');
 });
