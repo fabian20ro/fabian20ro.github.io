@@ -1048,6 +1048,7 @@ function createCardFooter(card) {
     badgeLinkNode.target = '_blank';
     badgeLinkNode.rel = 'noopener noreferrer';
     badgeLinkNode.setAttribute('aria-label', t('deployStatus'));
+    badgeLinkNode.setAttribute('title', t('deployStatus'));
     badgeLinkNode.addEventListener('click', (e) => e.stopPropagation());
     badgeLinkNode.addEventListener('keydown', (e) => e.stopPropagation());
 
@@ -1675,6 +1676,7 @@ if (typeof module !== 'undefined' && module.exports)
     getEventIcon,
     createCopyButton,
     createCardHeader,
+    createCardFooter,
     renderThankYouMessage,
     startThankYouRotation
   };

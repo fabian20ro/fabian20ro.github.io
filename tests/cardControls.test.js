@@ -480,3 +480,24 @@ test('rapid copy clicks debounce the success timeout to the latest click', async
     }
   }
 });
+
+test('deploy badge link in the card footer exposes a hover tooltip', () => {
+  const originalDocument = global.document;
+  global.document = { createElement };
+
+  try {
+    const card = {
+      ...app.projectSections.liveProjects[0],
+      badgeUrl: 'https://example.com/badge.svg'
+    };
+    const footer = app.createCardFooter(card);
+    const badgeLink = footer.children.find(
+      (child) => child.className === 'card-badge-link'
+    );
+
+    assert.equal(badgeLink.getAttribute('aria-label'), app.t('deployStatus'));
+    assert.equal(badgeLink.getAttribute('title'), app.t('deployStatus'));
+  } finally {
+    global.document = originalDocument;
+  }
+});

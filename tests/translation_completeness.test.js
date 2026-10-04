@@ -195,4 +195,31 @@ describe('translation completeness', () => {
     );
   });
 
+  // t()'s $lang dispatch: a falsy $lang short-circuits to the module
+  // currentLang, while a truthy NON-STRING $lang bypasses currentLang and hits
+  // normalizeLang, whose typeof guard returns the EN base. The two branches only
+  // diverge observably when currentLang is a non-base language. This pins the
+  // `($lang && normalizeLang($lang)) || currentLang` contract: a refactor that
+  // drops the falsy guard would make t("title", null) return English even while
+  // currentLang is "ro".
+  it('t() dispatches a falsy $lang to currentLang but a non-string $lang to the EN base', () => {
+    const t = app.t;
+    const enTitle = app.translations.en.title;
+    const roTitle = app.translations.ro.title;
+    assert.notStrictEqual(enTitle, roTitle, 'fixture sanity: en and ro titles must differ');
+
+    app.setLang('ro');
+    try {
+      // Falsy $lang values defer to the active currentLang (here "ro").
+      assert.strictEqual(t('title', null), roTitle, 't("title", null) must resolve via currentLang (ro)');
+      assert.strictEqual(t('title', ''), roTitle, 't("title", "") must resolve via currentLang (ro)');
+
+      // A truthy non-string $lang is non-empty, so it bypasses currentLang and
+      // hits normalizeLang, whose typeof guard forces the EN base.
+      assert.strictEqual(t('title', 42), enTitle, 't("title", 42) must fall back to the EN base regardless of currentLang');
+    } finally {
+      app.setLang('en');
+    }
+  });
+
 });
