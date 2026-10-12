@@ -27,6 +27,7 @@ try {
 
   // Test case 4: getEventIcon
   assert.strictEqual(getEventIcon('PushEvent'), '📤');
+  assert.strictEqual(getEventIcon('ReleaseEvent'), '🚀');
   assert.strictEqual(getEventIcon('UnknownEvent'), '📌');
   assert.strictEqual(getEventIcon(''), '📌');
   assert.strictEqual(getEventIcon(null), '📌');

@@ -30,6 +30,19 @@ test('parseRepoName', () => {
   assert.strictEqual(parseRepoName('user/repo/extra'), null);
 });
 
+test('parseRepoName honors the owner character class (dot, underscore, hyphen)', () => {
+  // Production contract (app.js parseRepoName): the owner and repo groups share the SAME
+  // character class [a-zA-Z0-9._-]+. Existing assertions only exercise special characters in
+  // the REPO group (repo-name, repo_name, repo.name) and always use a pure-alphanumeric
+  // owner (`user`). This pins the owner side of that class: a refactor that narrows the owner
+  // group to [a-zA-Z0-9]+ (plausible, since the real username `fabian20ro` is pure-alphanumeric)
+  // would fail here — it makes `user-name/repo` parse to null, so buildRepoUrl would silently
+  // fall back to the profile URL instead of linking https://github.com/user-name/repo.
+  assert.deepStrictEqual(parseRepoName('user-name/repo'), { owner: 'user-name', repo: 'repo' });
+  assert.deepStrictEqual(parseRepoName('user.name/repo'), { owner: 'user.name', repo: 'repo' });
+  assert.deepStrictEqual(parseRepoName('user_repo/repo'), { owner: 'user_repo', repo: 'repo' });
+});
+
 test('buildRepoUrl', () => {
   assert.strictEqual(buildRepoUrl('user/repo'), 'https://github.com/user/repo');
   assert.strictEqual(buildRepoUrl('invalid'), 'https://github.com/fabian20ro');
