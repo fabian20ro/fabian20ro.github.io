@@ -255,6 +255,24 @@ async function runTests() {
 
     console.log('Plural months range tests passed!');
 
+    // 1→2 year boundary: last singular-year value (729 days → floor 1 year)
+    // vs the first plural-years value (730 days → floor 2 years). Catches an
+    // off-by-one (e.g. diffYears <= 1) that would keep "1 year ago" past the
+    // 1-year→2-year transition while the 365-day and 1900 cases still pass.
+    console.log('Testing 1→2 year boundary...');
+    setLang('en');
+    const enOneYearMax = getRelativeTime(new Date(mockDate.getTime() - 729 * 86400000).toISOString());
+    assert.strictEqual(enOneYearMax, translations.en.yearAgo);
+    const enTwoYears = getRelativeTime(new Date(mockDate.getTime() - 730 * 86400000).toISOString());
+    assert.strictEqual(enTwoYears, `2 ${translations.en.yearsAgo}`);
+    setLang('ro');
+    const roOneYearMax = getRelativeTime(new Date(mockDate.getTime() - 729 * 86400000).toISOString());
+    assert.strictEqual(roOneYearMax, translations.ro.yearAgo);
+    const roTwoYears = getRelativeTime(new Date(mockDate.getTime() - 730 * 86400000).toISOString());
+    assert.strictEqual(roTwoYears, `2 ${translations.ro.yearsAgo}`);
+
+    console.log('1→2 year boundary tests passed!');
+
   } catch (err) {
     console.error('getRelativeTime tests failed:');
     console.error(err.message);

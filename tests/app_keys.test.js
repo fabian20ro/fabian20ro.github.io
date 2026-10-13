@@ -94,6 +94,12 @@ test('normalizeLang resolution', () => {
   assert.strictEqual(app.normalizeLang('  DE  '), 'de');
   assert.strictEqual(app.normalizeLang('jp'), 'en');
   assert.strictEqual(app.normalizeLang(123), 'en');
+  // Region subtags are joined by hyphen or underscore only (app.js documents
+  // 'ro-RO' / 'ro_RO' as the prefix forms): a dot-joined tag is malformed and
+  // must fall through to 'en', never prefix-match the supported base it starts
+  // with. A separator-less startsWith(s) regression would pass every earlier
+  // case yet turn 'de.at' into 'de'.
+  assert.strictEqual(app.normalizeLang('de.at'), 'en');
 });
 
 test('getToggleTargetLang language toggle contract', () => {
