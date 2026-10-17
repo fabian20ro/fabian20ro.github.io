@@ -835,6 +835,10 @@ function getToggleTargetLang(lang) {
   return normalizeLang(lang) === 'en' ? 'ro' : 'en';
 }
 
+function getToggleAriaLabel(targetLang) {
+  return t('toggleLanguage') + ' (' + targetLang.toUpperCase() + ')';
+}
+
 function getPreferredTheme() {
   const savedTheme = storageGet('theme');
   if (savedTheme === 'light' || savedTheme === 'dark') {
@@ -905,8 +909,8 @@ function setLang(lang) {
     const langFlag = LANG_FLAGS[targetLang] || '🌐';
 
     langToggle.textContent = `➡️ ${langFlag}`;
-    langToggle.setAttribute('aria-label', t('toggleLanguage'));
-    langToggle.setAttribute('title', t('toggleLanguage'));
+    langToggle.setAttribute('aria-label', getToggleAriaLabel(targetLang));
+    langToggle.setAttribute('title', getToggleAriaLabel(targetLang));
   }
 
   if (themeToggle) {
@@ -1667,6 +1671,7 @@ if (typeof module !== 'undefined' && module.exports)
     loadGitHubActivity,
     normalizeLang,
     getToggleTargetLang,
+    getToggleAriaLabel,
     parseRepoName,
     buildRepoUrl,
     t,

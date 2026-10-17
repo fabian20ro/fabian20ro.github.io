@@ -296,3 +296,66 @@ test('429 without a usable retry-after header still applies the bounded 60-secon
     'success clears the floor and removes the retry control'
   );
 });
+
+test('429 with an HTTP-date retry-after holds the window until that date, not the 60-second floor', async (t) => {
+  const { app, feed } = setup(t);
+  const realNow = Date.now;
+  let offset = 0;
+  Date.now = () => realNow() + offset;
+  t.after(() => {
+    Date.now = realNow;
+  });
+  const windowEnd = realNow() + 300_000;
+  let calls = 0;
+  let finishFetch;
+  global.fetch = async () => {
+    calls++;
+    if (calls === 1) {
+      return {
+        ok: false,
+        status: 429,
+        headers: {
+          get: (key) => (key === 'retry-after' ? new Date(windowEnd).toUTCString() : null)
+        }
+      };
+    }
+    return new Promise((resolve) => {
+      finishFetch = resolve;
+    });
+  };
+  await app.loadGitHubActivity();
+  const retry = feed.children[0].children[2];
+  assert.ok(retry, 'failed request renders retry');
+  assert.equal(retry.disabled, true, 'HTTP-date retry-after disables the control');
+  await app.loadGitHubActivity({ force: true });
+  assert.equal(calls, 1, 'force bypasses backoff, not the server retry window');
+  offset = 61_000;
+  await app.loadGitHubActivity();
+  assert.equal(
+    calls,
+    1,
+    'the parsed date keeps the window open past the 60-second floor'
+  );
+  offset = 301_000;
+  const settled = app.loadGitHubActivity();
+  assert.equal(calls, 2, 'request resumes once the HTTP-date window elapses');
+  finishFetch({
+    ok: true,
+    json: async () => [
+      {
+        type: 'PushEvent',
+        repo: { name: 'fabian20ro/date-window-recovery' },
+        created_at: new Date().toISOString(),
+        payload: { ref: 'refs/heads/main' }
+      }
+    ]
+  });
+  await settled;
+  assert.equal(feed.children[0].tagName, 'fragment');
+  assert.equal(feed.children[0].children[0].className, 'activity-item');
+  assert.equal(
+    feed.children[0].children.some((child) => child.className === 'activity-retry'),
+    false,
+    'success clears the window and removes the retry control'
+  );
+});

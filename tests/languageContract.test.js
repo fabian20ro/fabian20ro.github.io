@@ -366,3 +366,14 @@ test('t() falls back to the English table when a key is absent from the requeste
     translations.ro[key] = original;
   }
 });
+
+test('getToggleAriaLabel includes the uppercase target language code', () => {
+  const { getToggleAriaLabel, setLang } = require('../app.js');
+  setLang('en');
+
+  const ro = getToggleAriaLabel('ro');
+  const en = getToggleAriaLabel('en');
+
+  assert.ok(ro.includes('(RO)'), `ro label must include '(RO)': ${ro}`);
+  assert.ok(en.includes('(EN)'), `en label must include '(EN)': ${en}`);
+});
