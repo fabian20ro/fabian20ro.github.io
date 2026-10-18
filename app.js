@@ -221,6 +221,7 @@ const translations = {
     viewGithub: 'View on GitHub →',
     copy: 'Copy link',
     copySuccess: 'Copied!',
+    copyFailed: 'Copy failed',
     copied: 'Copied',
     viewAllGithub: 'View all projects on GitHub →',
     next_thought: 'Next thought',
@@ -306,6 +307,7 @@ const translations = {
     viewGithub: 'Vezi pe GitHub →',
     viewAllGithub: 'Vezi toate proiectele pe GitHub →',
     copySuccess: 'Copiat!',
+    copyFailed: 'Nu s-a putut copia',
     copied: 'Copiat',
     copyTitle: 'Copiere link către clipboard',
     copy: 'Copiere',
@@ -390,6 +392,7 @@ const translations = {
     viewGithub: 'Voir sur GitHub →',
     viewAllGithub: 'Voir tous les projets sur GitHub →',
     copySuccess: 'Copié !',
+    copyFailed: 'Échec de la copie',
     copied: 'Copié',
     copyTitle: 'Copier le lien dans le presse-papier',
     copy: 'Copier',
@@ -476,6 +479,7 @@ const translations = {
     viewGithub: 'Ver en GitHub →',
     viewAllGithub: 'Ver todos los proyectos en GitHub →',
     copySuccess: '¡Copiado!',
+    copyFailed: 'Error al copiar',
     copied: 'Copiado',
     copyTitle: 'Copiar enlace al portapapeles',
     copy: 'Copiar',
@@ -561,6 +565,7 @@ const translations = {
     viewGithub: 'Auf GitHub ansehen →',
     viewAllGithub: 'Alle Projekte auf GitHub ansehen →',
     copySuccess: 'Kopiert!',
+    copyFailed: 'Kopieren fehlgeschlagen',
     copied: 'Kopiert',
     copyTitle: 'Link in die Zwischenablage kopieren',
     copy: 'Kopieren',
@@ -646,6 +651,7 @@ const translations = {
     viewGithub: 'Vedi su GitHub →',
     viewAllGithub: 'Vedi tutti i progetti su GitHub →',
     copySuccess: 'Copiato!',
+    copyFailed: 'Copia fallita',
     copied: 'Copiato',
     copyTitle: 'Copia il link negli appunti',
     copy: 'Copia',
@@ -731,6 +737,7 @@ const translations = {
     viewGithub: 'Ver no GitHub →',
     viewAllGithub: 'Ver todos os projetos no GitHub →',
     copySuccess: 'Copiado!',
+    copyFailed: 'Falha ao copiar',
     copied: 'Copiado',
     copyTitle: 'Copiar link para a área de transferência',
     copy: 'Copiar',
@@ -990,6 +997,20 @@ function createCopyButton(href, title) {
       }, 1500);
     } catch (err) {
       console.error('Failed to copy:', err);
+      btn.classList.add('card-copy-btn-error');
+      statusNode.textContent = t('copyFailed');
+      btn.setAttribute('title', t('copyFailed'));
+      btn.setAttribute('aria-label', t('copyFailed'));
+      if (copyTimer !== null) {
+        clearTimeout(copyTimer);
+      }
+      copyTimer = setTimeout(() => {
+        copyTimer = null;
+        btn.classList.remove('card-copy-btn-error');
+        statusNode.textContent = '';
+        btn.setAttribute('title', title);
+        btn.setAttribute('aria-label', title);
+      }, 1500);
     }
   });
   return btn;

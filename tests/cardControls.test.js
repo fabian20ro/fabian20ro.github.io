@@ -183,10 +183,12 @@ test('arrow and copy controls isolate their events from whole-card navigation', 
   }
 });
 
-test('clipboard rejection leaves copy button in its default state', async () => {
+test('clipboard rejection shows error feedback and restores defaults after timeout', async () => {
   const originalDocument = global.document;
   const originalNavigatorDescriptor = Object.getOwnPropertyDescriptor(global, 'navigator');
+  const originalSetTimeout = global.setTimeout;
   let rejectedWith = null;
+  let restoreCopyState;
 
   global.document = { createElement };
   Object.defineProperty(global, 'navigator', {
@@ -200,6 +202,10 @@ test('clipboard rejection leaves copy button in its default state', async () => 
       }
     }
   });
+  global.setTimeout = (callback) => {
+    restoreCopyState = callback;
+    return 1;
+  };
 
   try {
     const card = app.projectSections.liveProjects[0];
@@ -210,10 +216,20 @@ test('clipboard rejection leaves copy button in its default state', async () => 
     await copyButton.dispatch('click', { stopPropagation() {} });
 
     assert.equal(copyButton.classList.contains('card-copy-btn-success'), false, 'success class should not be added on rejection');
-    assert.equal(copyButton.getAttribute('aria-label'), originalTitle, 'aria-label should stay at the default title after rejection');
+    assert.equal(copyButton.classList.contains('card-copy-btn-error'), true, 'error class must be present after rejection');
+    assert.equal(copyButton.children[1].textContent, app.t('copyFailed'), 'status text must show the failure message');
+    assert.equal(copyButton.getAttribute('aria-label'), app.t('copyFailed'), 'aria-label must reflect the failure');
+    assert.equal(copyButton.getAttribute('title'), app.t('copyFailed'), 'title must reflect the failure');
     assert.notEqual(rejectedWith, null, 'writeText must have thrown during dispatch');
+
+    restoreCopyState();
+    assert.equal(copyButton.classList.contains('card-copy-btn-error'), false, 'error class must be removed after restore');
+    assert.equal(copyButton.children[1].textContent, '', 'status text must be cleared after restore');
+    assert.equal(copyButton.getAttribute('aria-label'), originalTitle, 'aria-label must restore to original title');
+    assert.equal(copyButton.getAttribute('title'), originalTitle, 'title must restore to original title');
   } finally {
     global.document = originalDocument;
+    global.setTimeout = originalSetTimeout;
     if (originalNavigatorDescriptor) {
       Object.defineProperty(global, 'navigator', originalNavigatorDescriptor);
     } else {
