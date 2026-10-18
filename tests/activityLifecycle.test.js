@@ -440,3 +440,19 @@ test('successful activity includes a localized GitHub link after updated time wi
   assert.equal(all.filter(n => n.tagName === 'a' && n.href === url).length, 1);
   assert.ok(notice.children.some(n => n.href === url));
 });
+
+test('minute tick repaints each item time in place without a fetch or rebuild', async () => {
+  const f = fixture();
+  await f.run('loadGitHubActivity()');
+  const timeNode = f.all().find(n => Object.hasOwn(n, 'data-activity-time'));
+  assert.equal(timeNode.textContent, 'just now');
+  f.advance(61_000);
+  await f.intervals[0]();
+  assert.equal(f.calls(), 1, 'tick with a fresh cache repaints instead of refetching');
+  assert.equal(
+    f.all().find(n => Object.hasOwn(n, 'data-activity-time')),
+    timeNode,
+    'tick reuses the existing time node instead of rebuilding items'
+  );
+  assert.equal(timeNode.textContent, '1 minute ago', 'tick advances each item bucket in place');
+});
