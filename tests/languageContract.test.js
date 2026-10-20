@@ -377,3 +377,14 @@ test('getToggleAriaLabel includes the uppercase target language code', () => {
   assert.ok(ro.includes('(RO)'), `ro label must include '(RO)': ${ro}`);
   assert.ok(en.includes('(EN)'), `en label must include '(EN)': ${en}`);
 });
+
+test('getThemeToggleAriaLabel includes the uppercase target theme state', () => {
+  const { getThemeToggleAriaLabel, setLang } = require('../app.js');
+  setLang('en');
+
+  const dark = getThemeToggleAriaLabel('dark');
+  const light = getThemeToggleAriaLabel('light');
+
+  assert.ok(dark.includes('(DARK)'), `dark label must include '(DARK)': ${dark}`);
+  assert.ok(light.includes('(LIGHT)'), `light label must include '(LIGHT)': ${light}`);
+});
