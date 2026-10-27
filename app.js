@@ -833,6 +833,11 @@ function normalizeLang(lang) {
 }
 
 function getDefaultLang() {
+  const savedLang = storageGet('lang');
+  if (savedLang === 'en' || savedLang === 'ro') {
+    return savedLang;
+  }
+
   const nav = typeof navigator === 'undefined' ? null : navigator;
   const browserLang = nav?.language || (nav?.languages && nav.languages[0]) || 'en';
   return normalizeLang(browserLang);
