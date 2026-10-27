@@ -388,3 +388,78 @@ test('getThemeToggleAriaLabel includes the uppercase target theme state', () => 
   assert.ok(dark.includes('(DARK)'), `dark label must include '(DARK)': ${dark}`);
   assert.ok(light.includes('(LIGHT)'), `light label must include '(LIGHT)': ${light}`);
 });
+
+// getDefaultLang() consults localStorage via storageGet, which swallows
+// exceptions — a storageless Node environment must resolve null instead of
+// throwing when the function is exercised in isolation.
+const storagelessNavigator = globalThis.navigator;
+const storagelessLocalStorage = globalThis.localStorage;
+Object.defineProperty(globalThis, 'navigator', { value: undefined, configurable: true, writable: true });
+Object.defineProperty(globalThis, 'localStorage', { value: undefined, configurable: true, writable: true });
+
+test('getDefaultLang returns the stored language when localStorage holds a supported value', () => {
+  const { getDefaultLang } = require('../app.js');
+  assert.strictEqual(getDefaultLang(), 'en', "with no stored value and no navigator, 'en' is the baseline default");
+
+  const stored = {};
+  Object.defineProperty(globalThis, 'localStorage', {
+    value: { getItem: (key) => (key in stored ? stored[key] : null) },
+    configurable: true,
+    writable: true,
+  });
+  stored.lang = 'ro';
+  assert.strictEqual(getDefaultLang(), 'ro', "stored 'ro' must resolve to 'ro'");
+  stored.lang = 'en';
+  assert.strictEqual(getDefaultLang(), 'en', "stored 'en' must resolve to 'en'");
+});
+
+test('getDefaultLang returns the stored language regardless of the browser language', () => {
+  const { getDefaultLang } = require('../app.js');
+  const stored = { lang: 'ro' };
+  Object.defineProperty(globalThis, 'localStorage', {
+    value: { getItem: (key) => (key in stored ? stored[key] : null) },
+    configurable: true,
+    writable: true,
+  });
+  Object.defineProperty(globalThis, 'navigator', {
+    value: { language: 'fr-FR', languages: ['fr-FR', 'fr', 'en'] },
+    configurable: true,
+    writable: true,
+  });
+  // A visitor who previously selected Romanian must keep it after reload even
+  // though the browser reports a different, unsupported locale.
+  assert.strictEqual(getDefaultLang(), 'ro', "stored 'ro' must win over browser 'fr-FR'");
+});
+
+test('getDefaultLang falls through to the browser language for null or unrecognized stored values', () => {
+  const { getDefaultLang } = require('../app.js');
+  Object.defineProperty(globalThis, 'navigator', {
+    value: { language: 'fr-FR', languages: ['fr-FR', 'fr', 'en'] },
+    configurable: true,
+    writable: true,
+  });
+  const stored = {};
+  Object.defineProperty(globalThis, 'localStorage', {
+    value: { getItem: (key) => (key in stored ? stored[key] : null) },
+    configurable: true,
+    writable: true,
+  });
+
+  // No stored value: the existing navigator-based path is unchanged.
+  assert.strictEqual(getDefaultLang(), 'fr', "null stored value with browser 'fr-FR' must resolve via the existing normalizeLang path");
+
+  // An unrecognized stored value (e.g. hand-edited) is not a supported
+  // language and must also fall through to the browser language.
+  stored.lang = 'de-DE';
+  assert.strictEqual(getDefaultLang(), 'fr', "unrecognized stored value with browser 'fr-FR' must fall through to the browser language");
+
+  // Unsupported in every form: stored value and browser language both
+  // unknown resolves to the English baseline.
+  stored.lang = 'de-DE';
+  Object.defineProperty(globalThis, 'navigator', {
+    value: { language: 'xx-XX', languages: ['xx-XX'] },
+    configurable: true,
+    writable: true,
+  });
+  assert.strictEqual(getDefaultLang(), 'en', "unrecognized stored value with unsupported browser language must resolve to 'en'");
+});
