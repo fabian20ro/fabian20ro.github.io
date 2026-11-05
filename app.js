@@ -1351,6 +1351,7 @@ function createActivityItem(event) {
   time.className = 'activity-time';
   time.textContent = getRelativeTime(event.created_at);
   time.setAttribute('data-activity-time', event.created_at || '');
+  time.setAttribute('title', event.created_at || '');
 
   content.append(createActivityText(event), time);
   item.append(icon, content);
@@ -1719,6 +1720,7 @@ if (typeof module !== 'undefined' && module.exports)
     projectSections,
     currentLang,
     getEventIcon,
+    createActivityItem,
     createCopyButton,
     createCardHeader,
     createCardFooter,
