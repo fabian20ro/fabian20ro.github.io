@@ -8,6 +8,41 @@ const originalDateNow = Date.now;
 const mockDate = new Date('2026-06-12T12:00:00Z');
 Date.now = () => mockDate.getTime();
 
+function createFakeDocument() {
+  function fakeElement(tag) {
+    return {
+      tagName: tag,
+      className: '',
+      textContent: '',
+      attrs: {},
+      children: [],
+      setAttribute(name, value) {
+        this.attrs[name] = String(value);
+      },
+      getAttribute(name) {
+        return Object.keys(this.attrs).includes(name) ? this.attrs[name] : null;
+      },
+      appendChild(child) {
+        this.children.push(child);
+        return child;
+      },
+      append(...nodes) {
+        for (const node of nodes) {
+          this.children.push(node);
+        }
+      },
+      querySelector(selector) {
+        const cls = selector.replace('.', '');
+        return this.children.find((c) => c.className === cls) || null;
+      }
+    };
+  }
+  return {
+    createElement: (tag) => fakeElement(tag),
+    createTextNode: (text) => ({ nodeType: 'text', textContent: text })
+  };
+}
+
 async function runTests() {
   try {
     console.log('Testing getRelativeTime with multiple languages...');
@@ -272,6 +307,44 @@ async function runTests() {
     assert.strictEqual(roTwoYears, `2 ${translations.ro.yearsAgo}`);
 
     console.log('1→2 year boundary tests passed!');
+
+    // Activity feed tooltip: createActivityItem surfaces the raw ISO timestamp
+    // via the title attribute so hovering shows the exact date.
+    console.log('Testing createActivityItem tooltip title...');
+    const originalDocument = global.document;
+    global.document = createFakeDocument();
+    const { createActivityItem } = app;
+
+    const feedItem = createActivityItem({
+      type: 'PushEvent',
+      repo: { name: 'fabian20ro/fabian20ro.github.io' },
+      created_at: '2026-06-12T10:00:00.000Z',
+      payload: { ref: 'refs/heads/main' }
+    });
+    const feedTime = feedItem
+      .querySelector('.activity-content')
+      .querySelector('.activity-time');
+    assert.strictEqual(
+      feedTime.getAttribute('title'),
+      '2026-06-12T10:00:00.000Z',
+      'relative-time element must expose the ISO timestamp as title'
+    );
+
+    const datelessItem = createActivityItem({
+      type: 'PushEvent',
+      repo: { name: 'fabian20ro/fabian20ro.github.io' },
+      created_at: null,
+      payload: { ref: 'refs/heads/main' }
+    });
+    const datelessTime = datelessItem
+      .querySelector('.activity-content')
+      .querySelector('.activity-time');
+    assert.strictEqual(
+      datelessTime.getAttribute('title'),
+      '',
+      'dateless events must expose an empty title (no stale tooltip)'
+    );
+    global.document = originalDocument;
 
   } catch (err) {
     console.error('getRelativeTime tests failed:');
