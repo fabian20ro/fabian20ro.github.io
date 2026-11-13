@@ -131,7 +131,11 @@ test('freshness and locale survive repeated resumes; visible repaint is not a fe
     'live region politeness on initial render'
   );
   f.run("setLang('ro')");
-  assert.match(f.text(), /Ultima actualizare:/);
+  assert.equal(
+    f.document.querySelectorAll('[data-activity-updated]')[0].textContent,
+    'Ultima actualizare: chiar acum',
+    'language switch repaints the exact localized updated line'
+  );
   f.advance(599_999);
   await f.listeners.visibilitychange();
   assert.equal(f.calls(), 1);
