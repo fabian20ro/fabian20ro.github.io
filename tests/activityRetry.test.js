@@ -359,3 +359,60 @@ test('429 with an HTTP-date retry-after holds the window until that date, not th
     'success clears the window and removes the retry control'
   );
 });
+
+test('429 with only x-ratelimit-reset holds the window to the reset time, past the 60-second floor', async (t) => {
+  const { app, feed } = setup(t);
+  const realNow = Date.now;
+  let offset = 0;
+  Date.now = () => realNow() + offset;
+  t.after(() => {
+    Date.now = realNow;
+  });
+  let calls = 0;
+  let finishFetch;
+  global.fetch = async () => {
+    calls++;
+    if (calls === 1) {
+      return {
+        ok: false,
+        status: 429,
+        headers: {
+          get: (key) =>
+            key === 'x-ratelimit-reset' ? String(Math.floor(realNow() / 1000) + 120) : null
+        }
+      };
+    }
+    return new Promise((resolve) => {
+      finishFetch = resolve;
+    });
+  };
+  await app.loadGitHubActivity();
+  const retry = feed.children[0].children[2];
+  assert.ok(retry, 'failed request renders retry');
+  assert.equal(retry.disabled, true, 'rate-limit reset header disables the control');
+  offset = 61_000;
+  await app.loadGitHubActivity();
+  assert.equal(calls, 1, 'x-ratelimit-reset keeps the window open past the 60-second floor');
+  offset = 121_000;
+  const settled = app.loadGitHubActivity();
+  assert.equal(calls, 2, 'request resumes once the reset window elapses');
+  finishFetch({
+    ok: true,
+    json: async () => [
+      {
+        type: 'PushEvent',
+        repo: { name: 'fabian20ro/reset-recovery' },
+        created_at: new Date().toISOString(),
+        payload: { ref: 'refs/heads/main' }
+      }
+    ]
+  });
+  await settled;
+  assert.equal(feed.children[0].tagName, 'fragment');
+  assert.equal(feed.children[0].children[0].className, 'activity-item');
+  assert.equal(
+    feed.children[0].children.some((child) => child.className === 'activity-retry'),
+    false,
+    'success clears the reset window and removes the retry control'
+  );
+});
