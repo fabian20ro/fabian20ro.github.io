@@ -1106,6 +1106,11 @@ function createCardFooter(card) {
   }
 
   if (card.liveSiteUrl) {
+    const liveLabel = document.createElement('span');
+    liveLabel.className = 'card-live-label';
+    liveLabel.setAttribute('data-i18n', 'liveSite');
+    liveLabel.textContent = t('liveSite');
+
     const liveNode = document.createElement('a');
     liveNode.className = 'card-live-link';
     liveNode.href = card.liveSiteUrl;
@@ -1116,7 +1121,7 @@ function createCardFooter(card) {
     liveNode.setAttribute('aria-label', t('liveSite'));
     liveNode.addEventListener('click', (e) => e.stopPropagation());
     liveNode.addEventListener('keydown', (e) => e.stopPropagation());
-    footerNode.appendChild(liveNode);
+    footerNode.append(liveLabel, liveNode);
   }
 
   return footerNode;

@@ -131,7 +131,11 @@ test('freshness and locale survive repeated resumes; visible repaint is not a fe
     'live region politeness on initial render'
   );
   f.run("setLang('ro')");
-  assert.match(f.text(), /Ultima actualizare:/);
+  assert.equal(
+    f.document.querySelectorAll('[data-activity-updated]')[0].textContent,
+    'Ultima actualizare: chiar acum',
+    'language switch repaints the exact localized updated line'
+  );
   f.advance(599_999);
   await f.listeners.visibilitychange();
   assert.equal(f.calls(), 1);
@@ -232,6 +236,39 @@ test('manual retry inside the server retry window never starts a request, even f
   await new Promise((r) => setTimeout(r, 0));
   assert.equal(requests, 1, 'force bypasses backoff, not the server retry window');
   assert.match(f.text(), /could not refresh/i);
+});
+
+test('403 rate-limit responses open the same server window as 429, holding automatic retries', async () => {
+  const f = fixture();
+  await f.run('loadGitHubActivity()');
+  f.advance(600_000);
+  let requests = 0;
+  f.context.fetch = async () => {
+    requests++;
+    return {
+      ok: false,
+      status: 403,
+      headers: { get: (key) => (key === 'retry-after' ? '300' : null) }
+    };
+  };
+  await f.listeners.visibilitychange();
+  assert.equal(requests, 1, 'stale refresh after TTL hits the network');
+  const retry = f.all().find((n) => n.className === 'activity-retry');
+  assert.equal(retry.disabled, true, '403 retry-after disables the control');
+  f.advance(60_000);
+  await f.intervals[0]();
+  assert.equal(
+    requests,
+    1,
+    'local 60s backoff elapses inside the 300s server window without refetching'
+  );
+  f.advance(240_000);
+  await f.intervals[0]();
+  assert.equal(
+    requests,
+    2,
+    'automatic refresh resumes once the 403 window expires'
+  );
 });
 
 test('request timeout aborts, preserves recovery control; failed empty state fully changes language', async () => {
