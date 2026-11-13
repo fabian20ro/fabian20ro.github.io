@@ -517,3 +517,49 @@ test('deploy badge link in the card footer exposes a hover tooltip', () => {
     global.document = originalDocument;
   }
 });
+
+test('live site footer shows a visible label before the globe link', () => {
+  const originalDocument = global.document;
+  global.document = { createElement };
+
+  try {
+    const card = {
+      ...app.projectSections.liveProjects[0],
+      liveSiteUrl: 'https://example.com/live',
+      badgeUrl: undefined
+    };
+    const footer = app.createCardFooter(card);
+
+    assert.ok(footer, 'footer must render for a card with a live site');
+    const [label, liveLink] = footer.children;
+    assert.equal(label.tagName, 'SPAN');
+    assert.equal(label.className, 'card-live-label');
+    assert.equal(label.textContent, app.t('liveSite'));
+    assert.equal(liveLink.className, 'card-live-link');
+    assert.equal(liveLink.href, card.liveSiteUrl);
+  } finally {
+    global.document = originalDocument;
+  }
+});
+
+test('badge footer children keep their order when a live label is added', () => {
+  const originalDocument = global.document;
+  global.document = { createElement };
+
+  try {
+    const card = {
+      ...app.projectSections.liveProjects[0],
+      badgeUrl: 'https://example.com/badge.svg',
+      liveSiteUrl: 'https://example.com/live'
+    };
+    const footer = app.createCardFooter(card);
+
+    assert.equal(footer.children[0].className, 'card-status-label');
+    assert.equal(footer.children[1].className, 'card-badge-link');
+    assert.equal(footer.children[2].className, 'card-live-label');
+    assert.equal(footer.children[2].textContent, app.t('liveSite'));
+    assert.equal(footer.children[3].className, 'card-live-link');
+  } finally {
+    global.document = originalDocument;
+  }
+});
