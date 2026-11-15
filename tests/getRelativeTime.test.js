@@ -330,6 +330,13 @@ async function runTests() {
       'relative-time element must expose the ISO timestamp as title'
     );
 
+    const feedIcon = feedItem.querySelector('.activity-icon');
+    assert.strictEqual(
+      feedIcon.getAttribute('title'),
+      'PushEvent',
+      'activity icon must expose the event type as its native tooltip'
+    );
+
     const datelessItem = createActivityItem({
       type: 'PushEvent',
       repo: { name: 'fabian20ro/fabian20ro.github.io' },
@@ -343,6 +350,13 @@ async function runTests() {
       datelessTime.getAttribute('title'),
       '',
       'dateless events must expose an empty title (no stale tooltip)'
+    );
+
+    const datelessIcon = datelessItem.querySelector('.activity-icon');
+    assert.strictEqual(
+      datelessIcon.getAttribute('title'),
+      'PushEvent',
+      'icon tooltip must carry the event type even when created_at is null'
     );
     global.document = originalDocument;
 

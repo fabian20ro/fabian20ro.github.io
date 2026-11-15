@@ -1348,6 +1348,7 @@ function createActivityItem(event) {
   icon.className = 'activity-icon';
   icon.textContent = getEventIcon(event.type);
   icon.setAttribute('aria-hidden', 'true');
+  icon.setAttribute('title', event.type || '');
 
   const content = document.createElement('div');
   content.className = 'activity-content';
