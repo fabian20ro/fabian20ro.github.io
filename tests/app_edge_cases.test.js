@@ -14,7 +14,8 @@ const {
   setLang,
   THANK_YOU_LANGUAGES,
   projectSections,
-  getEventIcon
+  getEventIcon,
+  createActivityItem
 } = require('../app.js');
 
 const ACTIVITY_CACHE_TTL_MS = 10 * 60 * 1000;
@@ -473,4 +474,98 @@ test('loadGitHubActivity network failure handles gracefully', async () => {
   // Must not throw — contract: loadGitHubActivity swallows network errors.
   await loadGitHubActivity();
   assert.strictEqual(fetchCalls, 1, 'fetch was attempted exactly once on cache miss + stale path');
+});
+
+test('createActivityItem renders type-specific GitHub links in the activity row', () => {
+  const originalDocument = global.document;
+
+  const makeElement = (tag) => ({
+    tagName: tag,
+    className: '',
+    textContent: '',
+    href: '',
+    attrs: {},
+    children: [],
+    setAttribute(name, value) {
+      this.attrs[name] = String(value);
+    },
+    getAttribute(name) {
+      return Object.prototype.hasOwnProperty.call(this.attrs, name) ? this.attrs[name] : null;
+    },
+    appendChild(child) {
+      this.children.push(child);
+      return child;
+    },
+    append(...nodes) {
+      for (const node of nodes) this.children.push(node);
+    }
+  });
+
+  global.document = {
+    createElement(tag) {
+      return makeElement(tag);
+    },
+    createTextNode(text) {
+      return { nodeType: 3, textContent: String(text) };
+    }
+  };
+
+  const collectLinks = (node, found = []) => {
+    for (const child of node.children || []) {
+      if (child.tagName === 'a') found.push(child);
+      if (child.children) collectLinks(child, found);
+    }
+    return found;
+  };
+
+  try {
+    const repo = { name: 'fabian20ro/fabian20ro.github.io' };
+    const repoUrl = 'https://github.com/fabian20ro/fabian20ro.github.io';
+    const createdAt = '2026-11-15T09:00:00Z';
+
+    // Push: link must point at the branch tree, not the repo root.
+    const pushLinks = collectLinks(
+      createActivityItem({
+        type: 'PushEvent',
+        repo,
+        payload: { ref: 'refs/heads/release' },
+        created_at: createdAt
+      })
+    );
+    assert.strictEqual(pushLinks.length, 1, 'push row renders exactly one link');
+    assert.strictEqual(pushLinks[0].href, `${repoUrl}/tree/release`);
+    assert.strictEqual(pushLinks[0].textContent, 'fabian20ro/fabian20ro.github.io');
+
+    // Issue: link must point at the issue number with a #<n> label.
+    const issueLinks = collectLinks(
+      createActivityItem({
+        type: 'IssuesEvent',
+        repo,
+        payload: { issue: { number: 7, title: 'Fix typo' } },
+        created_at: createdAt
+      })
+    );
+    assert.strictEqual(issueLinks.length, 1, 'issue row renders exactly one link');
+    assert.strictEqual(issueLinks[0].href, `${repoUrl}/issues/7`);
+    assert.strictEqual(issueLinks[0].textContent, 'fabian20ro/fabian20ro.github.io#7');
+
+    // Incomplete payload: must degrade to a valid repo-root link, never /issues/undefined.
+    const bareIssueLinks = collectLinks(
+      createActivityItem({
+        type: 'IssuesEvent',
+        repo,
+        payload: { issue: {} },
+        created_at: createdAt
+      })
+    );
+    assert.strictEqual(bareIssueLinks.length, 1, 'issue row without a number still renders one link');
+    assert.strictEqual(bareIssueLinks[0].href, repoUrl, 'missing issue number falls back to the repo root');
+    assert.strictEqual(bareIssueLinks[0].textContent, 'fabian20ro/fabian20ro.github.io');
+  } finally {
+    if (originalDocument === undefined) {
+      delete global.document;
+    } else {
+      global.document = originalDocument;
+    }
+  }
 });
