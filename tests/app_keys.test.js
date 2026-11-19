@@ -3,7 +3,7 @@
 const app = require('../app.js');
 const assert = require('node:assert');
 const { test } = require('node:test');
-const { setLang, translations, t } = app;
+const { getDefaultLang, setLang, translations, t } = app;
 
 test('translation key contract', (t) => {
   console.log('Running translation key contract tests...');
@@ -198,5 +198,54 @@ test('t() returns the key itself when both the target and en dictionaries hold f
   } finally {
     translations.pt['title'] = savedPt;
     translations.en['title'] = savedEn;
+  }
+});
+
+test('the "lang" storage key only honors explicit en/ro toggle choices', () => {
+  // The toggle can only produce en or ro, but setLang persists whatever it
+  // resolves, so a first visit on a French browser stores "fr". On reload that
+  // inferred choice must not win: getDefaultLang re-derives from the browser.
+  // languageContract.test.js pins the stored "ro"/"en"/null/"de-DE" values,
+  // but none pins the supported base code that production itself stores.
+  const saved = { lang: 'fr' };
+  const originalStorage = globalThis.localStorage;
+  const originalNavigator = globalThis.navigator;
+  const hadStorage = 'localStorage' in globalThis;
+  const hadNavigator = 'navigator' in globalThis;
+  try {
+    Object.defineProperty(globalThis, 'localStorage', {
+      value: { getItem: (key) => (key in saved ? saved[key] : null) },
+      configurable: true,
+      writable: true,
+    });
+    Object.defineProperty(globalThis, 'navigator', {
+      value: { language: 'de-DE', languages: ['de-DE', 'de', 'en'] },
+      configurable: true,
+      writable: true,
+    });
+    assert.strictEqual(
+      getDefaultLang(),
+      'de',
+      "stored 'fr' (supported but not a toggle target) must defer to the browser language"
+    );
+  } finally {
+    if (hadStorage) {
+      Object.defineProperty(globalThis, 'localStorage', {
+        value: originalStorage,
+        configurable: true,
+        writable: true,
+      });
+    } else {
+      delete globalThis.localStorage;
+    }
+    if (hadNavigator) {
+      Object.defineProperty(globalThis, 'navigator', {
+        value: originalNavigator,
+        configurable: true,
+        writable: true,
+      });
+    } else {
+      delete globalThis.navigator;
+    }
   }
 });
