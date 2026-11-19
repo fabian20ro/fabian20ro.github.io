@@ -147,6 +147,13 @@ test('freshness and locale survive repeated resumes; visible repaint is not a fe
   assert.equal(f.calls(), 3, 'second resume works within same tab');
   f.advance(60_000);
   const stableItem = f.all().find((n) => n.className === 'activity-item');
+  const updatedBefore = f.document.querySelectorAll('[data-activity-updated]')[0];
+  const titleBefore = updatedBefore.getAttribute('title');
+  assert.equal(
+    titleBefore,
+    new Date(f.run('activity.updatedAt')).toLocaleString(),
+    'initial render sets the absolute date-time tooltip'
+  );
   await f.intervals[0]();
   assert.equal(f.calls(), 3);
   assert.ok(f.all().includes(stableItem), 'repaint preserves focused item identity');
@@ -155,6 +162,11 @@ test('freshness and locale survive repeated resumes; visible repaint is not a fe
     updated.textContent,
     'Ultima actualizare: acum 1 minut',
     'minute tick repaints the updated line with the exact localized bucket'
+  );
+  assert.equal(
+    updated.getAttribute('title'),
+    titleBefore,
+    'repaint preserves the original absolute date-time tooltip'
   );
   assert.equal(
     updated.getAttribute('role'),

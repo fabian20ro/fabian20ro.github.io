@@ -1426,6 +1426,7 @@ function renderActivity() {
     updated.setAttribute('role', 'status');
     updated.setAttribute('aria-live', 'polite');
     updated.textContent = `${t('activityUpdated')} ${getRelativeTime(new Date(updatedAt).toISOString())}`;
+    updated.setAttribute('title', new Date(updatedAt).toLocaleString());
     fragment.appendChild(updated);
   }
   if (events.length > 0 && status === 'ready') {
