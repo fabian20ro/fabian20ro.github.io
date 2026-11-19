@@ -479,7 +479,15 @@ test('successful activity includes a localized GitHub link after updated time wi
     assert.equal(links[0].target, '_blank');
     assert.equal(links[0].rel, 'noopener noreferrer');
     assert.equal(links[0].textContent, f.run("t('activityViewGithub')"));
-    assert.ok(all.indexOf(links[0]) > all.findIndex(n => n.className === 'activity-updated'));
+    const updatedIndex = all.findIndex(n => n.className === 'activity-updated');
+    assert.ok(
+      updatedIndex !== -1,
+      'successful load renders the updated line the GitHub link must follow'
+    );
+    assert.ok(
+      all.indexOf(links[0]) > updatedIndex,
+      'GitHub link renders after the updated line in both languages'
+    );
   }
   f.events.splice(0);
   await f.run('loadGitHubActivity({force: true})');
