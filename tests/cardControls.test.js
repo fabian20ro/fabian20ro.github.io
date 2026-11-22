@@ -168,10 +168,12 @@ test('arrow and copy controls isolate their events from whole-card navigation', 
     assert.deepEqual(copiedUrls, [card.href]);
     assert.equal(copyButton.classList.contains('card-copy-btn-success'), true);
     assert.equal(copyButton.getAttribute('aria-label'), app.t('copied'));
+    assert.equal(copyButton.getAttribute('aria-busy'), 'true', 'busy must be true while the write is pending');
 
     restoreCopyState();
     assert.equal(copyButton.classList.contains('card-copy-btn-success'), false);
     assert.equal(copyButton.getAttribute('aria-label'), app.t(card.copyTitle || 'copy'));
+    assert.equal(copyButton.getAttribute('aria-busy'), 'false', 'busy must be cleared when the 1500 ms restore fires');
   } finally {
     global.document = originalDocument;
     global.setTimeout = originalSetTimeout;
@@ -220,6 +222,7 @@ test('clipboard rejection shows error feedback and restores defaults after timeo
     assert.equal(copyButton.children[1].textContent, app.t('copyFailed'), 'status text must show the failure message');
     assert.equal(copyButton.getAttribute('aria-label'), app.t('copyFailed'), 'aria-label must reflect the failure');
     assert.equal(copyButton.getAttribute('title'), app.t('copyFailed'), 'title must reflect the failure');
+    assert.equal(copyButton.getAttribute('aria-busy'), 'true', 'busy must remain set while the error feedback is pending restore');
     assert.notEqual(rejectedWith, null, 'writeText must have thrown during dispatch');
 
     restoreCopyState();
@@ -227,6 +230,7 @@ test('clipboard rejection shows error feedback and restores defaults after timeo
     assert.equal(copyButton.children[1].textContent, '', 'status text must be cleared after restore');
     assert.equal(copyButton.getAttribute('aria-label'), originalTitle, 'aria-label must restore to original title');
     assert.equal(copyButton.getAttribute('title'), originalTitle, 'title must restore to original title');
+    assert.equal(copyButton.getAttribute('aria-busy'), 'false', 'busy must be cleared when the restore timeout fires');
   } finally {
     global.document = originalDocument;
     global.setTimeout = originalSetTimeout;
