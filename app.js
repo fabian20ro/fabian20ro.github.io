@@ -971,6 +971,7 @@ function createCopyButton(href, title) {
   btn.type = 'button';
   btn.setAttribute('title', title);
   btn.setAttribute('aria-label', title);
+  btn.setAttribute('aria-busy', 'false');
 
   const iconNode = document.createElement('span');
   iconNode.className = 'copy-icon';
@@ -993,6 +994,7 @@ function createCopyButton(href, title) {
   let copyTimer = null;
   btn.addEventListener('click', async (e) => {
     e.stopPropagation();
+    btn.setAttribute('aria-busy', 'true');
     try {
       await navigator.clipboard.writeText(href);
       btn.classList.add('card-copy-btn-success');
@@ -1011,6 +1013,7 @@ function createCopyButton(href, title) {
         iconNode.append(backRectangle, frontRectangle);
         btn.setAttribute('title', title);
         btn.setAttribute('aria-label', title);
+        btn.setAttribute('aria-busy', 'false');
       }, 1500);
     } catch (err) {
       console.error('Failed to copy:', err);
@@ -1027,6 +1030,7 @@ function createCopyButton(href, title) {
         statusNode.textContent = '';
         btn.setAttribute('title', title);
         btn.setAttribute('aria-label', title);
+        btn.setAttribute('aria-busy', 'false');
       }, 1500);
     }
   });
