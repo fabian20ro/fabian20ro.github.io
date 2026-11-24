@@ -1140,6 +1140,7 @@ function createCard(card, isSelected) {
   cardNode.setAttribute('role', 'group');
   cardNode.setAttribute('tabindex', '0');
   cardNode.setAttribute('aria-label', t(card.titleKey));
+  cardNode.setAttribute('title', card.href);
   cardNode.addEventListener('click', () => {
     window.location.href = card.href;
   });
@@ -1734,6 +1735,7 @@ if (typeof module !== 'undefined' && module.exports)
     createActivityItem,
     createCopyButton,
     createCardHeader,
+    createCard,
     createCardFooter,
     renderThankYouMessage,
     startThankYouRotation
