@@ -873,10 +873,9 @@ function setTheme(theme) {
   const icon = document.querySelector('.theme-icon');
   const themeToggle = document.getElementById('theme-toggle');
   if (themeToggle) {
-    themeToggle.setAttribute(
-      'aria-label',
-      getThemeToggleAriaLabel(resolvedTheme === 'dark' ? 'light' : 'dark')
-    );
+    const themeToggleLabel = getThemeToggleAriaLabel(resolvedTheme === 'dark' ? 'light' : 'dark');
+    themeToggle.setAttribute('aria-label', themeToggleLabel);
+    themeToggle.setAttribute('title', themeToggleLabel);
   }
 
   document.documentElement.setAttribute('data-theme', resolvedTheme);
@@ -933,12 +932,11 @@ function setLang(lang) {
   }
 
   if (themeToggle) {
-    themeToggle.setAttribute(
-      'aria-label',
-      getThemeToggleAriaLabel(
-        document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark'
-      )
+    const themeToggleLabel = getThemeToggleAriaLabel(
+      document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark'
     );
+    themeToggle.setAttribute('aria-label', themeToggleLabel);
+    themeToggle.setAttribute('title', themeToggleLabel);
   }
 
   storageSet('lang', currentLang);
@@ -1724,6 +1722,7 @@ if (typeof module !== 'undefined' && module.exports)
     getToggleTargetLang,
     getToggleAriaLabel,
     getThemeToggleAriaLabel,
+    setTheme,
     parseRepoName,
     buildRepoUrl,
     t,
