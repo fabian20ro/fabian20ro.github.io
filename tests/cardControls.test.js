@@ -501,6 +501,23 @@ test('rapid copy clicks debounce the success timeout to the latest click', async
   }
 });
 
+test('card body exposes the destination URL as a hover tooltip', () => {
+  const originalDocument = global.document;
+  global.document = { createElement };
+
+  try {
+    const card = app.projectSections.liveProjects[0];
+    const node = app.createCard(card, false);
+
+    assert.equal(node.getAttribute('title'), card.href);
+    assert.equal(node.getAttribute('role'), 'group');
+    assert.equal(node.getAttribute('tabindex'), '0');
+    assert.equal(node.getAttribute('aria-label'), app.t(card.titleKey));
+  } finally {
+    global.document = originalDocument;
+  }
+});
+
 test('deploy badge link in the card footer exposes a hover tooltip', () => {
   const originalDocument = global.document;
   global.document = { createElement };

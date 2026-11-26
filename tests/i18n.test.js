@@ -1,6 +1,6 @@
 const test = require('node:test');
 const assert = require('node:assert');
-const { translations, t, normalizeLang, setLang, getToggleTargetLang, getDefaultLang } = require('../app.js');
+const { translations, t, normalizeLang, setLang, setTheme, getToggleTargetLang, getDefaultLang } = require('../app.js');
 
 test('i18n translation completeness', () => {
   const enKeys = Object.keys(translations.en);
@@ -329,6 +329,102 @@ test('getDefaultLang() resolves navigator.language through normalizeLang in brow
       Object.defineProperty(globalThis, 'navigator', { value: original, configurable: true });
     } else {
       delete globalThis.navigator;
+    }
+  }
+});
+
+// Minimal document mock exposing only the nodes setLang/setTheme touch. Every
+// other getElementById returns null so the app's guarded renderers no-op.
+function createMockThemeToggleDocument(initialTheme = 'light') {
+  const createToggle = () => {
+    const attrs = new Map();
+    return {
+      setAttribute(name, value) {
+        attrs.set(name, value);
+      },
+      getAttribute(name) {
+        return attrs.has(name) ? attrs.get(name) : null;
+      },
+    };
+  };
+
+  const themeToggle = createToggle();
+  const documentElement = {
+    lang: 'en',
+    classList: { toggle() {} },
+    attrs: new Map([['data-theme', initialTheme]]),
+    setAttribute(name, value) {
+      this.attrs.set(name, value);
+    },
+    getAttribute(name) {
+      return this.attrs.has(name) ? this.attrs.get(name) : null;
+    },
+  };
+
+  return {
+    documentElement,
+    title: '',
+    getElementById(id) {
+      return id === 'theme-toggle' ? themeToggle : null;
+    },
+    querySelector() {
+      return null;
+    },
+    querySelectorAll() {
+      return [];
+    },
+  };
+}
+
+test('setLang keeps the theme toggle tooltip in sync with its aria-label', () => {
+  const hadDocument = Object.prototype.hasOwnProperty.call(globalThis, 'document');
+  const original = globalThis.document;
+  globalThis.document = createMockThemeToggleDocument('light');
+  try {
+    setLang('ro');
+    const themeToggle = globalThis.document.getElementById('theme-toggle');
+    assert.equal(
+      themeToggle.getAttribute('title'),
+      themeToggle.getAttribute('aria-label'),
+      'tooltip (title) must mirror the aria-label after a language switch'
+    );
+    assert.equal(
+      themeToggle.getAttribute('aria-label'),
+      'Schimb\u0103 tema (DARK)',
+      'theme toggle label must localize to Romanian with the opposite target theme'
+    );
+  } finally {
+    if (hadDocument) {
+      globalThis.document = original;
+    } else {
+      delete globalThis.document;
+    }
+  }
+});
+
+test('setTheme keeps the theme toggle tooltip in sync with its aria-label', () => {
+  const hadDocument = Object.prototype.hasOwnProperty.call(globalThis, 'document');
+  const original = globalThis.document;
+  globalThis.document = createMockThemeToggleDocument('light');
+  try {
+    setLang('en');
+    setTheme('dark');
+    const themeToggle = globalThis.document.getElementById('theme-toggle');
+    assert.equal(
+      themeToggle.getAttribute('title'),
+      themeToggle.getAttribute('aria-label'),
+      'tooltip (title) must mirror the aria-label after a theme change'
+    );
+    assert.equal(
+      themeToggle.getAttribute('aria-label'),
+      'Toggle theme (LIGHT)',
+      'theme toggle label must point at the opposite target theme in English'
+    );
+  } finally {
+    if (hadDocument) {
+      globalThis.document = original;
+    } else {
+      delete globalThis.document;
     }
   }
 });
